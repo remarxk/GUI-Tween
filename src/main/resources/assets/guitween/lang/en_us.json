@@ -1,0 +1,17 @@
+{
+  "guitween.config": "GUITween Configuration",
+  "guitween.config.enable": "enable animation",
+  "guitween.config.windowGroup": "window animation",
+  "guitween.config.windowDuration": "duration",
+  "guitween.config.windowEase": "ease",
+  "guitween.config.holdItemGroup": "hold item animation",
+  "guitween.config.holdItemScaleDuration": "scale duration",
+  "guitween.config.holdItemRestoreDuration": "restore duration",
+  "guitween.config.holdItemScale": "scale",
+  "guitween.config.holdItemScaleEase": "scale ease",
+  "guitween.config.holdItemRestoreEase": "restore ease",
+  "guitween.config.hoverGroup": "hover animation",
+  "guitween.config.hoverDuration": "duration",
+  "guitween.config.hoverEase": "ease",
+  "guitween.config.hoverScale": "scale"
+}
