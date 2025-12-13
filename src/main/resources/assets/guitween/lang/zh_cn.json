@@ -1,0 +1,17 @@
+{
+  "guitween.config": "GUITween 配置",
+  "guitween.config.enable": "是否启用动画",
+  "guitween.config.windowGroup": "窗体动画",
+  "guitween.config.windowDuration": "动画时长",
+  "guitween.config.windowEase": "动画曲线",
+  "guitween.config.holdItemGroup": "物品栏动画",
+  "guitween.config.holdItemScaleDuration": "缩放动画时长",
+  "guitween.config.holdItemRestoreDuration": "还原动画时长",
+  "guitween.config.holdItemScale": "缩放比例",
+  "guitween.config.holdItemScaleEase": "缩放动画曲线",
+  "guitween.config.holdItemRestoreEase": "还原动画曲线",
+  "guitween.config.hoverGroup": "悬停动画",
+  "guitween.config.hoverDuration": "动画时长",
+  "guitween.config.hoverEase": "动画曲线",
+  "guitween.config.hoverScale": "缩放比例"
+}
