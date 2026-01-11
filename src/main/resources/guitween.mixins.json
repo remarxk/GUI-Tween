@@ -6,8 +6,13 @@
   "mixins": [
   ],
   "client": [
+    "AbstractContainerScreenMixin",
+    "ChatComponentMixin",
+    "ChatScreenMixin",
+    "FontMixin",
     "GuiMixin",
-    "AbstractContainerScreenMixin"
+    "ItemRendererMixin",
+    "LocalPlayerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

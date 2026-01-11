@@ -1,44 +1,81 @@
 package com.remarxk.guitween.mixin;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.remarxk.guitween.AnimationState;
 import com.remarxk.guitween.GUITween;
+import com.remarxk.guitween.GUITweenUtility;
 import com.remarxk.guitween.HotbarChangeListener;
 import com.remarxk.guitween.config.GUITweenConfig;
+import com.remarxk.guitween.util.AnimationStatePool;
+import com.remarxk.guitween.util.Ease;
 import com.remarxk.guitween.util.TweenUtil;
 import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(Gui.class)
 public class GuiMixin {
+    @Unique
+    private int gUITween$lastLevel = -1;
+
+    @Unique
+    private boolean gUITween$inLevelTextTween;
+
+    @Unique
+    private float gUITween$levelTextTick;
+
+    @Shadow
+    @Final
+    private Minecraft minecraft;
+
     @Inject(method = "renderSlot", at = @At("HEAD"))
-    public void renderHotbarBefore(GuiGraphics guiGraphics, int x, int y, DeltaTracker deltaTracker, Player player, ItemStack stack, int seed, CallbackInfo ci){
-        if (!GUITweenConfig.enable.get())
+    public void renderSlotBefore(GuiGraphics guiGraphics, int x, int y, DeltaTracker deltaTracker, Player player, ItemStack stack, int seed, CallbackInfo ci){
+        if (!GUITweenConfig.isEnableHoldItem())
             return;
 
-        if (HotbarChangeListener.lastSelected + 1 != seed)
+        int slot = seed - 1;
+
+        AnimationState state = HotbarChangeListener.hotbarAnimStateMap.getOrDefault(slot, null);
+        if (state == null) {
             return;
+        }
 
         float centerX = x + 8;
         float centerY = y + 8;
 
-        float scale;
-        if (HotbarChangeListener.animTick < GUITweenConfig.holdItemScaleDuration.get()) {
-            float progress = (float) HotbarChangeListener.animTick / GUITweenConfig.holdItemScaleDuration.get();
-            scale = TweenUtil.tween(1, GUITweenConfig.holdItemScale.get().floatValue(), progress, GUITweenConfig.holdItemScaleEase.get());
+        float scale = TweenUtil.tween(state.startValue, state.stopValue, state.tick, state.totalTick, state.ease);
+
+        float deltaTicks = GUITweenUtility.getDeltaTicks();
+        if (!state.rewind) {
+            state.tick += deltaTicks;
+            if (state.tick >= state.totalTick) {
+                if (state.stopValue > 1) {
+                    state.ease = GUITweenConfig.holdZoomOutEase.get();
+                    state.tick = 0;
+                    state.totalTick = GUITweenConfig.holdZoomOutDuration.get().floatValue();
+                    state.startValue = state.stopValue;
+                    state.stopValue = 1;
+                    state.rewind = false;
+                }
+            }
         }
         else {
-            float progress = (float) (HotbarChangeListener.animTick - GUITweenConfig.holdItemScaleDuration.get()) / GUITweenConfig.holdItemRestoreDuration.get();
-            scale = TweenUtil.tween(GUITweenConfig.holdItemScale.get().floatValue(), 1, progress, GUITweenConfig.holdItemRestoreEase.get());
+            state.tick -= deltaTicks;
         }
-
-        HotbarChangeListener.animTick++;
 
         PoseStack poseStack = guiGraphics.pose();
         poseStack.pushPose();
@@ -48,14 +85,157 @@ public class GuiMixin {
     }
 
     @Inject(method = "renderSlot", at = @At("TAIL"))
-    public void renderHotbarAfter(GuiGraphics guiGraphics, int x, int y, DeltaTracker deltaTracker, Player player, ItemStack stack, int seed, CallbackInfo ci){
-        if (!GUITweenConfig.enable.get())
+    public void renderSlotAfter(GuiGraphics guiGraphics, int x, int y, DeltaTracker deltaTracker, Player player, ItemStack stack, int seed, CallbackInfo ci){
+        if (!GUITweenConfig.isEnableHoldItem())
             return;
 
-        if (HotbarChangeListener.lastSelected + 1 != seed)
+        int slot = seed - 1;
+        AnimationState state = HotbarChangeListener.hotbarAnimStateMap.getOrDefault(slot, null);
+        if (state == null)
             return;
 
         PoseStack poseStack = guiGraphics.pose();
         poseStack.popPose();
+
+        if (state.rewind) {
+            if (state.startValue <= 1 && state.tick <= 0) {
+                AnimationStatePool.releaseAnimationState(state);
+                HotbarChangeListener.hotbarAnimStateMap.remove(slot);
+            }
+        }
+        else {
+            if (state.stopValue <= 1 && state.tick >= state.totalTick) {
+                AnimationStatePool.releaseAnimationState(state);
+                HotbarChangeListener.hotbarAnimStateMap.remove(slot);
+            }
+        }
+    }
+
+    @Unique
+    private float gUITween$selectTick;
+
+    @Unique
+    private boolean gUITween$inLackTween;
+
+    @Inject(
+            method = "renderItemHotbar",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lnet/minecraft/resources/ResourceLocation;IIII)V",
+                    ordinal = 1
+            ),
+            locals = LocalCapture.CAPTURE_FAILEXCEPTION
+    )
+    public void renderItemHotbarSelectBefore(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci, Player player, ItemStack itemStack, HumanoidArm humanoidArm, int i) {
+        if (!GUITweenConfig.isEnableLack())
+            return;
+
+        if (HotbarChangeListener.lackTick >= GUITweenConfig.lackDuration.get())
+            return;
+
+        gUITween$inLackTween = true;
+
+        PoseStack poseStack = guiGraphics.pose();
+
+        float dx = TweenUtil.shake(0, HotbarChangeListener.lackTick, 6, GUITweenConfig.lackShakeStrength.get().floatValue());
+        float dy = TweenUtil.shake(1, HotbarChangeListener.lackTick, 6, GUITweenConfig.lackShakeStrength.get().floatValue());
+
+        poseStack.pushPose();
+        poseStack.translate(dx, dy, 0);
+
+        HotbarChangeListener.lackTick += GUITweenUtility.getDeltaTicks();
+    }
+
+    @Inject(
+            method = "renderItemHotbar",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lnet/minecraft/resources/ResourceLocation;IIII)V",
+                    ordinal = 1,
+                    shift = At.Shift.AFTER
+            )
+    )
+    public void renderItemHotbarSelectAfter(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+        if (!gUITween$inLackTween)
+            return;
+
+        gUITween$inLackTween = false;
+
+        PoseStack poseStack = guiGraphics.pose();
+        poseStack.popPose();
+    }
+
+    @Inject(
+            method = "renderExperienceLevel",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/gui/GuiGraphics;drawString(Lnet/minecraft/client/gui/Font;Ljava/lang/String;IIIZ)I",
+                    ordinal = 0
+            ),
+            locals = LocalCapture.CAPTURE_FAILEXCEPTION
+    )
+    public void renderExperienceLevelBefore(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci, int i, String s, int j, int k) {
+        if (!GUITweenConfig.isEnableExp())
+            return;
+
+        if (gUITween$lastLevel == -1) {
+            gUITween$lastLevel = i;
+            gUITween$levelTextTick = GUITweenConfig.expDuration.get().floatValue();
+            return;
+        }
+
+        if (gUITween$lastLevel != i) {
+            gUITween$lastLevel = i;
+            gUITween$levelTextTick = 0;
+        }
+
+        if (gUITween$levelTextTick >= GUITweenConfig.expDuration.get().floatValue()) {
+            return;
+        }
+
+        gUITween$inLevelTextTween = true;
+
+        Gui gui = (Gui) ((Object) this);
+
+        PoseStack poseStack = guiGraphics.pose();
+        poseStack.pushPose();
+
+        // 缩放中心为文本中心
+        float cx = j + gui.getFont().width(s) / 2f;
+        float cy = k + gui.getFont().lineHeight / 2f;
+
+        float progress = gUITween$levelTextTick / GUITweenConfig.expDuration.get().floatValue();
+        float scale = TweenUtil.tween(GUITweenConfig.expScale.get().floatValue(), 1, progress, GUITweenConfig.expEase.get());
+
+        poseStack.translate(cx, cy, 0);
+        poseStack.scale(scale, scale, 1);
+        poseStack.translate(-cx, -cy, 0);
+
+        gUITween$levelTextTick += GUITweenUtility.getDeltaTicks();
+    }
+
+    @Inject(
+            method = "renderExperienceLevel",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/gui/GuiGraphics;drawString(Lnet/minecraft/client/gui/Font;Ljava/lang/String;IIIZ)I",
+                    ordinal = 4,
+                    shift = At.Shift.AFTER
+            )
+    )
+    public void renderExperienceLevelAfter(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+        if (!gUITween$inLevelTextTween)
+            return;
+
+        gUITween$inLevelTextTween = false;
+        guiGraphics.pose().popPose();
+    }
+
+    @Inject(
+            method = "clear",
+            at = @At(value = "TAIL")
+    )
+    public void onClear(CallbackInfo ci) {
+        gUITween$lastLevel = -1;
     }
 }
