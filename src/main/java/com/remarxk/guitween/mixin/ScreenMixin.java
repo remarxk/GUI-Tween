@@ -4,8 +4,10 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.remarxk.guitween.GUITween;
 import com.remarxk.guitween.GUITweenAPI;
+import com.remarxk.guitween.GUITweenUtility;
 import com.remarxk.guitween.util.Ease;
 import com.remarxk.guitween.util.TweenUtil;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.AbstractContainerEventHandler;
@@ -21,14 +23,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Screen.class)
 public abstract class ScreenMixin extends AbstractContainerEventHandler implements Renderable {
     @Unique
-    private long gUITween$openTick;
-
-    @Unique private static final float gUITween$MOVE_Y = 20f;
+    private float gUITween$openTick;
 
     @Unique
-    private float gUITween$getProgress() {
-        return Math.min((float) gUITween$openTick / GUITween.CONFIG.windowDuration, 1f);
-    }
+    private boolean gUiTween$inTween;
 
     @Inject(method = "init()V", at = @At("HEAD"))
     public void initMixin(CallbackInfo ci){
@@ -37,31 +35,33 @@ public abstract class ScreenMixin extends AbstractContainerEventHandler implemen
 
     @Inject(method = "renderBackground", at = @At("TAIL"))
     public void renderBackgroundAfter(GuiGraphics pGuiGraphics, CallbackInfo ci){
+        if (!GUITween.CONFIG.isEnableWindow())
+            return;
+
         Object instance = this;
 
         if (!(instance instanceof AbstractContainerScreen<?>))
             return;
 
-        if (!GUITween.CONFIG.enable)
+        float moveProgress = gUITween$openTick / GUITween.CONFIG.windowMoveDuration;
+        float gradientProgress = gUITween$openTick / GUITween.CONFIG.windowGradientDuration;
+
+        if (moveProgress >= 1 && gradientProgress >= 1)
             return;
 
-        float t = gUITween$getProgress();
-        gUITween$openTick++;
+        gUITween$openTick += GUITweenUtility.getDeltaTicks();
 
-        if (t >= 1)
-            return;
-
-        float dy = TweenUtil.tween(gUITween$MOVE_Y, 0, t, GUITween.CONFIG.windowEase.get());
+        float dx = TweenUtil.tween(GUITween.CONFIG.windowMoveX, 0, moveProgress, GUITween.CONFIG.windowMoveEase.get());
+        float dy = TweenUtil.tween(GUITween.CONFIG.windowMoveY, 0, moveProgress, GUITween.CONFIG.windowMoveEase.get());
 
         PoseStack poseStack = pGuiGraphics.pose();
 
         // 动画变换
         poseStack.pushPose();
-        poseStack.translate(0, dy, 0);  // 上移
+        poseStack.translate(dx, dy, 0);  // 上移
 
-        float alpha = TweenUtil.tween(0, 1, t, GUITween.CONFIG.windowEase.get());
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        pGuiGraphics.setColor(1f, 1f, 1f, alpha);
+        float alpha = TweenUtil.tween(0.05f, 1, gradientProgress, GUITween.CONFIG.windowGradientEase.get());
+        GUITweenUtility.setInTween(GUITweenUtility.OPEN_WINDOW, true);
+        GUITweenUtility.setTweenValue(GUITweenUtility.OPEN_WINDOW_ALPHA, alpha);
     }
 }

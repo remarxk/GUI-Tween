@@ -1,8 +1,15 @@
 package com.remarxk.guitween.util;
 
 
+import net.minecraft.util.Mth;
 
 public class TweenUtil {
+    public static float clamp(float value, float min, float max) {
+        if (value < min)
+            return min;
+        return Math.min(value, max);
+    }
+
     /**
      * 核心方法
      * @param start 起始值
@@ -114,12 +121,61 @@ public class TweenUtil {
         else { t -= 2.625f/2.75f; return 7.5625f*t*t + 0.984375f; }
     }
 
-    /**
-     * 限制 t 在 0~1
-     */
-    private static float clamp(float t, float min, float max) {
-        if(t < min) return min;
-        if(t > max) return max;
-        return t;
+
+    public static float punch(float strength, int vibrato, float progress) {
+        if (progress >= 1f) return 1f;
+
+        float decay = 1f - progress;
+
+        float oscillation =
+                (float) Math.sin(progress * vibrato * Math.PI * 2);
+
+        return 1f + oscillation * strength * decay;
+    }
+
+    private static final long DEFAULT_SEED = 1337L;
+
+    public static float shake(int axis, float time, float duration, float strength) {
+        if (time <= 0 || time >= duration) return 0f;
+
+        // ===== 隐式参数 =====
+        long seed = DEFAULT_SEED;
+        int frame = (int)(time * 60); // 时间 → 帧
+
+        float t = time / duration;
+        float decay = 1f - t;
+
+        return noise(seed, axis, frame) * strength * decay;
+    }
+
+    private static float noise(long seed, int axis, int frame) {
+        long h = seed;
+        h ^= axis * 0x632BE5ABL;
+        h ^= frame * 0x9E3779B97F4A7C15L;
+
+        h ^= (h >> 33);
+        h *= 0xff51afd7ed558ccdL;
+        h ^= (h >> 33);
+        h *= 0xc4ceb9fe1a85ec53L;
+        h ^= (h >> 33);
+
+        // 映射到 [-1, 1]
+        return ((h & 0xFFFFFF) / (float)0x7FFFFF) - 1f;
+    }
+
+    public static int blinkWhiteRedstonePingPong(int color, float time, float duration) {
+        float t = (time % duration) / duration;   // 0~1
+        t = t < 0.5f ? t * 2f : 2f - t * 2f;       // PingPong
+
+        int rgb = color & 0x00FFFFFF;
+        int targetR = (rgb >> 16) & 0xFF;
+        int targetG = (rgb >> 8)  & 0xFF;
+        int targetB = rgb & 0xFF;
+
+        int r = (int) Mth.lerp(t, 255, targetR);
+        int g = (int) Mth.lerp(t, 255, targetG);
+        int b = (int) Mth.lerp(t, 255, targetB);
+
+        return (0xFF << 24) | (r << 16) | (g << 8) | b;
     }
 }
