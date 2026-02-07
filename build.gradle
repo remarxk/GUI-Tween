@@ -112,6 +112,11 @@ dependencies {
     compileOnly "curse.maven:jade-324717:7428884"
     runtimeOnly "curse.maven:jade-324717:7428884"
 
+    compileOnly "curse.maven:sodium-394468:6382651"
+    runtimeOnly "curse.maven:sodium-394468:6382651"
+
+    runtimeOnly "curse.maven:trade-refresh-821729:5533325"
+
     // Example mod dependency using a mod jar from ./libs with a flat dir repository
     // This maps to ./libs/coolmod-${mc_version}-${coolmod_version}.jar
     // The group id is ignored when searching -- in this case, it is "blank"

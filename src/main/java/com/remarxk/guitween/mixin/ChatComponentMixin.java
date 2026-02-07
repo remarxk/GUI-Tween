@@ -82,10 +82,10 @@ public abstract class ChatComponentMixin {
         PoseStack poseStack = guiGraphics.pose();
         poseStack.pushPose();
 
-        float progress = gUITween$newMessageTick / GUITweenConfig.chatCompMoveDuration.get().floatValue();
-        float moveX = GUITweenConfig.chatCompMoveX.get().floatValue();
-        float moveY = GUITweenConfig.chatCompMoveY.get().floatValue();
-        float dx = TweenUtil.tween(moveX, moveY, progress, GUITweenConfig.chatCompMoveEase.get());
+        float progress = gUITween$newMessageTick / GUITweenConfig.chat.compMoveDuration.get().floatValue();
+        float moveX = GUITweenConfig.chat.compMoveX.get().floatValue();
+        float moveY = GUITweenConfig.chat.compMoveY.get().floatValue();
+        float dx = TweenUtil.tween(moveX, moveY, progress, GUITweenConfig.chat.compMoveEase.get());
         poseStack.translate(dx, 0, 0);
     }
 
@@ -105,8 +105,8 @@ public abstract class ChatComponentMixin {
         int originAlpha = (color >> 24) & 0xFF;
         int rgb   = color & 0x00FFFFFF;
 
-        float progress = gUITween$newMessageTick / GUITweenConfig.chatCompGradientDuration.get().floatValue();
-        float alpha = TweenUtil.tween(0, 1, progress, GUITweenConfig.chatCompGradientEase.get());
+        float progress = gUITween$newMessageTick / GUITweenConfig.chat.compGradientDuration.get().floatValue();
+        float alpha = TweenUtil.tween(0, 1, progress, GUITweenConfig.chat.compGradientEase.get());
 
         int newAlpha = (int)(alpha * originAlpha);
 
@@ -128,8 +128,8 @@ public abstract class ChatComponentMixin {
         int originAlpha = (color >> 24) & 0xFF;
         int rgb   = color & 0x00FFFFFF;
 
-        float progress = gUITween$newMessageTick / GUITweenConfig.chatCompGradientDuration.get().floatValue();
-        float alpha = TweenUtil.tween(0.05f, 1, progress, GUITweenConfig.chatCompGradientEase.get());
+        float progress = gUITween$newMessageTick / GUITweenConfig.chat.compGradientDuration.get().floatValue();
+        float alpha = TweenUtil.tween(0.05f, 1, progress, GUITweenConfig.chat.compGradientEase.get());
 
         int newAlpha = (int)(alpha * originAlpha);
 

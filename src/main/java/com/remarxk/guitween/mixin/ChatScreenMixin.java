@@ -53,12 +53,12 @@ public abstract class ChatScreenMixin extends Screen {
         PoseStack poseStack = guiGraphics.pose();
         poseStack.pushPose();
 
-        float moveProgress = gUITween$openTick / GUITweenConfig.chatOpenMoveDuration.get().floatValue();
-        float dx = TweenUtil.tween(GUITweenConfig.chatOpenMoveX.get().floatValue(), 0, moveProgress, GUITweenConfig.chatOpenMoveEase.get());
-        float dy = TweenUtil.tween(GUITweenConfig.chatOpenMoveY.get().floatValue(), 0, moveProgress, GUITweenConfig.chatOpenMoveEase.get());
+        float moveProgress = gUITween$openTick / GUITweenConfig.chat.openMoveDuration.get().floatValue();
+        float dx = TweenUtil.tween(GUITweenConfig.chat.openMoveX.get().floatValue(), 0, moveProgress, GUITweenConfig.chat.openMoveEase.get());
+        float dy = TweenUtil.tween(GUITweenConfig.chat.openMoveY.get().floatValue(), 0, moveProgress, GUITweenConfig.chat.openMoveEase.get());
 
-        float alphaProgress = gUITween$openTick / GUITweenConfig.chatOpenGradientDuration.get().floatValue();
-        float alpha = TweenUtil.tween(0, 1, alphaProgress, GUITweenConfig.chatOpenGradientEase.get());
+        float alphaProgress = gUITween$openTick / GUITweenConfig.chat.openGradientDuration.get().floatValue();
+        float alpha = TweenUtil.tween(0, 1, alphaProgress, GUITweenConfig.chat.openGradientEase.get());
 
         poseStack.translate(dx, dy, 0);
         guiGraphics.setColor(1, 1, 1, alpha);
@@ -71,6 +71,7 @@ public abstract class ChatScreenMixin extends Screen {
         if (!gUITween$inTween)
             return;
 
+        gUITween$inTween = false;
         guiGraphics.pose().popPose();
         guiGraphics.setColor(1, 1, 1, 1);
     }

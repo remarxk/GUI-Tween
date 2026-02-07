@@ -43,7 +43,7 @@ public abstract class ItemRendererMixin implements ResourceManagerReloadListener
             index = 1 // RenderType 在参数列表中的索引
     )
     private RenderType modifyRenderType(RenderType renderType) {
-        if (GUITweenUtility.isInTween(GUITweenUtility.OPEN_WINDOW)) {
+        if (GUITweenUtility.hasItemAlpha()) {
             ResourceLocation resourceLocation = gUITween$bakedModel.getParticleIcon(ModelData.EMPTY).atlasLocation();
             RenderType transRenderType = gUITween$cacheTransRenderType.getOrDefault(resourceLocation, null);
             if (transRenderType == null) {
@@ -63,8 +63,8 @@ public abstract class ItemRendererMixin implements ResourceManagerReloadListener
             index = 5
     )
     private float modifyQuadAlpha(float alpha) {
-        if (GUITweenUtility.isInTween(GUITweenUtility.OPEN_WINDOW)) {
-            alpha = alpha * GUITweenUtility.getTweenValue(GUITweenUtility.OPEN_WINDOW_ALPHA);
+        if (GUITweenUtility.hasItemAlpha()) {
+            alpha = alpha * GUITweenUtility.peekItemAlpha();
         }
 
         return alpha;

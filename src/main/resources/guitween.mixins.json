@@ -12,7 +12,9 @@
     "FontMixin",
     "GuiMixin",
     "ItemRendererMixin",
-    "LocalPlayerMixin"
+    "LocalPlayerMixin",
+    "MerchantScreenMixin",
+    "SodiumBakedModelEncoderMixin"
   ],
   "injectors": {
     "defaultRequire": 1

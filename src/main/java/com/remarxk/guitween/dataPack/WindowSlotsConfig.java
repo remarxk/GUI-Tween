@@ -1,6 +1,5 @@
-package com.remarxk.guitween.DataPack;
+package com.remarxk.guitween.dataPack;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.util.ArrayList;

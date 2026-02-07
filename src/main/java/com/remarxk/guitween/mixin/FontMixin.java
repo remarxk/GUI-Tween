@@ -14,8 +14,8 @@ public abstract class FontMixin implements net.neoforged.neoforge.client.extensi
             index = 0
     )
     public int changeColor(int color) {
-        if (GUITweenUtility.isInTween(GUITweenUtility.TOOL_TIP)) {
-            int a = (int)(((color >> 24) & 0xFF) * GUITweenUtility.getTweenValue(GUITweenUtility.TOOL_TIP_ALPHA));
+        if (GUITweenUtility.hasFontAlpha()) {
+            int a = (int)(((color >> 24) & 0xFF) * GUITweenUtility.peekFontAlpha());
             color = (a << 24) | (color & 0x00FFFFFF);
         }
 
