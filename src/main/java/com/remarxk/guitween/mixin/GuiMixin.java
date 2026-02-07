@@ -1,12 +1,12 @@
 package com.remarxk.guitween.mixin;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.remarxk.guitween.AnimationState;
 import com.remarxk.guitween.GUITween;
 import com.remarxk.guitween.GUITweenUtility;
 import com.remarxk.guitween.HotbarChangeListener;
+import com.remarxk.guitween.anim.Tween;
+import com.remarxk.guitween.anim.TweenPool;
 import com.remarxk.guitween.config.GUITweenConfig;
-import com.remarxk.guitween.util.AnimationStatePool;
 import com.remarxk.guitween.util.Ease;
 import com.remarxk.guitween.util.TweenUtil;
 import net.minecraft.client.Minecraft;
@@ -48,32 +48,32 @@ public class GuiMixin {
 
         int slot = pSeed - 1;
 
-        AnimationState state = HotbarChangeListener.hotbarAnimStateMap.getOrDefault(slot, null);
-        if (state == null) {
+        Tween tween = HotbarChangeListener.hotbarAnimStateMap.getOrDefault(slot, null);
+        if (tween == null) {
             return;
         }
 
         float centerX = pX + 8;
         float centerY = pY + 8;
 
-        float scale = TweenUtil.tween(state.startValue, state.stopValue, state.tick, state.totalTick, state.ease);
+        float scale = TweenUtil.tween(tween.startValue, tween.stopValue, tween.tick, tween.totalTick, tween.ease);
 
         float deltaTicks = GUITweenUtility.getDeltaTicks();
-        if (!state.rewind) {
-            state.tick += deltaTicks;
-            if (state.tick >= state.totalTick) {
-                if (state.stopValue > 1) {
-                    state.ease = GUITween.CONFIG.holdZoomOutEase.get();
-                    state.tick = 0;
-                    state.totalTick = GUITween.CONFIG.holdZoomOutDuration;
-                    state.startValue = state.stopValue;
-                    state.stopValue = 1;
-                    state.rewind = false;
+        if (!tween.rewind) {
+            tween.tick += deltaTicks;
+            if (tween.tick >= tween.totalTick) {
+                if (tween.stopValue > 1) {
+                    tween.ease = GUITween.CONFIG.holdZoomOutEase.get();
+                    tween.tick = 0;
+                    tween.totalTick = GUITween.CONFIG.holdZoomOutDuration;
+                    tween.startValue = tween.stopValue;
+                    tween.stopValue = 1;
+                    tween.rewind = false;
                 }
             }
         }
         else {
-            state.tick -= deltaTicks;
+            tween.tick -= deltaTicks;
         }
 
         PoseStack poseStack = pGuiGraphics.pose();
@@ -89,22 +89,22 @@ public class GuiMixin {
             return;
 
         int slot = pSeed - 1;
-        AnimationState state = HotbarChangeListener.hotbarAnimStateMap.getOrDefault(slot, null);
-        if (state == null)
+        Tween tween = HotbarChangeListener.hotbarAnimStateMap.getOrDefault(slot, null);
+        if (tween == null)
             return;
 
         PoseStack poseStack = pGuiGraphics.pose();
         poseStack.popPose();
 
-        if (state.rewind) {
-            if (state.startValue <= 1 && state.tick <= 0) {
-                AnimationStatePool.releaseAnimationState(state);
+        if (tween.rewind) {
+            if (tween.startValue <= 1 && tween.tick <= 0) {
+                TweenPool.releaseTween(tween);
                 HotbarChangeListener.hotbarAnimStateMap.remove(slot);
             }
         }
         else {
-            if (state.stopValue <= 1 && state.tick >= state.totalTick) {
-                AnimationStatePool.releaseAnimationState(state);
+            if (tween.stopValue <= 1 && tween.tick >= tween.totalTick) {
+                TweenPool.releaseTween(tween);
                 HotbarChangeListener.hotbarAnimStateMap.remove(slot);
             }
         }

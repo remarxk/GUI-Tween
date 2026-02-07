@@ -1,8 +1,10 @@
-package com.remarxk.guitween;
+package com.remarxk.guitween.anim;
 
 import com.remarxk.guitween.util.Ease;
 
-public class AnimationState {
+public class Tween {
+    public String name;
+
     public float tick;
     public float totalTick;
     public Ease ease;

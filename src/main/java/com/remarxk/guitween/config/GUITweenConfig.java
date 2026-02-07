@@ -1,6 +1,8 @@
 package com.remarxk.guitween.config;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import com.remarxk.guitween.GUITween;
 import com.remarxk.guitween.util.Ease;
@@ -21,6 +23,8 @@ public class GUITweenConfig extends Config {
 
     public ConfigGroup windowGroup = new ConfigGroup("window tween");
     public boolean enableWindow = true;
+
+    public List<String> disableNames = List.of("None");
 
     public float windowMoveDuration = 6;
 
@@ -132,6 +136,10 @@ public class GUITweenConfig extends Config {
 
     public float getChatCompMaxDuration() {
         return Math.max(chatCompMoveDuration, chatCompGradientDuration);
+    }
+
+    public boolean isDisableTweenWindow(String screenName) {
+        return disableNames.contains(screenName);
     }
 
     public boolean isEnable() {

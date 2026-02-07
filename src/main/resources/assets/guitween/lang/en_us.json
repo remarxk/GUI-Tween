@@ -1,9 +1,10 @@
 {
   "guitween.config": "GUITween Configuration",
   "guitween.config.enable": "Enable tween",
+  "guitween.config.enableDebugWindow" : "Enable debug window",
 
   "guitween.config.windowGroup": "Window tween",
-  "guitween.config.enableDebugWindow" : "Enable debug window",
+  "guitween.config.disableNames": "Disable open tween screen",
   "guitween.config.enableWindow": "Enable window tween",
   "guitween.config.windowMoveDuration": "Move duration",
   "guitween.config.windowMoveEase": "Move ease",
@@ -21,7 +22,7 @@
   "guitween.config.tooltipDuration" : "Tooltip duration",
   "guitween.config.tooltipEase" : "Tooltip ease",
   "guitween.config.enableClickItem" : "Enable click item tween",
-  "guitween.config.itemClickDuration" : "Click item duration",
+  "guitween.config.clickItemDuration" : "Click item duration",
   "guitween.config.enableOutput" : "Enable output tween",
   "guitween.config.outputDuration" : "Output duration",
   "guitween.config.outputEase" : "Output ease",

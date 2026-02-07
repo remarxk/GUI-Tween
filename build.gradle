@@ -154,6 +154,11 @@ dependencies {
 //     runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}")
     runtimeOnly fg.deobf("curse.maven:jei-238222:7270446")
 
+    compileOnly fg.deobf("curse.maven:embeddium-908741:5681725")
+//    runtimeOnly fg.deobf("curse.maven:embeddium-908741:5681725")
+
+//    runtimeOnly fg.deobf("curse.maven:oculus-581495:6020952")
+
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
 //    compileOnly group: 'me.fzzyhmstrs', name: 'fzzy_config', version: "${fzzy_config_version}+forge"

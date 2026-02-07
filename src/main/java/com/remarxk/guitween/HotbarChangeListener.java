@@ -1,7 +1,7 @@
 package com.remarxk.guitween;
 
-import com.remarxk.guitween.config.GUITweenConfig;
-import com.remarxk.guitween.util.AnimationStatePool;
+import com.remarxk.guitween.anim.Tween;
+import com.remarxk.guitween.anim.TweenPool;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -17,7 +17,7 @@ public class HotbarChangeListener {
 
     private static boolean hasItem = true;
 
-    public static HashMap<Integer, AnimationState> hotbarAnimStateMap = new HashMap<>();
+    public static HashMap<Integer, Tween> hotbarAnimStateMap = new HashMap<>();
 
     public static float animTick = 0;
 
@@ -35,14 +35,14 @@ public class HotbarChangeListener {
             // 判断是否切换了选中物品
             if (lastSelected != index) {
                 if (lastSelected >= 0) {
-//                    AnimationState state = hotbarAnimStateMap.getOrDefault(lastSelected, null);
-//                    if (state != null && state.stopValue > 1) { // 放大过程中
-//                        state.rewind = true;
+//                    Tween tween = hotbarAnimStateMap.getOrDefault(lastSelected, null);
+//                    if (tween != null && tween.stopValue > 1) { // 放大过程中
+//                        tween.rewind = true;
 //                    }
 
-                    AnimationState state = hotbarAnimStateMap.remove(lastSelected);
-                    if (state != null) {
-                        AnimationStatePool.releaseAnimationState(state);
+                    Tween tween = hotbarAnimStateMap.remove(lastSelected);
+                    if (tween != null) {
+                        TweenPool.releaseTween(tween);
                     }
                 }
 
@@ -55,25 +55,25 @@ public class HotbarChangeListener {
                 hasItem = player.getInventory().getSelected().getCount() > 0;
 
                 if (GUITween.CONFIG.isEnableHoldItem()) {
-                    AnimationState state = hotbarAnimStateMap.getOrDefault(index, null);
-                    if (state == null) {
-                        state = AnimationStatePool.getAnimationState();
-                        state.tick = 0;
-                        state.totalTick = GUITween.CONFIG.holdZoomInDuration;
-                        state.ease = GUITween.CONFIG.holdZoomInEase.get();
-                        state.startValue = 1;
-                        state.stopValue = GUITween.CONFIG.holdZoomScale;
-                        state.rewind = false;
-                        hotbarAnimStateMap.put(index, state);
+                    Tween tween = hotbarAnimStateMap.getOrDefault(index, null);
+                    if (tween == null) {
+                        tween = TweenPool.getTween();
+                        tween.tick = 0;
+                        tween.totalTick = GUITween.CONFIG.holdZoomInDuration;
+                        tween.ease = GUITween.CONFIG.holdZoomInEase.get();
+                        tween.startValue = 1;
+                        tween.stopValue = GUITween.CONFIG.holdZoomScale;
+                        tween.rewind = false;
+                        hotbarAnimStateMap.put(index, tween);
                     }
                     else {
-                        if (state.stopValue > 1) {
-                            if (state.rewind)
-                                state.rewind = false;
+                        if (tween.stopValue > 1) {
+                            if (tween.rewind)
+                                tween.rewind = false;
                         }
                         else {
-                            if (!state.rewind)
-                                state.rewind = true;
+                            if (!tween.rewind)
+                                tween.rewind = true;
                         }
                     }
                 }

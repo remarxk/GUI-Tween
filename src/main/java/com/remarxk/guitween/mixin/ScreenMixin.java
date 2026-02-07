@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.remarxk.guitween.GUITween;
 import com.remarxk.guitween.GUITweenAPI;
 import com.remarxk.guitween.GUITweenUtility;
+import com.remarxk.guitween.mixinAccess.AbstractContainerScreenMixinAccess;
 import com.remarxk.guitween.util.Ease;
 import com.remarxk.guitween.util.TweenUtil;
 import net.minecraft.client.Minecraft;
@@ -21,12 +22,32 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Screen.class)
-public abstract class ScreenMixin extends AbstractContainerEventHandler implements Renderable {
+public abstract class ScreenMixin extends AbstractContainerEventHandler implements Renderable, AbstractContainerScreenMixinAccess {
     @Unique
     private float gUITween$openTick;
 
     @Unique
     private boolean gUiTween$inTween;
+
+    @Override
+    public boolean getGUITween$inTween() {
+        return gUiTween$inTween;
+    }
+
+    @Override
+    public void setGUITween$inTween(boolean inTween) {
+        gUiTween$inTween = inTween;
+    }
+
+    @Override
+    public float getGUITween$openTick() {
+        return gUITween$openTick;
+    }
+
+    @Override
+    public void setGUITween$openTick(float openTick) {
+        gUITween$openTick = openTick;
+    }
 
     @Inject(method = "init()V", at = @At("HEAD"))
     public void initMixin(CallbackInfo ci){
@@ -41,6 +62,9 @@ public abstract class ScreenMixin extends AbstractContainerEventHandler implemen
         Object instance = this;
 
         if (!(instance instanceof AbstractContainerScreen<?>))
+            return;
+
+        if (GUITween.CONFIG.isDisableTweenWindow(getClass().getSimpleName()))
             return;
 
         float moveProgress = gUITween$openTick / GUITween.CONFIG.windowMoveDuration;
@@ -61,7 +85,6 @@ public abstract class ScreenMixin extends AbstractContainerEventHandler implemen
         poseStack.translate(dx, dy, 0);  // 上移
 
         float alpha = TweenUtil.tween(0.05f, 1, gradientProgress, GUITween.CONFIG.windowGradientEase.get());
-        GUITweenUtility.setInTween(GUITweenUtility.OPEN_WINDOW, true);
-        GUITweenUtility.setTweenValue(GUITweenUtility.OPEN_WINDOW_ALPHA, alpha);
+        GUITweenUtility.pushAlpha(alpha);
     }
 }

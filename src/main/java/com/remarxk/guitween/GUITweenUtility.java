@@ -1,43 +1,64 @@
 package com.remarxk.guitween;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.inventory.MerchantScreen;
 
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Stack;
 
 public class GUITweenUtility {
-    public static final String OPEN_WINDOW = "OpenWindow";
-    public static final String OPEN_WINDOW_ALPHA = "OpenWindowAlpha";
+    public static final HashSet<Class<?>> WINDOW_DELAY_TICK = new HashSet<>();
 
-    public static final String TOOL_TIP = "TOOL_TIP";
-    public static final String TOOL_TIP_ALPHA = "TOOL_TIP_ALPHA";
+    private static final Stack<Float> itemAlphaStack = new Stack<>();
+    private static final Stack<Float> fontAlphaStack = new Stack<>();
 
-    private static final HashSet<String> inTween = new HashSet<>();
-
-    private static final HashMap<String, Float> tweenValue = new HashMap<>();
-
-    public static void setInTween(String name, boolean state) {
-        if (state) {
-            inTween.add(name);
-        }
-        else {
-            inTween.remove(name);
-        }
-    }
-
-    public static void setTweenValue(String name, Float value) {
-        tweenValue.put(name, value);
-    }
-
-    public static boolean isInTween(String name) {
-        return inTween.contains(name);
-    }
-
-    public static Float getTweenValue(String name) {
-        return tweenValue.getOrDefault(name, null);
+    static {
+        WINDOW_DELAY_TICK.add(MerchantScreen.class);
     }
 
     public static float getDeltaTicks() {
         return Minecraft.getInstance().getDeltaFrameTime();
+    }
+
+    public static void pushAlpha(float alpha) {
+        pushItemAlpha(alpha);
+        pushFontAlpha(alpha);
+    }
+
+    public static void popAlpha() {
+        popItemAlpha();
+        popFontAlpha();
+    }
+
+    public static void pushItemAlpha(float alpha) {
+        itemAlphaStack.push(alpha);
+    }
+
+    public static void popItemAlpha() {
+        itemAlphaStack.pop();
+    }
+
+    public static float peekItemAlpha() {
+        return itemAlphaStack.peek();
+    }
+
+    public static boolean hasItemAlpha() {
+        return !itemAlphaStack.isEmpty();
+    }
+
+    public static void pushFontAlpha(float alpha) {
+        fontAlphaStack.push(alpha);
+    }
+
+    public static void popFontAlpha() {
+        fontAlphaStack.pop();
+    }
+
+    public static float peekFontAlpha() {
+        return fontAlphaStack.peek();
+    }
+
+    public static boolean hasFontAlpha() {
+        return !fontAlphaStack.isEmpty();
     }
 }

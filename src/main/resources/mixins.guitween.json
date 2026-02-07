@@ -9,10 +9,12 @@
     "AbstractContainerScreenMixin",
     "ChatComponentMixin",
     "ChatScreenMixin",
+    "EmbeddiumBakedModelEncoderMixin",
     "FontMixin",
     "GuiMixin",
     "ItemRendererMixin",
     "LocalPlayerMixin",
+    "MerchantScreenMixin",
     "ScreenMixin"
   ],
   "injectors": {

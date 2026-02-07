@@ -2,23 +2,28 @@ package com.remarxk.guitween.mixin;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import com.remarxk.guitween.AnimationState;
-import com.remarxk.guitween.DataPack.WindowSlotsConfig;
-import com.remarxk.guitween.DataPack.WindowSlotsLoader;
+import com.remarxk.guitween.anim.Tween;
+import com.remarxk.guitween.config.GUITweenConfig;
+import com.remarxk.guitween.dataPack.WindowSlotsConfig;
+import com.remarxk.guitween.dataPack.WindowSlotsLoader;
 import com.remarxk.guitween.GUITween;
 import com.remarxk.guitween.GUITweenUtility;
-import com.remarxk.guitween.config.GUITweenConfig;
-import com.remarxk.guitween.util.AnimationStatePool;
+import com.remarxk.guitween.anim.TweenPool;
+import com.remarxk.guitween.mixinAccess.AbstractContainerScreenMixinAccess;
 import com.remarxk.guitween.util.Ease;
 import com.remarxk.guitween.util.TweenUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
+import net.minecraft.client.gui.screens.inventory.MerchantScreen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -38,16 +43,22 @@ import java.util.HashMap;
 @Mixin(AbstractContainerScreen.class)
 public abstract class AbstractContainerScreenMixin <T extends AbstractContainerMenu> extends Screen implements MenuAccess<T> {
     @Unique
+    private static final ResourceLocation COPY_TEXTURE = ResourceLocation.fromNamespaceAndPath(GUITween.MODID, "textures/gui/sprites/copy.png");
+
+    @Unique
+    private static final ResourceLocation COPY_HOVER_TEXTURE = ResourceLocation.fromNamespaceAndPath(GUITween.MODID, "textures/gui/sprites/copy_hover.png");
+
+    @Unique
     private String gUITween$screenName;
 
     @Unique
-    private boolean gUITween$inScale;
+    private boolean gUITween$inSlotTween;
 
     @Unique
     private Slot gUITween$lastHoverSlot;
 
     @Unique
-    private HashMap<Slot, AnimationState> gUITween$hoverSlotMap = new HashMap<>();
+    private HashMap<Slot, Tween> gUITween$hoverSlotMap = new HashMap<>();
 
     @Unique
     private HashMap<Integer, Boolean> gUITween$OutputSlotIsEmpty = new HashMap<>();
@@ -62,6 +73,12 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
 
     @Unique
     private float gUITween$tooltipShowTick;
+
+    @Unique
+    private boolean gUITween$inTooltipTween;
+
+    @Unique
+    private Button gUITween$copyNameBtn;
 
     @Final
     @Shadow
@@ -88,10 +105,7 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
     @Shadow
     protected int topPos;
 
-    @Shadow
-    protected int imageHeight;
-
-    @Inject(method = "init", at = @At("HEAD"))
+    @Inject(method = "init", at = @At("TAIL"))
     public void init(CallbackInfo ci) {
         gUITween$screenName = getClass().getSimpleName();
         gUITween$OutputSlotIsEmpty.clear();
@@ -104,6 +118,33 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
                 gUITween$OutputSlotIsEmpty.put(slotIndex, !slot.hasItem());
             }
         }
+
+        if (gUITween$copyNameBtn == null) {
+            gUITween$copyNameBtn = new ImageButton(
+                    0, 0,
+                    8, 8,
+                    0, 0, 0,
+                    COPY_TEXTURE,
+                    8, 8,
+                    button -> {
+                        Minecraft.getInstance().keyboardHandler.setClipboard(gUITween$screenName);
+                    }
+            );
+        }
+
+        if (GUITween.CONFIG.isEnableDebugWindow()) {
+            int x = this.leftPos + 2;
+            int y = this.topPos - 10;
+            if ((((AbstractContainerScreen) (Object) this) instanceof CreativeModeInventoryScreen)) {
+                y -= 30;
+            }
+            gUITween$copyNameBtn.setPosition(x, y);
+
+            addRenderableWidget(gUITween$copyNameBtn);
+        }
+        else {
+            removeWidget(gUITween$copyNameBtn);
+        }
     }
 
     @Inject(method = "render", at = @At("HEAD"))
@@ -115,9 +156,9 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
 
         if (hoveredSlot != gUITween$lastHoverSlot) {
             if (gUITween$lastHoverSlot != null) {
-                AnimationState state = gUITween$hoverSlotMap.getOrDefault(gUITween$lastHoverSlot, null);
-                if (state != null)
-                    state.rewind = true;
+                Tween tween = gUITween$hoverSlotMap.getOrDefault(gUITween$lastHoverSlot, null);
+                if (tween != null)
+                    tween.rewind = true;
             }
 
             if (gUITween$lastHoverSlot == null || !gUITween$lastHoverSlot.hasItem()) {
@@ -128,19 +169,19 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
             gUITween$lastHoverSlot = hoveredSlot;
 
             if (gUITween$lastHoverSlot != null) {
-                AnimationState state = gUITween$hoverSlotMap.getOrDefault(gUITween$lastHoverSlot, null);
-                if (state == null) {
-                    state = AnimationStatePool.getAnimationState();
-                    state.tick = 0;
-                    state.totalTick = GUITween.CONFIG.hoverDuration;
-                    state.ease = GUITween.CONFIG.hoverEase.get();
-                    state.startValue = 1;
-                    state.stopValue = GUITween.CONFIG.hoverScale;
-                    state.rewind = false;
-                    gUITween$hoverSlotMap.put(gUITween$lastHoverSlot, state);
+                Tween tween = gUITween$hoverSlotMap.getOrDefault(gUITween$lastHoverSlot, null);
+                if (tween == null) {
+                    tween = TweenPool.getTween();
+                    tween.tick = 0;
+                    tween.totalTick = GUITween.CONFIG.hoverDuration;
+                    tween.ease = GUITween.CONFIG.hoverEase.get();
+                    tween.startValue = 1;
+                    tween.stopValue = GUITween.CONFIG.hoverScale;
+                    tween.rewind = false;
+                    gUITween$hoverSlotMap.put(gUITween$lastHoverSlot, tween);
                 }
                 else {
-                    state.rewind = false;
+                    tween.rewind = false;
                 }
             }
         }
@@ -156,7 +197,7 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
         poseStack.translate(0, 0, 1000);
 
         // 左上角偏移（界面内部）
-        int x = this.leftPos + 2;
+        int x = this.leftPos + 12;
         int y = this.topPos - 10;
 
         if ((((AbstractContainerScreen) (Object) this) instanceof CreativeModeInventoryScreen)) {
@@ -174,8 +215,14 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
 
         poseStack.popPose();
 
-        if (GUITweenUtility.isInTween(GUITweenUtility.OPEN_WINDOW)) {
-            GUITweenUtility.setInTween(GUITweenUtility.OPEN_WINDOW, false);
+        if ((Object)this instanceof MerchantScreen) {
+            return;
+        }
+
+        AbstractContainerScreenMixinAccess access = (AbstractContainerScreenMixinAccess) this;
+
+        if (access.getGUITween$inTween()) {
+            access.setGUITween$inTween(false);
             poseStack.popPose();
         }
     }
@@ -216,7 +263,7 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
                         gUITween$outputSlotTicks.remove(pSlot.index);
                     }
                     else {
-                        float progress = tick / 6;
+                        float progress = tick / GUITween.CONFIG.outputDuration;
                         scale = TweenUtil.tween(0, 1, progress, Ease.OUT_BACK);
 
                         tick += GUITweenUtility.getDeltaTicks();
@@ -235,24 +282,24 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
                 AbstractContainerScreen.renderSlotHighlight(pGuiGraphics, pSlot.x, pSlot.y, 0, getSlotColor(pSlot.index));
             }
 
-            AnimationState state = gUITween$hoverSlotMap.getOrDefault(pSlot, null);
-            if (state != null) {
+            Tween tween = gUITween$hoverSlotMap.getOrDefault(pSlot, null);
+            if (tween != null) {
                 if (isEmpty) {
-                    AnimationStatePool.releaseAnimationState(state);
+                    TweenPool.releaseTween(tween);
                     gUITween$hoverSlotMap.remove(pSlot);
                 }
                 else {
                     haveTween = true;
 
-                    scale = TweenUtil.tween(state.startValue, state.stopValue, state.tick, state.totalTick, state.ease);   // 放大比例
+                    scale = TweenUtil.tween(tween.startValue, tween.stopValue, tween.tick, tween.totalTick, tween.ease);   // 放大比例
 
-                    int sign = state.rewind ? -1 : 1;
+                    int sign = tween.rewind ? -1 : 1;
 
-                    state.tick += sign * GUITweenUtility.getDeltaTicks();
-                    state.tick = TweenUtil.clamp(state.tick, 0, state.totalTick);
+                    tween.tick += sign * GUITweenUtility.getDeltaTicks();
+                    tween.tick = TweenUtil.clamp(tween.tick, 0, tween.totalTick);
 
-                    if (state.rewind && state.tick <= 0) {
-                        AnimationStatePool.releaseAnimationState(state);
+                    if (tween.rewind && tween.tick <= 0) {
+                        TweenPool.releaseTween(tween);
                         gUITween$hoverSlotMap.remove(pSlot);
                     }
                 }
@@ -260,7 +307,7 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
         }
 
         if (haveTween) {
-            gUITween$inScale = true;
+            gUITween$inSlotTween = true;
 
             poseStack.pushPose();
 
@@ -273,9 +320,9 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
 
     @Inject(method = "renderSlot", at = @At(value = "TAIL"))
     public void renderItemAfter(GuiGraphics pGuiGraphics, Slot pSlot, CallbackInfo ci) {
-        if (gUITween$inScale) {
+        if (gUITween$inSlotTween) {
             pGuiGraphics.pose().popPose();
-            gUITween$inScale = false;
+            gUITween$inSlotTween = false;
         }
 
         if (GUITween.CONFIG.isEnableDebugWindow()) {
@@ -369,32 +416,34 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
         if (gUITween$tooltipShowTick > duration)
             return;
 
+        gUITween$inTooltipTween = true;
+
         float progress = gUITween$tooltipShowTick / duration;
         float alpha = TweenUtil.tween(0, 1, progress, GUITween.CONFIG.tooltipEase.get());
         guiGraphics.setColor(1, 1, 1, alpha);
 
-        GUITweenUtility.setInTween(GUITweenUtility.TOOL_TIP, true);
-        GUITweenUtility.setTweenValue(GUITweenUtility.TOOL_TIP_ALPHA, alpha);
+        GUITweenUtility.pushFontAlpha(alpha);
 
         gUITween$tooltipShowTick += GUITweenUtility.getDeltaTicks();
     }
 
     @Inject(method = "renderTooltip", at = @At(value = "TAIL"))
     public void renderTooltipAfter(GuiGraphics guiGraphics, int x, int y, CallbackInfo ci) {
-        if (!GUITweenUtility.isInTween(GUITweenUtility.TOOL_TIP))
+        if (!gUITween$inTooltipTween)
             return;
 
-        GUITweenUtility.setInTween(GUITweenUtility.TOOL_TIP, false);
+        gUITween$inTooltipTween = false;
+        GUITweenUtility.popFontAlpha();
         guiGraphics.setColor(1, 1, 1, 1);
     }
 
     @Inject(method = "onClose", at = @At("TAIL"))
     public void onClose(CallbackInfo ci) {
         gUITween$lastHoverSlot = null;
-        gUITween$inScale = false;
+        gUITween$inSlotTween = false;
 
-        gUITween$hoverSlotMap.forEach((slot, state) -> {
-            AnimationStatePool.releaseAnimationState(state);
+        gUITween$hoverSlotMap.forEach((slot, tween) -> {
+            TweenPool.releaseTween(tween);
         });
         gUITween$hoverSlotMap.clear();
 

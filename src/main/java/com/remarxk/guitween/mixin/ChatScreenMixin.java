@@ -69,6 +69,7 @@ public abstract class ChatScreenMixin extends Screen {
         if (!gUITween$inTween)
             return;
 
+        gUITween$inTween = false;
         guiGraphics.pose().popPose();
         guiGraphics.setColor(1, 1, 1, 1);
     }
