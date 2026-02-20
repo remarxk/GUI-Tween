@@ -73,6 +73,10 @@ public class GUITweenConfig {
         return hotbar.holdZoomInDuration.get().floatValue() + hotbar.holdZoomOutDuration.get().floatValue();
     }
 
+    public static float getSelectedItemNameDuration() {
+        return Math.max(hotbar.selectedItemNameMoveDuration.get().floatValue(), hotbar.selectedItemNameAlphaDuration.get().floatValue());
+    }
+
     public static float getChatOpenMaxDuration() {
         return Math.max(chat.openMoveDuration.get().floatValue(), chat.openGradientDuration.get().floatValue());
     }
@@ -91,6 +95,14 @@ public class GUITweenConfig {
 
     public static boolean isEnableWindow() {
         return isEnable() && window.enable.get();
+    }
+
+    public static boolean isEnableJeiLeft() {
+        return isEnable() && window.enableJeiLeft.get();
+    }
+
+    public static boolean isEnableJeiRight() {
+        return isEnable() && window.enableJeiRight.get();
     }
 
     public static boolean isEnableDebugWindow() {
@@ -113,16 +125,40 @@ public class GUITweenConfig {
         return isEnable() && windowItem.enableOutput.get();
     }
 
+    public static boolean isEnableDragItem() {
+        return isEnable() && windowItem.enableDrag.get();
+    }
+
+    public static boolean isEnableQuickCraft() {
+        return isEnable() && windowItem.enableQuick.get();
+    }
+
     public static boolean isEnableHoldItem() {
         return isEnable() && hotbar.enableHoldItem.get();
+    }
+
+    public static boolean isEnableAttack() {
+        return isEnable() && hotbar.enableAttack.get();
+    }
+
+    public static boolean isEnableUse() {
+        return isEnable() && hotbar.enableUse.get();
     }
 
     public static boolean isEnableLack() {
         return isEnable() && hotbar.enableLack.get();
     }
 
+    public static boolean isEnableSelectedItemName() {
+        return isEnable() && hotbar.enableSelectedItemName.get();
+    }
+
     public static boolean isEnableExp() {
         return isEnable() && hotbar.enableExp.get();
+    }
+
+    public static boolean isEnableArmor() {
+        return isEnable() && hotbar.enableArmor.get();
     }
 
     public static boolean isEnableChat() {

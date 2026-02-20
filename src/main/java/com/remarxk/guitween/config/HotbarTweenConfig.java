@@ -18,6 +18,26 @@ public class HotbarTweenConfig {
 
     public final ModConfigSpec.EnumValue<Ease> holdZoomOutEase;
 
+    public final ModConfigSpec.BooleanValue enableSelectedItemName;
+
+    public final ModConfigSpec.DoubleValue selectedItemNameMoveDuration;
+
+    public final ModConfigSpec.DoubleValue selectedItemNameMoveY;
+
+    public final ModConfigSpec.EnumValue<Ease> selectedItemNameMoveEase;
+
+    public final ModConfigSpec.DoubleValue selectedItemNameAlphaDuration;
+
+    public final ModConfigSpec.EnumValue<Ease> selectedItemNameAlphaEase;
+
+    public final ModConfigSpec.BooleanValue enableAttack;
+
+    public final ModConfigSpec.DoubleValue attackMaxAngle;
+
+    public final ModConfigSpec.BooleanValue enableUse;
+
+    public final ModConfigSpec.DoubleValue useStrength;
+
     public final ModConfigSpec.BooleanValue enableLack;
 
     public final ModConfigSpec.DoubleValue lackDuration;
@@ -31,7 +51,17 @@ public class HotbarTweenConfig {
     public final ModConfigSpec.EnumValue<Ease> expEase;
 
     public final ModConfigSpec.DoubleValue expScale;
-    
+
+    public final ModConfigSpec.BooleanValue enableArmor;
+
+    public final ModConfigSpec.DoubleValue armorDuration;
+
+    public final ModConfigSpec.DoubleValue upArmorScale;
+
+    public final ModConfigSpec.EnumValue<Ease> upArmorEase;
+
+    public final ModConfigSpec.DoubleValue downArmorShakeStrength;
+
     public HotbarTweenConfig(ModConfigSpec.Builder builder) {
         builder.translation("guitween.config.hotbarGroup").push("hotbarGroup");
 
@@ -63,6 +93,46 @@ public class HotbarTweenConfig {
                 .translation("guitween.config.holdZoomOutEase")
                 .defineEnum("holdZoomOutEase", Ease.OUT_QUART);
 
+        enableSelectedItemName = builder
+                .translation("guitween.config.enableSelectedItemName")
+                .define("enableSelectedItemName", true);
+
+        selectedItemNameMoveDuration = builder
+                .translation("guitween.config.selectedItemNameMoveDuration")
+                .defineInRange("selectedItemNameMoveDuration", 4d, 0d, 1000d);
+
+        selectedItemNameMoveY = builder
+                .translation("guitween.config.selectedItemNameMoveY")
+                .defineInRange("selectedItemNameMoveY", 5d, 0d, 1000d);
+
+        selectedItemNameMoveEase = builder
+                .translation("guitween.config.selectedItemNameMoveEase")
+                .defineEnum("selectedItemNameMoveEase", Ease.IN_OUT_SINE);
+
+        selectedItemNameAlphaDuration = builder
+                .translation("guitween.config.selectedItemNameAlphaDuration")
+                .defineInRange("selectedItemNameAlphaDuration", 6d, 0, 1000);
+
+        selectedItemNameAlphaEase = builder
+                .translation("guitween.config.selectedItemNameAlphaEase")
+                .defineEnum("selectedItemNameAlphaEase", Ease.IN_OUT_SINE);
+
+        enableAttack = builder
+                .translation("guitween.config.enableAttack")
+                .define("enableAttack", true);
+
+        attackMaxAngle = builder
+                .translation("guitween.config.attackMaxAngle")
+                .defineInRange("attackMaxAngle", 15d, 0d, 90d);
+
+        enableUse = builder
+                .translation("guitween.config.enableUse")
+                .define("enableUse", true);
+
+        useStrength = builder
+                .translation("guitween.config.useStrength")
+                .defineInRange("useStrength", 0.2f, 0d, 1000d);
+
         enableLack = builder
                 .translation("guitween.config.enableLack")
                 .define("enableLack", true);
@@ -90,6 +160,26 @@ public class HotbarTweenConfig {
         expScale = builder
                 .translation("guitween.config.expScale")
                 .defineInRange("expScale", 4d, 1, 1000);
+
+        enableArmor = builder
+                .translation("guitween.config.enableArmor")
+                .define("enableArmor", true);
+
+        armorDuration = builder
+                .translation("guitween.config.armorDuration")
+                .defineInRange("armorDuration", 4d, 0, 1000d);
+
+        upArmorScale = builder
+                .translation("guitween.config.upArmorScale")
+                .defineInRange("upArmorScale", 1.5d, 0, 1000d);
+
+        upArmorEase = builder
+                .translation("guitween.config.upArmorEase")
+                .defineEnum("upArmorEase", Ease.IN_OUT_SINE);
+
+        downArmorShakeStrength = builder
+                .translation("guitween.config.downArmorShakeStrength")
+                .defineInRange("downArmorShakeStrength", 3, 0, 1000d);
 
         builder.pop();
     }

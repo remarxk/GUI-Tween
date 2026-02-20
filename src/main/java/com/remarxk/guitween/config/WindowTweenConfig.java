@@ -23,6 +23,26 @@ public class WindowTweenConfig {
 
     public final ModConfigSpec.EnumValue<Ease> gradientEase;
 
+    public final ModConfigSpec.BooleanValue enableJeiLeft;
+
+    public final ModConfigSpec.DoubleValue jeiLeftMoveDuration;
+
+    public final ModConfigSpec.EnumValue<Ease> jeiLeftMoveEase;
+
+    public final ModConfigSpec.DoubleValue jeiLeftMoveX;
+
+    public final ModConfigSpec.DoubleValue jeiLeftMoveY;
+
+    public final ModConfigSpec.BooleanValue enableJeiRight;
+
+    public final ModConfigSpec.DoubleValue jeiRightMoveDuration;
+
+    public final ModConfigSpec.EnumValue<Ease> jeiRightMoveEase;
+
+    public final ModConfigSpec.DoubleValue jeiRightMoveX;
+
+    public final ModConfigSpec.DoubleValue jeiRightMoveY;
+
     public WindowTweenConfig(ModConfigSpec.Builder BUILDER) {
         BUILDER.translation("guitween.config.windowGroup").push("windowGroup");
 
@@ -32,9 +52,9 @@ public class WindowTweenConfig {
 
         disableNames = BUILDER
                 .translation("guitween.config.disableNames")
-                .defineList(
+                .defineListAllowEmpty(
                         "disableNames",
-                        List.of("None"),
+                        List.of(),
                         () -> "",
                         obj -> obj instanceof String
                 );
@@ -62,6 +82,46 @@ public class WindowTweenConfig {
         gradientEase = BUILDER
                 .translation("guitween.config.windowGradientEase")
                 .defineEnum("windowGradientEase", Ease.IN_OUT_SINE);
+
+        enableJeiLeft = BUILDER
+                .translation("guitween.config.enableJeiLeft")
+                .define("enableJeiLeft", true);
+
+        jeiLeftMoveDuration = BUILDER
+                .translation("guitween.config.jeiLeftMoveDuration")
+                .defineInRange("jeiLeftMoveDuration", 6d, 0, 1000d);
+
+        jeiLeftMoveEase = BUILDER
+                .translation("guitween.config.jeiLeftMoveEase")
+                .defineEnum("jeiLeftMoveEase", Ease.OUT_BACK);
+
+        jeiLeftMoveX = BUILDER
+                .translation("guitween.config.jeiLeftMoveX")
+                .defineInRange("jeiLeftMoveX", -50d, -10000, 10000);
+
+        jeiLeftMoveY = BUILDER
+                .translation("guitween.config.jeiLeftMoveY")
+                .defineInRange("jeiLeftMoveY", 0f, -10000, 10000);
+
+        enableJeiRight = BUILDER
+                .translation("guitween.config.enableJeiRight")
+                .define("enableJeiRight", true);
+
+        jeiRightMoveDuration = BUILDER
+                .translation("guitween.config.jeiRightMoveDuration")
+                .defineInRange("jeiRightMoveDuration", 6d, 0, 1000d);
+
+        jeiRightMoveEase = BUILDER
+                .translation("guitween.config.jeiRightMoveEase")
+                .defineEnum("jeiRightMoveEase", Ease.OUT_BACK);
+
+        jeiRightMoveX = BUILDER
+                .translation("guitween.config.jeiRightMoveX")
+                .defineInRange("jeiRightMoveX", 50d, -10000, 10000);
+
+        jeiRightMoveY = BUILDER
+                .translation("guitween.config.jeiRightMoveY")
+                .defineInRange("jeiRightMoveY", 0f, -10000, 10000);
 
         BUILDER.pop();
     }

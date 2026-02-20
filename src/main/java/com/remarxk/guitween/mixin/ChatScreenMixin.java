@@ -1,15 +1,14 @@
 package com.remarxk.guitween.mixin;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.remarxk.guitween.GUITween;
 import com.remarxk.guitween.GUITweenUtility;
 import com.remarxk.guitween.config.GUITweenConfig;
-import com.remarxk.guitween.util.Ease;
 import com.remarxk.guitween.util.TweenUtil;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -54,13 +53,12 @@ public abstract class ChatScreenMixin extends Screen {
         poseStack.pushPose();
 
         float moveProgress = gUITween$openTick / GUITweenConfig.chat.openMoveDuration.get().floatValue();
-        float dx = TweenUtil.tween(GUITweenConfig.chat.openMoveX.get().floatValue(), 0, moveProgress, GUITweenConfig.chat.openMoveEase.get());
-        float dy = TweenUtil.tween(GUITweenConfig.chat.openMoveY.get().floatValue(), 0, moveProgress, GUITweenConfig.chat.openMoveEase.get());
+        float dy = TweenUtil.tween(12f, 0, moveProgress, GUITweenConfig.chat.openMoveEase.get());
 
         float alphaProgress = gUITween$openTick / GUITweenConfig.chat.openGradientDuration.get().floatValue();
-        float alpha = TweenUtil.tween(0, 1, alphaProgress, GUITweenConfig.chat.openGradientEase.get());
+        float alpha = TweenUtil.tween(0.01f, 1, alphaProgress, GUITweenConfig.chat.openGradientEase.get());
 
-        poseStack.translate(dx, dy, 0);
+        poseStack.translate(0, dy, 0);
         guiGraphics.setColor(1, 1, 1, alpha);
 
         gUITween$openTick += GUITweenUtility.getDeltaTicks();

@@ -10,10 +10,6 @@ public class ChatTweenConfig {
 
     public final ModConfigSpec.EnumValue<Ease> openMoveEase;
 
-    public final ModConfigSpec.DoubleValue openMoveX;
-
-    public final ModConfigSpec.DoubleValue openMoveY;
-
     public final ModConfigSpec.DoubleValue openGradientDuration;
 
     public final ModConfigSpec.EnumValue<Ease> openGradientEase;
@@ -23,10 +19,6 @@ public class ChatTweenConfig {
     public final ModConfigSpec.DoubleValue compMoveDuration;
 
     public final ModConfigSpec.EnumValue<Ease> compMoveEase;
-
-    public final ModConfigSpec.DoubleValue compMoveX;
-
-    public final ModConfigSpec.DoubleValue compMoveY;
 
     public final ModConfigSpec.DoubleValue compGradientDuration;
 
@@ -47,14 +39,6 @@ public class ChatTweenConfig {
                 .translation("guitween.config.chatOpenMoveEase")
                 .defineEnum("chatOpenMoveEase", Ease.IN_OUT_SINE);
 
-        openMoveX = builder
-                .translation("guitween.config.chatOpenMoveX")
-                .defineInRange("chatOpenMoveX", 0, -10000d, 10000d);
-
-        openMoveY = builder
-                .translation("guitween.config.chatOpenMoveY")
-                .defineInRange("chatOpenMoveY", 50, -10000d, 10000d);
-
         openGradientDuration = builder
                 .translation("guitween.config.chatOpenGradientDuration")
                 .defineInRange("chatOpenGradientDuration", 6, 0d, 1000d);
@@ -74,14 +58,6 @@ public class ChatTweenConfig {
         compMoveEase = builder
                 .translation("guitween.config.chatCompMoveEase")
                 .defineEnum("chatCompMoveEase", Ease.IN_OUT_SINE);
-
-        compMoveX = builder
-                .translation("guitween.config.chatCompMoveX")
-                .defineInRange("chatCompMoveX", -500, -10000d, 10000d);
-
-        compMoveY = builder
-                .translation("guitween.config.chatCompMoveY")
-                .defineInRange("chatCompMoveY", 0, -10000d, 10000d);
 
         compGradientDuration = builder
                 .translation("guitween.config.chatCompGradientDuration")

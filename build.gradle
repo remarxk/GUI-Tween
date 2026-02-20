@@ -117,6 +117,12 @@ dependencies {
 
     runtimeOnly "curse.maven:trade-refresh-821729:5533325"
 
+    compileOnly "curse.maven:sophisticated-core-618298:7635107"
+    runtimeOnly "curse.maven:sophisticated-core-618298:7635107"
+
+    compileOnly "curse.maven:sophisticated-backpacks-422301:7645643"
+    runtimeOnly "curse.maven:sophisticated-backpacks-422301:7645643"
+
     // Example mod dependency using a mod jar from ./libs with a flat dir repository
     // This maps to ./libs/coolmod-${mc_version}-${coolmod_version}.jar
     // The group id is ignored when searching -- in this case, it is "blank"

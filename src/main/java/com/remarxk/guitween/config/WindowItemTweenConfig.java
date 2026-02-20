@@ -31,7 +31,15 @@ public class WindowItemTweenConfig {
     public final ModConfigSpec.DoubleValue outputDuration;
 
     public final ModConfigSpec.EnumValue<Ease> outputEase;
-    
+
+    public final ModConfigSpec.BooleanValue enableDrag;
+
+    public final ModConfigSpec.DoubleValue dragMaxAngle;
+
+    public final ModConfigSpec.DoubleValue dragSensitivity;
+
+    public final ModConfigSpec.BooleanValue enableQuick;
+
     public WindowItemTweenConfig(ModConfigSpec.Builder builder) {
         builder.translation("guitween.config.screenItemGroup").push("screenItemGroup");
 
@@ -90,6 +98,22 @@ public class WindowItemTweenConfig {
         outputEase = builder
                 .translation("guitween.config.outputEase")
                 .defineEnum("outputEase", Ease.OUT_BACK);
+
+        enableDrag = builder
+                .translation("guitween.config.enableDrag")
+                .define("enableDrag", true);
+
+        dragMaxAngle = builder
+                .translation("guitween.config.dragMaxAngle")
+                .defineInRange("dragMaxAngle", 15d, 0, 90);
+
+        dragSensitivity = builder
+                .translation("guitween.config.dragSensitivity")
+                .defineInRange("dragSensitivity", 8d, 0, 1000);
+
+        enableQuick = builder
+                .translation("guitween.config.enableQuick")
+                .define("enableQuick", true);
 
         builder.pop();
     }

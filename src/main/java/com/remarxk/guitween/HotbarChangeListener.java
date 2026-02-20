@@ -14,9 +14,9 @@ import java.util.HashMap;
 
 @EventBusSubscriber
 public class HotbarChangeListener {
-    private static int lastSelected = -1;
-
     private static boolean hasItem = true;
+
+    public static int lastSelected = -1;
 
     public static HashMap<Integer, Tween> hotbarAnimStateMap = new HashMap<>();
 

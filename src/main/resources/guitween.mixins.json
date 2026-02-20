@@ -3,18 +3,20 @@
   "minVersion": "0.8",
   "package": "com.remarxk.guitween.mixin",
   "compatibilityLevel": "JAVA_21",
-  "mixins": [
-  ],
   "client": [
     "AbstractContainerScreenMixin",
+    "BookmarkOverlayMixin",
     "ChatComponentMixin",
     "ChatScreenMixin",
     "FontMixin",
     "GuiMixin",
+    "IngredientListOverlayMixin",
     "ItemRendererMixin",
     "LocalPlayerMixin",
     "MerchantScreenMixin",
-    "SodiumBakedModelEncoderMixin"
+    "MinecraftMixin",
+    "SodiumBakedModelEncoderMixin",
+    "StorageScreenBaseMixin"
   ],
   "injectors": {
     "defaultRequire": 1
