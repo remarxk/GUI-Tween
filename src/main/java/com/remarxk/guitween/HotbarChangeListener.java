@@ -2,6 +2,9 @@ package com.remarxk.guitween;
 
 import com.remarxk.guitween.anim.Tween;
 import com.remarxk.guitween.anim.TweenPool;
+import com.remarxk.guitween.anim.UseTween;
+import com.remarxk.guitween.config.GUITweenConfig;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -13,9 +16,9 @@ import java.util.HashMap;
 
 @Mod.EventBusSubscriber
 public class HotbarChangeListener {
-    private static int lastSelected = -1;
+    public static boolean hasItem = true;
 
-    private static boolean hasItem = true;
+    public static int lastSelected = -1;
 
     public static HashMap<Integer, Tween> hotbarAnimStateMap = new HashMap<>();
 
@@ -30,19 +33,40 @@ public class HotbarChangeListener {
 
         // 仅处理客户端玩家 + 主 Tick 阶段
         if (level.isClientSide) {
+            if (GUITween.CONFIG.isEnableUse()) {
+                UseTween usingTween = GUITweenUtility.getUsingTween();
+
+                if (player.isUsingItem()) {
+                    InteractionHand hand = player.getUsedItemHand();
+
+                    int useSlot = -1;
+
+                    if (hand == InteractionHand.MAIN_HAND) {
+                        useSlot = player.getInventory().selected;
+                    } else if (hand == InteractionHand.OFF_HAND) {
+                        useSlot = 9;
+                    }
+
+                    usingTween.use(useSlot);
+                }
+            }
+
             int index = player.getInventory().selected;
 
             // 判断是否切换了选中物品
             if (lastSelected != index) {
                 if (lastSelected >= 0) {
-//                    Tween tween = hotbarAnimStateMap.getOrDefault(lastSelected, null);
-//                    if (tween != null && tween.stopValue > 1) { // 放大过程中
-//                        tween.rewind = true;
-//                    }
-
-                    Tween tween = hotbarAnimStateMap.remove(lastSelected);
-                    if (tween != null) {
-                        TweenPool.releaseTween(tween);
+                    if (GUITween.CONFIG.enableHoldZoomTransition) {
+                        Tween tween = hotbarAnimStateMap.getOrDefault(lastSelected, null);
+                        if (tween != null && tween.stopValue > 1) { // 放大过程中
+                            tween.rewind = true;
+                        }
+                    }
+                    else {
+                        Tween tween = hotbarAnimStateMap.remove(lastSelected);
+                        if (tween != null) {
+                            TweenPool.releaseTween(tween);
+                        }
                     }
                 }
 

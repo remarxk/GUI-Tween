@@ -7,15 +7,20 @@
   ],
   "client": [
     "AbstractContainerScreenMixin",
+    "BookmarkOverlayMixin",
     "ChatComponentMixin",
     "ChatScreenMixin",
     "EmbeddiumBakedModelEncoderMixin",
     "FontMixin",
+    "ForgeGuiMixin",
     "GuiMixin",
+    "IngredientListOverlayMixin",
     "ItemRendererMixin",
     "LocalPlayerMixin",
     "MerchantScreenMixin",
-    "ScreenMixin"
+    "MinecraftMixin",
+    "ScreenMixin",
+    "StorageScreenBaseMixin"
   ],
   "injectors": {
     "defaultRequire": 1

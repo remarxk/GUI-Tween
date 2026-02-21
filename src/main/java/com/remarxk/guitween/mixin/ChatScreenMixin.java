@@ -52,13 +52,12 @@ public abstract class ChatScreenMixin extends Screen {
         poseStack.pushPose();
 
         float moveProgress = gUITween$openTick / GUITween.CONFIG.chatOpenMoveDuration;
-        float dx = TweenUtil.tween(GUITween.CONFIG.chatOpenMoveX, 0, moveProgress, GUITween.CONFIG.chatOpenMoveEase.get());
-        float dy = TweenUtil.tween(GUITween.CONFIG.chatOpenMoveY, 0, moveProgress, GUITween.CONFIG.chatOpenMoveEase.get());
+        float dy = TweenUtil.tween(12f, 0, moveProgress, GUITween.CONFIG.chatOpenMoveEase.get());
 
         float alphaProgress = gUITween$openTick / GUITween.CONFIG.chatOpenGradientDuration;
-        float alpha = TweenUtil.tween(0, 1, alphaProgress, GUITween.CONFIG.chatOpenGradientEase.get());
+        float alpha = TweenUtil.tween(0.01f, 1, alphaProgress, GUITween.CONFIG.chatOpenGradientEase.get());
 
-        poseStack.translate(dx, dy, 0);
+        poseStack.translate(0, dy, 0);
         guiGraphics.setColor(1, 1, 1, alpha);
 
         gUITween$openTick += GUITweenUtility.getDeltaTicks();

@@ -36,6 +36,11 @@ public abstract class ChatComponentMixin {
     @Shadow
     private List<GuiMessage.Line> trimmedMessages;
 
+    @Shadow
+    public int getWidth() {
+        return 0;
+    }
+
     @Inject(
             method = "render",
             at = @At(
@@ -83,10 +88,11 @@ public abstract class ChatComponentMixin {
         poseStack.pushPose();
 
         float progress = gUITween$newMessageTick / GUITween.CONFIG.chatCompMoveDuration;
-        float moveX = GUITween.CONFIG.chatCompMoveX;
-        float moveY = GUITween.CONFIG.chatCompMoveY;
-        float dx = TweenUtil.tween(moveX, moveY, progress, GUITween.CONFIG.chatCompMoveEase.get());
-        poseStack.translate(dx, 0, 0);
+        float moveX = -getWidth();
+        float moveY = 0;
+        float dx = TweenUtil.tween(moveX, 0, progress, GUITween.CONFIG.chatCompMoveEase.get());
+        float dy = TweenUtil.tween(moveY, 0, progress, GUITween.CONFIG.chatCompMoveEase.get());
+        poseStack.translate(dx, dy, 0);
     }
 
     @ModifyArg(

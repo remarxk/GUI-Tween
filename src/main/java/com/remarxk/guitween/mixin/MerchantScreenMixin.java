@@ -29,7 +29,8 @@ public abstract class MerchantScreenMixin extends AbstractContainerScreen<Mercha
                     value = "INVOKE",
                     target = "Lnet/minecraft/world/item/trading/MerchantOffers;isEmpty()Z",
                     shift = At.Shift.BEFORE
-            )
+            ),
+            remap = false
     )
     public void renderSlotBefore(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci){
         AbstractContainerScreenMixinAccess access = (AbstractContainerScreenMixinAccess) this;

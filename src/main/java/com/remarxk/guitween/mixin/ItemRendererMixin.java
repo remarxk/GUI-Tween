@@ -60,7 +60,8 @@ public abstract class ItemRendererMixin implements ResourceManagerReloadListener
             at = @At(
                     value = "INVOKE",
                     target = "Lcom/mojang/blaze3d/vertex/VertexConsumer;putBulkData(Lcom/mojang/blaze3d/vertex/PoseStack$Pose;Lnet/minecraft/client/renderer/block/model/BakedQuad;FFFFIIZ)V"),
-            index = 5
+            index = 5,
+            remap = false
     )
     private float modifyQuadAlpha(float alpha) {
         if (GUITweenUtility.hasItemAlpha()) {

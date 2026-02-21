@@ -36,9 +36,29 @@ public class GUITweenConfig extends Config {
 
     public float windowGradientDuration = 8;
 
-    @ConfigGroup.Pop
     public ValidatedChoice<Ease> windowGradientEase  = new ValidatedChoice<>(Ease.IN_OUT_SINE, Arrays.stream(Ease.values()).toList(), new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
 
+    public boolean enableJeiLeft = true;
+
+    public float jeiLeftMoveDuration = 6f;
+
+    public ValidatedChoice<Ease> jeiLeftMoveEase = new ValidatedChoice<>(Ease.OUT_BACK, Arrays.stream(Ease.values()).toList(), new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);;;
+
+    public float jeiLeftMoveX = -50f;
+
+    public float jeiLeftMoveY = 0f;
+
+    public boolean enableJeiRight = true;
+
+    public float jeiRightMoveDuration = 6f;
+
+    public ValidatedChoice<Ease> jeiRightMoveEase = new ValidatedChoice<>(Ease.OUT_BACK, Arrays.stream(Ease.values()).toList(), new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);;
+
+    public float jeiRightMoveX = 50f;
+
+    @ConfigGroup.Pop
+    public float jeiRightMoveY = 0;
+    
     public ConfigGroup screenItemGroup = new ConfigGroup("Screen Item tween");
     public boolean enableHover = true;
 
@@ -54,7 +74,11 @@ public class GUITweenConfig extends Config {
 
     public ValidatedChoice<Ease> tooltipEase = new ValidatedChoice<>(Ease.OUT_CIRC, Arrays.stream(Ease.values()).toList(), new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
 
+    public float clickItemScale = 1.2f;
+
     public boolean enableClickItem = true;
+
+    public float clickZoomStrength = 0.2f;
 
     public float clickItemDuration =5;
 
@@ -62,11 +86,21 @@ public class GUITweenConfig extends Config {
 
     public float outputDuration = 5;
 
-    @ConfigGroup.Pop
     public ValidatedChoice<Ease> outputEase = new ValidatedChoice<>(Ease.OUT_BACK, Arrays.stream(Ease.values()).toList(), new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
 
+    public boolean enableDrag = true;
+
+    public float dragMaxAngle = 15f;
+
+    public float dragSensitivity = 8f;
+
+    @ConfigGroup.Pop
+    public boolean enableQuick = true;
+    
     public ConfigGroup hotbarGroup = new ConfigGroup("hotbar tween");
     public boolean enableHoldItem = true;
+
+    public boolean enableHoldZoomTransition = false;
 
     public float holdZoomInDuration = 8;
 
@@ -78,11 +112,37 @@ public class GUITweenConfig extends Config {
 
     public ValidatedChoice<Ease> holdZoomOutEase = new ValidatedChoice<>(Ease.OUT_QUART, Arrays.stream(Ease.values()).toList(), new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
 
+    public boolean enableSelectedItemName = true;
+
+    public float selectedItemNameMoveDuration = 4f;
+
+    public float selectedItemNameMoveY = 5f;
+
+    public ValidatedChoice<Ease> selectedItemNameMoveEase = new ValidatedChoice<>(Ease.IN_OUT_SINE, Arrays.stream(Ease.values()).toList(), new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
+
+    public float selectedItemNameAlphaDuration = 6f;
+
+    public ValidatedChoice<Ease> selectedItemNameAlphaEase  = new ValidatedChoice<>(Ease.IN_OUT_SINE, Arrays.stream(Ease.values()).toList(), new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
+
+    public boolean enableAttack = true;
+
+    public float attackMaxAngle = 15f;
+
+    public boolean enableUse = true;
+
+    public float useStrength = 0.2f;
+    
     public boolean enableLack = true;
 
     public float lackDuration = 8f;
 
     public float lackShakeStrength = 3f;
+
+    public boolean enableSelectMove = true;
+
+    public float selectMoveDuration = 2f;
+
+    public ValidatedChoice<Ease> selectMoveEase = new ValidatedChoice<>(Ease.OUT_CUBIC, Arrays.stream(Ease.values()).toList(), new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
 
     public boolean enableExp = true;
 
@@ -90,8 +150,18 @@ public class GUITweenConfig extends Config {
 
     public ValidatedChoice<Ease> expEase = new ValidatedChoice<>(Ease.OUT_BACK, Arrays.stream(Ease.values()).toList(), new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
 
-    @ConfigGroup.Pop
     public float expScale = 4f;
+
+    public boolean enableArmor = true;
+
+    public float armorDuration = 4f;
+
+    public float upArmorScale = 1.5f;
+
+    public ValidatedChoice<Ease> upArmorEase = new ValidatedChoice<>(Ease.IN_OUT_SINE, Arrays.stream(Ease.values()).toList(), new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
+
+    @ConfigGroup.Pop
+    public float downArmorShakeStrength = 3f;
 
     public ConfigGroup chatGroup = new ConfigGroup("chat tween");
     public boolean enableChat = true;
@@ -99,10 +169,6 @@ public class GUITweenConfig extends Config {
     public float chatOpenMoveDuration = 4f;
 
     public ValidatedChoice<Ease> chatOpenMoveEase = new ValidatedChoice<>(Ease.IN_OUT_SINE, Arrays.stream(Ease.values()).toList(), new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
-
-    public float chatOpenMoveX = 0;
-
-    public float chatOpenMoveY = 50;
 
     public float chatOpenGradientDuration = 6f;
 
@@ -114,10 +180,6 @@ public class GUITweenConfig extends Config {
 
     public ValidatedChoice<Ease> chatCompMoveEase = new ValidatedChoice<>(Ease.IN_OUT_SINE, Arrays.stream(Ease.values()).toList(), new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
 
-    public float chatCompMoveX = -500f;
-
-    public float chatCompMoveY = 0;
-
     public float chatCompGradientDuration = 6f;
 
     public ValidatedChoice<Ease> chatCompGradientEase = new ValidatedChoice<>(Ease.IN_OUT_SINE, Arrays.stream(Ease.values()).toList(), new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
@@ -128,6 +190,10 @@ public class GUITweenConfig extends Config {
 
     public float getHoldItemTotalDuration() {
         return holdZoomInDuration + holdZoomOutDuration;
+    }
+
+    public float getSelectedItemNameDuration() {
+        return Math.max(selectedItemNameMoveDuration, selectedItemNameAlphaDuration);
     }
 
     public float getChatOpenMaxDuration() {
@@ -150,6 +216,14 @@ public class GUITweenConfig extends Config {
         return isEnable() && enableWindow;
     }
 
+    public boolean isEnableJeiLeft() {
+        return isEnable() && enableJeiLeft;
+    }
+
+    public boolean isEnableJeiRight() {
+        return isEnable() && enableJeiRight;
+    }
+
     public boolean isEnableDebugWindow() {
         return isEnable() && enableDebugWindow;
     }
@@ -170,16 +244,44 @@ public class GUITweenConfig extends Config {
         return isEnable() && enableOutput;
     }
 
+    public boolean isEnableDragItem() {
+        return isEnable() && enableDrag;
+    }
+
+    public boolean isEnableQuickCraft() {
+        return isEnable() && enableQuick;
+    }
+
     public boolean isEnableHoldItem() {
         return isEnable() && enableHoldItem;
+    }
+
+    public boolean isEnableAttack() {
+        return isEnable() && enableAttack;
+    }
+
+    public boolean isEnableUse() {
+        return isEnable() && enableUse;
     }
 
     public boolean isEnableLack() {
         return isEnable() && enableLack;
     }
 
+    public boolean isEnableSelectMove() {
+        return isEnable() && enableSelectMove;
+    }
+
+    public boolean isEnableSelectedItemName() {
+        return isEnable() && enableSelectedItemName;
+    }
+
     public boolean isEnableExp() {
         return isEnable() && enableExp;
+    }
+
+    public boolean isEnableArmor() {
+        return isEnable() && enableArmor;
     }
 
     public boolean isEnableChat() {
