@@ -44,6 +44,12 @@ public class HotbarTweenConfig {
 
     public final ModConfigSpec.DoubleValue lackShakeStrength;
 
+    public final ModConfigSpec.BooleanValue enableSelectMove;
+
+    public final ModConfigSpec.DoubleValue selectMoveDuration;
+
+    public final ModConfigSpec.EnumValue<Ease> selectMoveEase;
+
     public final ModConfigSpec.BooleanValue enableExp;
 
     public final ModConfigSpec.DoubleValue expDuration;
@@ -144,6 +150,18 @@ public class HotbarTweenConfig {
         lackShakeStrength = builder
                 .translation("guitween.config.lackShakeStrength")
                 .defineInRange("lackShakeStrength", 3d, 0, 1000);
+
+        enableSelectMove = builder
+                .translation("guitween.config.enableSelectMove")
+                .define("enableSelectMove", true);
+
+        selectMoveDuration = builder
+                .translation("guitween.config.selectMoveDuration")
+                .defineInRange("selectMoveDuration", 2d, 0, 1000d);
+
+        selectMoveEase = builder
+                .translation("guitween.config.selectMoveEase")
+                .defineEnum("selectMoveEase", Ease.OUT_CUBIC);
 
         enableExp = builder
                 .translation("guitween.config.enableExp")

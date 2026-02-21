@@ -1,8 +1,10 @@
 package com.remarxk.guitween;
 
 import com.remarxk.guitween.anim.Tween;
+import com.remarxk.guitween.anim.UseTween;
 import com.remarxk.guitween.config.GUITweenConfig;
 import com.remarxk.guitween.anim.TweenPool;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -31,6 +33,24 @@ public class HotbarChangeListener {
 
         // 仅处理客户端玩家 + 主 Tick 阶段
         if (level.isClientSide) {
+            if (GUITweenConfig.isEnableUse()) {
+                UseTween usingTween = GUITweenUtility.getUsingTween();
+
+                if (player.isUsingItem()) {
+                    InteractionHand hand = player.getUsedItemHand();
+
+                    int useSlot = -1;
+
+                    if (hand == InteractionHand.MAIN_HAND) {
+                        useSlot = player.getInventory().selected;
+                    } else if (hand == InteractionHand.OFF_HAND) {
+                        useSlot = 9;
+                    }
+
+                    usingTween.use(useSlot);
+                }
+            }
+
             int index = player.getInventory().selected;
 
             // 判断是否切换了选中物品

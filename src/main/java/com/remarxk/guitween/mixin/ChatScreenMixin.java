@@ -38,7 +38,8 @@ public abstract class ChatScreenMixin extends Screen {
                     value = "INVOKE",
                     target = "Lnet/minecraft/client/gui/components/ChatComponent;render(Lnet/minecraft/client/gui/GuiGraphics;IIIZ)V",
                     shift = At.Shift.AFTER
-            )
+            ),
+            remap = false
     )
     public void renderBefore(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
         if (!GUITweenConfig.isEnableChat())

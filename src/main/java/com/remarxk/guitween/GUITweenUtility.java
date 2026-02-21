@@ -5,7 +5,6 @@ import com.remarxk.guitween.anim.DragTween;
 import com.remarxk.guitween.anim.UseTween;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.MerchantScreen;
-import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.BackpackScreen;
 
 import java.util.HashSet;
 import java.util.Stack;
@@ -35,12 +34,12 @@ public class GUITweenUtility {
         return Minecraft.getInstance().getTimer().getGameTimeDeltaTicks();
     }
 
-    public static void SetOpenScreen(String screenName, float tick) {
+    public static void setOpenScreen(String screenName, float tick) {
         openScreenName = screenName;
         openScreenTick = tick;
     }
 
-    public static void DeleteOpenScreen() {
+    public static void deleteOpenScreen() {
         openScreenName = null;
         openScreenTick = 0;
     }

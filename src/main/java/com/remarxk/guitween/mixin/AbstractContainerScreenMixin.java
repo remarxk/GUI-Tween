@@ -285,7 +285,7 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
             gUITween$openTick += GUITweenUtility.getDeltaTicks();
         }
 
-        GUITweenUtility.SetOpenScreen(gUITween$screenName, gUITween$openTick);
+        GUITweenUtility.setOpenScreen(gUITween$screenName, gUITween$openTick);
 
         if (!GUITweenConfig.isEnableWindow())
             return;
@@ -672,6 +672,6 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
 
         gUITween$tooltipShowTick = 0;
 
-        GUITweenUtility.DeleteOpenScreen();
+        GUITweenUtility.deleteOpenScreen();
     }
 }

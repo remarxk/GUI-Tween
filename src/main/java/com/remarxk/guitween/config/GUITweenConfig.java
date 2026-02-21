@@ -149,6 +149,10 @@ public class GUITweenConfig {
         return isEnable() && hotbar.enableLack.get();
     }
 
+    public static boolean isEnableSelectMove() {
+        return isEnable() && hotbar.enableSelectMove.get();
+    }
+
     public static boolean isEnableSelectedItemName() {
         return isEnable() && hotbar.enableSelectedItemName.get();
     }

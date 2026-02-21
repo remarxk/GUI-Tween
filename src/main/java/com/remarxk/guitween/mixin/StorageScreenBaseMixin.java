@@ -30,7 +30,7 @@ public abstract class StorageScreenBaseMixin<S extends StorageContainerMenuBase<
         if (!(this instanceof AbstractContainerScreenMixinAccess access))
             return;
 
-        GUITweenUtility.SetOpenScreen(access.getGUITween$screenName(), access.getGUITween$openTick());
+        GUITweenUtility.setOpenScreen(access.getGUITween$screenName(), access.getGUITween$openTick());
 
 //        if (!GUITweenConfig.isEnableWindow())
 //            return;

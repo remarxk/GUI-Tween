@@ -31,7 +31,7 @@ public class AttackTween {
         this.slot = slot;
 
         if (progress > 0) {
-            nextReset = true;
+//            nextReset = true;
         }
         else {
             progress = 1f;
@@ -53,7 +53,7 @@ public class AttackTween {
                 progress = 1f;
             }
             else {
-                progress -= 0.6f;
+                progress -= 1f;
             }
         }
     }

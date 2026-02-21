@@ -6,6 +6,7 @@ import com.remarxk.guitween.HotbarChangeListener;
 import com.remarxk.guitween.anim.AttackTween;
 import com.remarxk.guitween.anim.UseTween;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -21,10 +22,12 @@ public class MinecraftMixin {
             )
     )
     public void onStartUseItem(CallbackInfo ci) {
-        GUITween.LOGGER.info("开始使用道具");
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (player == null)
+            return;
 
         UseTween usingTween = GUITweenUtility.getUsingTween();
-        usingTween.use(HotbarChangeListener.lastSelected);
+        usingTween.use(player.getInventory().selected);
     }
 
     @Inject(
@@ -35,8 +38,12 @@ public class MinecraftMixin {
             )
     )
     public void onStartAttack(CallbackInfo ci) {
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (player == null)
+            return;
+
         AttackTween attackTween = GUITweenUtility.getAttackTween();
-        attackTween.resetProgress(HotbarChangeListener.lastSelected);
+        attackTween.resetProgress(player.getInventory().selected);
     }
 
     @Inject(
@@ -47,7 +54,11 @@ public class MinecraftMixin {
             )
     )
     public void onContinueAttack(CallbackInfo ci) {
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (player == null)
+            return;
+
         AttackTween attackTween = GUITweenUtility.getAttackTween();
-        attackTween.resetProgress(HotbarChangeListener.lastSelected);
+        attackTween.resetProgress(player.getInventory().selected);
     }
 }

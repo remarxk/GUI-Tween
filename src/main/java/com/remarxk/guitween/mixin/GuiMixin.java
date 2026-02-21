@@ -10,6 +10,7 @@ import com.remarxk.guitween.anim.Tween;
 import com.remarxk.guitween.anim.UseTween;
 import com.remarxk.guitween.config.GUITweenConfig;
 import com.remarxk.guitween.anim.TweenPool;
+import com.remarxk.guitween.util.Ease;
 import com.remarxk.guitween.util.TweenUtil;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.Gui;
@@ -89,30 +90,30 @@ public class GuiMixin {
 
         int slot = seed - 1;
 
-        if (HotbarChangeListener.lastSelected == slot) {
+        if (GUITweenConfig.isEnableAttack()) {
             AttackTween attackTween = GUITweenUtility.getAttackTween();
-            if (GUITweenConfig.isEnableAttack() && attackTween.isRunning()) {
-                if (!stack.isEmpty() && slot == attackTween.slot) {
-                    gUITween$inItemTween = true;
-                    angle = attackTween.getAngle();
-                    attackTween.update();
-                }
-                else {
-                    attackTween.stop();
-                }
-            }
 
-            UseTween usingTween = GUITweenUtility.getUsingTween();
-            if (GUITweenConfig.isEnableUse() && usingTween.isRunning()) {
-                if (!stack.isEmpty() && slot == usingTween.slot) {
-                    gUITween$inItemTween = true;
-                    scale = usingTween.getScale();
-                    usingTween.update();
-                }
-                else {
-                    usingTween.stop();
-                }
+            if (attackTween.isRunning() && !stack.isEmpty() && slot == attackTween.slot) {
+                gUITween$inItemTween = true;
+                angle = attackTween.getAngle();
+                attackTween.update();
             }
+//            else {
+//                attackTween.stop();
+//            }
+        }
+
+        if (GUITweenConfig.isEnableUse()) {
+            UseTween usingTween = GUITweenUtility.getUsingTween();
+
+            if (usingTween.isRunning() && !stack.isEmpty() && slot == usingTween.slot) {
+                gUITween$inItemTween = true;
+                scale = usingTween.getScale();
+                usingTween.update();
+            }
+//                else {
+//                    usingTween.stop();
+//                }
         }
 
         if (gUITween$inItemTween) {
@@ -260,9 +261,6 @@ public class GuiMixin {
     }
 
     @Unique
-    private float gUITween$selectTick;
-
-    @Unique
     private boolean gUITween$inLackTween;
 
     @Inject(
@@ -293,6 +291,53 @@ public class GuiMixin {
                 HotbarChangeListener.lackTick += GUITweenUtility.getDeltaTicks();
             }
         }
+    }
+
+    @Unique
+    private float gUITween$startSelectPos;
+
+    @Unique
+    private int gUITween$targetSelectPos = -1000;
+
+    @Unique
+    float gUITween$selectMoveTick;
+
+    @ModifyArg(
+            method = "renderItemHotbar",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lnet/minecraft/resources/ResourceLocation;IIII)V",
+                    ordinal = 1
+            ),
+            index = 1
+    )
+    public int modifyItemHotbarSelectPos(int x) {
+        if (!GUITweenConfig.isEnableSelectMove())
+            return x;
+
+        float duration = GUITweenConfig.hotbar.selectMoveDuration.get().floatValue();
+        Ease ease = GUITweenConfig.hotbar.selectMoveEase.get();
+
+        if (gUITween$targetSelectPos == -1000) {
+            gUITween$startSelectPos = x;
+            gUITween$targetSelectPos = x;
+            gUITween$selectMoveTick = duration;
+        }
+        else if (gUITween$targetSelectPos != x) {
+            gUITween$startSelectPos = TweenUtil.tween(gUITween$startSelectPos, gUITween$targetSelectPos, gUITween$selectMoveTick / duration, ease);
+
+            gUITween$targetSelectPos = x;
+            gUITween$selectMoveTick = 0;
+
+            x = (int) gUITween$startSelectPos;
+        }
+        else {
+            gUITween$selectMoveTick += GUITweenUtility.getDeltaTicks();
+
+            x = (int) TweenUtil.tween(gUITween$startSelectPos, gUITween$targetSelectPos, gUITween$selectMoveTick / duration, ease);;
+        }
+
+        return x;
     }
 
     @Inject(
