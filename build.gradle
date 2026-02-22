@@ -159,13 +159,16 @@ dependencies {
     compileOnly fg.deobf("curse.maven:embeddium-908741:5681725")
     runtimeOnly fg.deobf("curse.maven:embeddium-908741:5681725")
 
-//    runtimeOnly fg.deobf("curse.maven:oculus-581495:6020952")
+    runtimeOnly fg.deobf("curse.maven:oculus-581495:6020952")
 
     compileOnly fg.deobf("curse.maven:sophisticated-core-618298:7645911")
 //    runtimeOnly fg.deobf("curse.maven:sophisticated-core-618298:7645911")
 
     compileOnly fg.deobf("curse.maven:sophisticated-backpacks-422301:7645913")
 //    runtimeOnly fg.deobf("curse.maven:sophisticated-backpacks-422301:7645913")
+
+    runtimeOnly fg.deobf("curse.maven:quark-243121:6427817")
+    runtimeOnly fg.deobf("curse.maven:zeta-968868:7335229")
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 

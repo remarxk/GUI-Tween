@@ -4,11 +4,15 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.remarxk.guitween.GUITween;
 import com.remarxk.guitween.GUITweenUtility;
+import com.remarxk.guitween.config.GUITweenConfig;
 import com.remarxk.guitween.util.TweenUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.client.gui.overlay.ForgeGui;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -16,7 +20,9 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ForgeGui.class)
 public abstract class ForgeGuiMixin extends Gui {
@@ -33,110 +39,154 @@ public abstract class ForgeGuiMixin extends Gui {
     @Unique
     private static float gUITween$armorChangeTick;
 
+    @Unique
+    private static boolean gUITween$armorIsUp;
+
+    @Unique
+    private static float gUITween$armorScale;
+
+    @Unique
+    private static float gUITween$armorDx;
+
+    @Unique
+    private static float gUITween$armorDy;
+
+    @Unique
+    private static boolean gUITween$inArmorTween;
+
     @Shadow(remap = false)
     public int leftHeight;;
 
-    /**
-     * @author
-     * @reason
-     */
-    @Overwrite(remap = false)
-    protected void renderArmor(GuiGraphics guiGraphics, int width, int height) {
-        minecraft.getProfiler().push("armor");
+    @Inject(
+            method = "renderArmor",
+            at = @At(
+                    value = "HEAD"
+            ),
+            remap = false
+    )
+    private void renderArmorBefore(GuiGraphics guiGraphics, int width, int height, CallbackInfo ci) {
+        LocalPlayer player = minecraft.player;
+        if (player == null)
+            return;
 
-        RenderSystem.enableBlend();
-        int left = width / 2 - 91;
-        int top = height - leftHeight;
-
-        int level = minecraft.player.getArmorValue();
+        int i = player.getArmorValue();
 
         float duration = GUITween.CONFIG.armorDuration;
 
         if (GUITween.CONFIG.isEnableArmor()) {
-            if (level != gUITween$curArmorValue) {
+            if (i != gUITween$curArmorValue) {
                 if (gUITween$curArmorValue != -1) {
                     gUITween$lastArmorValue = gUITween$curArmorValue;
                     gUITween$armorChangeTick = 0;
                 }
                 else {
-                    gUITween$lastArmorValue = level;
+                    gUITween$lastArmorValue = i;
                     gUITween$armorChangeTick = duration;
                 }
 
-                gUITween$curArmorValue = level;
+                gUITween$curArmorValue = i;
             }
         }
 
         float progress = gUITween$armorChangeTick / duration;
         if (GUITween.CONFIG.isEnableArmor() && progress < 1) {
-            boolean isUp = gUITween$curArmorValue > gUITween$lastArmorValue;
+            gUITween$inArmorTween = true;
+
+            gUITween$armorIsUp = gUITween$curArmorValue > gUITween$lastArmorValue;
 
             float originScale = GUITween.CONFIG.upArmorScale;
-            float scale = isUp ? TweenUtil.tween(originScale, 1, progress, GUITween.CONFIG.upArmorEase.get()) : 1;
+            gUITween$armorScale = gUITween$armorIsUp ? TweenUtil.tween(originScale, 1, progress, GUITween.CONFIG.upArmorEase.get()) : 1;
 
             float shakeStrength = GUITween.CONFIG.downArmorShakeStrength;
-            float dx = !isUp ? TweenUtil.shake(0, gUITween$armorChangeTick, duration, shakeStrength) : 0;
-            float dy = !isUp ? TweenUtil.shake(1, gUITween$armorChangeTick, duration, shakeStrength) : 0;
+            gUITween$armorDx = !gUITween$armorIsUp ? TweenUtil.shake(0, gUITween$armorChangeTick, duration, shakeStrength) : 0;
+            gUITween$armorDy = !gUITween$armorIsUp ? TweenUtil.shake(1, gUITween$armorChangeTick, duration, shakeStrength) : 0;
+        }
+    }
 
-            PoseStack poseStack = guiGraphics.pose();
+    @ModifyVariable(
+            method = "renderArmor",
+            at = @At(
+                    value = "STORE"
+            ),
+            ordinal = 4,
+            remap = false
+    )
+    private int modifyRenderArmorValue(int value) {
+        if (gUITween$inArmorTween) {
+            value = gUITween$armorIsUp ? gUITween$curArmorValue : gUITween$lastArmorValue;
+        }
 
-            int targetArmor = isUp ? gUITween$curArmorValue : gUITween$lastArmorValue;
+        return value;
+    }
 
-            for (int i = 1; i < 20; i += 2)
-            {
-                if (i <= targetArmor) {
-                    int spriteOffset = i == targetArmor ? 25 : 34;
+    @Unique
+    private void gUITween$renderAnimArmor(GuiGraphics guiGraphics, ResourceLocation pAtlasLocation, int pX, int pY, int pUOffset, int pVOffset, int pUWidth, int pVHeight) {
+        PoseStack poseStack = guiGraphics.pose();
 
-                    poseStack.pushPose();
+        boolean needPlayTween = gUITween$inArmorTween;
 
-                    if (isUp) {
-                        float centerX = left + 4.5f;
-                        float centerY = top + 4.5f;
+        // 在渲染之前做自定义处理
+        if (needPlayTween) {
+            poseStack.pushPose();
 
-                        poseStack.translate(centerX, centerY, 0);
-                        poseStack.scale(scale, scale, 1);
-                        poseStack.translate(-centerX, -centerY, 0);
+            if (gUITween$armorIsUp) {
+                float centerX = pX + 4.5f;
+                float centerY = pY + 4.5f;
 
-                    }
-                    else {
-                        poseStack.translate(dx, dy, 0);
-                    }
-                    guiGraphics.blit(GUI_ICONS_LOCATION, left, top, spriteOffset, 9, 9, 9);
-                    poseStack.popPose();
-                }
+                poseStack.translate(centerX, centerY, 0);
+                poseStack.scale(gUITween$armorScale, gUITween$armorScale, 1);
+                poseStack.translate(-centerX, -centerY, 0);
 
-                if (i > targetArmor) {
-                    guiGraphics.blit(GUI_ICONS_LOCATION, left, top, 16, 9, 9, 9);
-                }
-
-                left += 8;
             }
+            else {
+                poseStack.translate(gUITween$armorDx, gUITween$armorDy, 0);
+            }
+        }
+
+        // 原始调用
+        guiGraphics.blit(pAtlasLocation, pX, pY, pUOffset, pVOffset, pUWidth, pVHeight);
+
+        if (needPlayTween) {
+            poseStack.popPose();
+        }
+    }
+
+    @Redirect(
+            method = "renderArmor",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V",
+                    ordinal = 0
+            )
+    )
+    private void redirectBlitFullSprite(GuiGraphics guiGraphics, ResourceLocation pAtlasLocation, int pX, int pY, int pUOffset, int pVOffset, int pUWidth, int pVHeight) {
+        gUITween$renderAnimArmor(guiGraphics, pAtlasLocation, pX, pY, pUOffset, pVOffset, pUWidth, pVHeight);
+    }
+
+    @Redirect(
+            method = "renderArmor",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V",
+                    ordinal = 1
+            )
+    )
+    private void redirectBlitHalfSprite(GuiGraphics guiGraphics, ResourceLocation pAtlasLocation, int pX, int pY, int pUOffset, int pVOffset, int pUWidth, int pVHeight) {
+        gUITween$renderAnimArmor(guiGraphics, pAtlasLocation, pX, pY, pUOffset, pVOffset, pUWidth, pVHeight);
+    }
+
+    @Inject(
+            method = "renderArmor",
+            at = @At(
+                    value = "TAIL"
+            ),
+            remap = false
+    )
+    private void renderArmorAfter(GuiGraphics guiGraphics, int width, int height, CallbackInfo ci) {
+        if (gUITween$inArmorTween) {
+            gUITween$inArmorTween = false;
 
             gUITween$armorChangeTick += GUITweenUtility.getDeltaTicks();
         }
-        else {
-            for (int i = 1; level > 0 && i < 20; i += 2)
-            {
-                if (i < level)
-                {
-                    guiGraphics.blit(GUI_ICONS_LOCATION, left, top, 34, 9, 9, 9);
-                }
-                else if (i == level)
-                {
-                    guiGraphics.blit(GUI_ICONS_LOCATION, left, top, 25, 9, 9, 9);
-                }
-                else if (i > level)
-                {
-                    guiGraphics.blit(GUI_ICONS_LOCATION, left, top, 16, 9, 9, 9);
-                }
-
-                left += 8;
-            }
-        }
-
-        leftHeight += 10;
-
-        RenderSystem.disableBlend();
-        minecraft.getProfiler().pop();
     }
 }

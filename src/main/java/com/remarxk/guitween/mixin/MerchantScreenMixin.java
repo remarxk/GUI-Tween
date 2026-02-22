@@ -39,10 +39,11 @@ public abstract class MerchantScreenMixin extends AbstractContainerScreen<Mercha
 
         float openTick = access.getGUITween$openTick();
         float moveProgress = openTick / GUITween.CONFIG.windowMoveDuration;
-        float gradientProgress = openTick / GUITween.CONFIG.windowMoveDuration;
+        float gradientProgress = openTick / GUITween.CONFIG.windowGradientDuration;
 
-        if (moveProgress >= 1 && gradientProgress >= 1)
+        if (moveProgress >= 1 && gradientProgress >= 1) {
             return;
+        }
 
         float dx = TweenUtil.tween(GUITween.CONFIG.windowMoveX, 0, moveProgress, GUITween.CONFIG.windowMoveEase.get());
         float dy = TweenUtil.tween(GUITween.CONFIG.windowMoveY, 0, moveProgress, GUITween.CONFIG.windowMoveEase.get());

@@ -231,6 +231,26 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
         }
     }
 
+    @Inject(method = "render", at = @At(value = "TAIL"))
+    public void renderAfter(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
+        if (!(this instanceof AbstractContainerScreenMixinAccess access))
+            return;
+
+        if (access.getGUITween$inTween()) {
+            GUITweenUtility.popAlpha();
+
+            PoseStack poseStack = guiGraphics.pose();
+            poseStack.popPose();
+        }
+
+        if (GUITweenUtility.WINDOW_DELAY_TICK.contains(getClass()))
+            return;
+
+        access.setGUITween$inTween(false);
+
+        access.setGUITween$openTick(access.getGUITween$openTick() + GUITweenUtility.getDeltaTicks());
+    }
+
     @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/inventory/Slot;isHighlightable()Z"))
     public boolean renderSlotHighlightBefore(Slot instance) {
         if (!GUITween.CONFIG.isEnableHoverItem())

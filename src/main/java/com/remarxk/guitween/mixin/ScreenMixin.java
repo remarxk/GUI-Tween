@@ -115,7 +115,9 @@ public abstract class ScreenMixin extends AbstractContainerEventHandler implemen
         if (moveProgress >= 1 && gradientProgress >= 1)
             return;
 
-        gUITween$openTick += GUITweenUtility.getDeltaTicks();
+        gUiTween$inTween = true;
+
+//        gUITween$openTick += GUITweenUtility.getDeltaTicks();
 
         float dx = TweenUtil.tween(GUITween.CONFIG.windowMoveX, 0, moveProgress, GUITween.CONFIG.windowMoveEase.get());
         float dy = TweenUtil.tween(GUITween.CONFIG.windowMoveY, 0, moveProgress, GUITween.CONFIG.windowMoveEase.get());
