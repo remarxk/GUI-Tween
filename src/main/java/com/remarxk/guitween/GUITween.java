@@ -27,23 +27,8 @@ public class GUITween
 
     public GUITween(FMLJavaModLoadingContext context)
     {
-        IEventBus modEventBus = context.getModEventBus();
-
-        modEventBus.addListener(this::clientSetup);
+        CONFIG = ConfigApi.registerAndLoadConfig((Function0<? extends GUITweenConfig>) () -> new GUITweenConfig(), RegisterType.CLIENT);
 
         MinecraftForge.EVENT_BUS.register(this);
-        MinecraftForge.EVENT_BUS.addListener(this::openScene);
-    }
-
-    private void clientSetup(final FMLClientSetupEvent event)
-    {
-        event.enqueueWork(() -> {
-            CONFIG = ConfigApi.registerAndLoadConfig((Function0<? extends GUITweenConfig>) () -> new GUITweenConfig(), RegisterType.CLIENT);
-        });
-    }
-
-    private void openScene(final ScreenEvent.Opening event)
-    {
-        LOGGER.info(event.getScreen().toString());
     }
 }

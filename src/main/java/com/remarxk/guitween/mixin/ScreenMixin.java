@@ -72,6 +72,11 @@ public abstract class ScreenMixin extends AbstractContainerEventHandler implemen
             )
     )
     public void initBefore(Minecraft pMinecraft, int pWidth, int pHeight, CallbackInfo ci) {
+        Object instance = this;
+
+        if (!(instance instanceof AbstractContainerScreen<?>))
+            return;
+
         gUITween$openTick = 0;
 
         gUITween$screenName = getClass().getSimpleName();
@@ -106,7 +111,7 @@ public abstract class ScreenMixin extends AbstractContainerEventHandler implemen
         if (!GUITween.CONFIG.isEnableWindow())
             return;
 
-        if (GUITween.CONFIG.isDisableTweenWindow(getClass().getSimpleName()))
+        if (gUITween$isDisableScreenTween)
             return;
 
         float moveProgress = gUITween$openTick / GUITween.CONFIG.windowMoveDuration;
