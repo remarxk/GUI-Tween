@@ -1,6 +1,7 @@
 package com.remarxk.guitween.mixin;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.remarxk.guitween.GUITween;
 import com.remarxk.guitween.GUITweenUtility;
 import com.remarxk.guitween.config.GUITweenConfig;
 import com.remarxk.guitween.mixinAccess.AbstractContainerScreenMixinAccess;
@@ -39,14 +40,17 @@ public abstract class MerchantScreenMixin extends AbstractContainerScreen<Mercha
         float moveProgress = openTick / GUITweenConfig.window.moveDuration.get().floatValue();
         float gradientProgress = openTick / GUITweenConfig.window.gradientDuration.get().floatValue();
 
-        if (moveProgress >= 1 && gradientProgress >= 1)
+        if (moveProgress >= 1 && gradientProgress >= 1) {
             return;
+        }
 
         float dx = TweenUtil.tween(GUITweenConfig.window.moveX.get().floatValue(), 0, moveProgress, GUITweenConfig.window.moveEase.get());
         float dy = TweenUtil.tween(GUITweenConfig.window.moveY.get().floatValue(), 0, moveProgress, GUITweenConfig.window.moveEase.get());
 
         float alpha = TweenUtil.tween(GUITweenUtility.fFontMinAlpha, 1, gradientProgress, GUITweenConfig.window.gradientEase.get());
         GUITweenUtility.pushAlpha(alpha);
+
+        GUITween.LOGGER.info("当前alpha:{}", alpha);
 
         PoseStack poseStack = guiGraphics.pose();
         poseStack.pushPose();

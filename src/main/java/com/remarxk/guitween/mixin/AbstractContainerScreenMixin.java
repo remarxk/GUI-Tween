@@ -316,20 +316,19 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
 
     @Inject(method = "render", at = @At(value = "TAIL"))
     public void renderAfter(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
-        gUITween$openTick += GUITweenUtility.getDeltaTicks();
+        if (gUiTween$inTween) {
+            GUITweenUtility.popAlpha();
 
-        if (!gUiTween$inTween)
-            return;
-
-        GUITweenUtility.popAlpha();
-
-        PoseStack poseStack = guiGraphics.pose();
-        poseStack.popPose();
+            PoseStack poseStack = guiGraphics.pose();
+            poseStack.popPose();
+        }
 
         if (GUITweenUtility.WINDOW_DELAY_TICK.contains(getClass()))
             return;
 
         gUiTween$inTween = false;
+
+        gUITween$openTick += GUITweenUtility.getDeltaTicks();
     }
 
     @Redirect(method = "renderSlotHighlight(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/world/inventory/Slot;IIF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/inventory/Slot;isHighlightable()Z"))

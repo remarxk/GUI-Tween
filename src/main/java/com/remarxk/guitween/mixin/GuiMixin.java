@@ -1,6 +1,5 @@
 package com.remarxk.guitween.mixin;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.remarxk.guitween.GUITweenUtility;
@@ -20,9 +19,7 @@ import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.*;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
@@ -433,24 +430,28 @@ public class GuiMixin {
     @Unique
     private static float gUITween$armorChangeTick;
 
-    @Final
-    @Shadow
-    private static ResourceLocation ARMOR_EMPTY_SPRITE;
+    @Unique
+    private static boolean gUITween$armorIsUp;
 
-    @Final
-    @Shadow
-    private static ResourceLocation ARMOR_HALF_SPRITE;
+    @Unique
+    private static float gUITween$armorScale;
 
-    @Final
-    @Shadow
-    private static ResourceLocation ARMOR_FULL_SPRITE;
+    @Unique
+    private static float gUITween$armorDx;
 
-    /**
-     * @author remarxk
-     * @reason add animation
-     */
-    @Overwrite
-    private static void renderArmor(GuiGraphics guiGraphics, Player player, int y, int heartRows, int height, int x) {
+    @Unique
+    private static float gUITween$armorDy;
+
+    @Unique
+    private static boolean gUITween$inArmorTween;
+
+    @Inject(
+            method = "renderArmor",
+            at = @At(
+                    value = "HEAD"
+            )
+    )
+    private static void renderArmorBefore(GuiGraphics guiGraphics, Player player, int y, int heartRows, int height, int x, CallbackInfo ci) {
         int i = player.getArmorValue();
 
         float duration = GUITweenConfig.hotbar.armorDuration.get().floatValue();
@@ -472,79 +473,101 @@ public class GuiMixin {
 
         float progress = gUITween$armorChangeTick / duration;
         if (GUITweenConfig.isEnableArmor() && progress < 1) {
-            RenderSystem.enableBlend();
-            int j = y - (heartRows - 1) * height - 10;
+            gUITween$inArmorTween = true;
 
-            boolean isUp = gUITween$curArmorValue > gUITween$lastArmorValue;
+            gUITween$armorIsUp = gUITween$curArmorValue > gUITween$lastArmorValue;
 
             float originScale = GUITweenConfig.hotbar.upArmorScale.get().floatValue();
-            float scale = isUp ? TweenUtil.tween(originScale, 1, progress, GUITweenConfig.hotbar.upArmorEase.get()) : 1;
+            gUITween$armorScale = gUITween$armorIsUp ? TweenUtil.tween(originScale, 1, progress, GUITweenConfig.hotbar.upArmorEase.get()) : 1;
 
             float shakeStrength = GUITweenConfig.hotbar.downArmorShakeStrength.get().floatValue();
-            float dx = !isUp ? TweenUtil.shake(0, gUITween$armorChangeTick, duration, shakeStrength) : 0;
-            float dy = !isUp ? TweenUtil.shake(1, gUITween$armorChangeTick, duration, shakeStrength) : 0;
+            gUITween$armorDx = !gUITween$armorIsUp ? TweenUtil.shake(0, gUITween$armorChangeTick, duration, shakeStrength) : 0;
+            gUITween$armorDy = !gUITween$armorIsUp ? TweenUtil.shake(1, gUITween$armorChangeTick, duration, shakeStrength) : 0;
+        }
+    }
 
-            PoseStack poseStack = guiGraphics.pose();
+    @ModifyVariable(
+            method = "renderArmor",
+            at = @At(
+                    value = "STORE"
+            ),
+            ordinal = 4
+    )
+    private static int modifyRenderArmorValue(int value) {
+        if (gUITween$inArmorTween) {
+            value = gUITween$armorIsUp ? gUITween$curArmorValue : gUITween$lastArmorValue;
+        }
 
-            int targetArmor = isUp ? gUITween$curArmorValue : gUITween$lastArmorValue;
+        return value;
+    }
 
-            for (int k = 0; k < 10; k++) {
-                int l = x + k * 8;
-                int showArmor = k * 2 + 1;
+    @Unique
+    private static void gUITween$renderAnimArmor(GuiGraphics guiGraphics, ResourceLocation sprite, int x, int y, int width, int height) {
+        PoseStack poseStack = guiGraphics.pose();
 
-                if (showArmor <= targetArmor) {
-                    ResourceLocation sprite = showArmor == targetArmor ? ARMOR_HALF_SPRITE : ARMOR_FULL_SPRITE;
+        boolean needPlayTween = gUITween$inArmorTween;
 
-                    poseStack.pushPose();
+        // 在渲染之前做自定义处理
+        if (needPlayTween) {
+            poseStack.pushPose();
 
-                    if (isUp) {
-                        float centerX = l + 4.5f;
-                        float centerY = j + 4.5f;
+            if (gUITween$armorIsUp) {
+                float centerX = x + 4.5f;
+                float centerY = y + 4.5f;
 
-                        poseStack.translate(centerX, centerY, 0);
-                        poseStack.scale(scale, scale, 1);
-                        poseStack.translate(-centerX, -centerY, 0);
+                poseStack.translate(centerX, centerY, 0);
+                poseStack.scale(gUITween$armorScale, gUITween$armorScale, 1);
+                poseStack.translate(-centerX, -centerY, 0);
 
-                    }
-                    else {
-                        poseStack.translate(dx, dy, 0);
-
-                    }
-                    guiGraphics.blitSprite(sprite, l, j, 9, 9);
-                    poseStack.popPose();
-                }
-
-                if (showArmor > targetArmor) {
-                    guiGraphics.blitSprite(ARMOR_EMPTY_SPRITE, l, j, 9, 9);
-                }
             }
+            else {
+                poseStack.translate(gUITween$armorDx, gUITween$armorDy, 0);
+            }
+        }
 
-            RenderSystem.disableBlend();
+        // 原始调用
+        guiGraphics.blitSprite(sprite, x, y, width, height);
+
+        if (needPlayTween) {
+            poseStack.popPose();
+        }
+    }
+
+    @Redirect(
+            method = "renderArmor",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lnet/minecraft/resources/ResourceLocation;IIII)V",
+                    ordinal = 0
+            )
+    )
+    private static void redirectBlitFullSprite(GuiGraphics guiGraphics, ResourceLocation sprite, int x, int y, int width, int height) {
+        gUITween$renderAnimArmor(guiGraphics, sprite, x, y, width, height);
+    }
+
+    @Redirect(
+            method = "renderArmor",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lnet/minecraft/resources/ResourceLocation;IIII)V",
+                    ordinal = 1
+            )
+    )
+    private static void redirectBlitHalfSprite(GuiGraphics guiGraphics, ResourceLocation sprite, int x, int y, int width, int height) {
+        gUITween$renderAnimArmor(guiGraphics, sprite, x, y, width, height);
+    }
+
+    @Inject(
+            method = "renderArmor",
+            at = @At(
+                    value = "TAIL"
+            )
+    )
+    private static void renderArmorAfter(GuiGraphics guiGraphics, Player player, int y, int heartRows, int height, int x, CallbackInfo ci) {
+        if (gUITween$inArmorTween) {
+            gUITween$inArmorTween = false;
 
             gUITween$armorChangeTick += GUITweenUtility.getDeltaTicks();
-        }
-        else {
-            if (i > 0) {
-                RenderSystem.enableBlend();
-                int j = y - (heartRows - 1) * height - 10;
-
-                for (int k = 0; k < 10; k++) {
-                    int l = x + k * 8;
-                    if (k * 2 + 1 < i) {
-                        guiGraphics.blitSprite(ARMOR_FULL_SPRITE, l, j, 9, 9);
-                    }
-
-                    if (k * 2 + 1 == i) {
-                        guiGraphics.blitSprite(ARMOR_HALF_SPRITE, l, j, 9, 9);
-                    }
-
-                    if (k * 2 + 1 > i) {
-                        guiGraphics.blitSprite(ARMOR_EMPTY_SPRITE, l, j, 9, 9);
-                    }
-                }
-
-                RenderSystem.disableBlend();
-            }
         }
     }
 
