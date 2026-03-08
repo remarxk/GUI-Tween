@@ -3,29 +3,34 @@
   "package": "com.remarxk.guitween.mixin",
   "refmap": "mixins.guitween.refmap.json",
   "compatibilityLevel": "JAVA_17",
-  "mixins": [
-  ],
+  "plugin" : "com.remarxk.guitween.mixin.GUITweenMixinPlugin",
+  "required" : false,
   "client": [
     "AbstractContainerScreenMixin",
-    "BookmarkOverlayMixin",
     "ChatComponentMixin",
     "ChatScreenMixin",
-    "EmbeddiumBakedModelEncoderMixin",
     "FontMixin",
     "ForgeGuiMixin",
     "GuiMixin",
-    "IngredientListOverlayMixin",
     "ItemRendererMixin",
     "LocalPlayerMixin",
-    "MerchantScreenMixin",
     "MinecraftMixin",
-    "ScreenMixin",
-    "StorageScreenBaseMixin"
+    "embeddium.EmbeddiumBakedModelEncoderMixin",
+    "emi.EmiClientForgeMixin",
+    "emi.EmiScreenManagerMixin",
+    "emi.EmiStackBatcherMixin",
+    "jei.BookmarkOverlayMixin",
+    "jei.IngredientListOverlayMixin",
+    "overflowingbars.ArmorBarRendererMixin",
+    "rei.ScreenOverlayImpMixin",
+    "rei.BatchedEntryRendererManagerMixin",
+    "rei.DefaultScreenOverlayRendererMixin",
+    "sophisticated.StorageScreenBaseMixin"
   ],
   "injectors": {
-    "defaultRequire": 1
+    "defaultRequire": 0
   },
   "overwrites": {
-    "requireAnnotations": true
+    "requireAnnotations": false
   }
 }

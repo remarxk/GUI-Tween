@@ -1,6 +1,5 @@
-package com.remarxk.guitween.mixin;
+package com.remarxk.guitween.mixin.embeddium;
 
-import com.remarxk.guitween.GUITween;
 import com.remarxk.guitween.GUITweenUtility;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
@@ -8,7 +7,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Pseudo
-@Mixin(targets = "me.jellysquid.mods.sodium.client.render.immediate.model.BakedModelEncoder", remap = false)
+@Mixin(targets = "me.jellysquid.mods.sodium.client.render.immediate.model.BakedModelEncoder")
 public class EmbeddiumBakedModelEncoderMixin {
     @ModifyVariable(
             method = "writeQuadVertices(Lnet/caffeinemc/mods/sodium/api/vertex/buffer/VertexBufferWriter;Lcom/mojang/blaze3d/vertex/PoseStack$Pose;Lme/jellysquid/mods/sodium/client/model/quad/ModelQuadView;III)V",

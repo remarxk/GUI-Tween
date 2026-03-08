@@ -1,7 +1,7 @@
 package com.remarxk.guitween.mixin;
 
 import com.remarxk.guitween.GUITweenUtility;
-import com.remarxk.guitween.HotbarChangeListener;
+import com.remarxk.guitween.eventListener.HotbarChangeListener;
 import com.remarxk.guitween.anim.AttackTween;
 import com.remarxk.guitween.anim.UseTween;
 import net.minecraft.client.Minecraft;

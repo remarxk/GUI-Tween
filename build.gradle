@@ -125,7 +125,8 @@ repositories {
     // }
 
     maven {
-        url "https://cursemaven.com"
+        name = "cursemaven"
+        url = "https://cursemaven.com"
     }
 
     maven {
@@ -154,7 +155,7 @@ dependencies {
 //     runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}")
 
     compileOnly fg.deobf("curse.maven:jei-238222:7270446")
-    runtimeOnly fg.deobf("curse.maven:jei-238222:7270446")
+//    runtimeOnly fg.deobf("curse.maven:jei-238222:7270446")
 
     compileOnly fg.deobf("curse.maven:embeddium-908741:5681725")
     runtimeOnly fg.deobf("curse.maven:embeddium-908741:5681725")
@@ -162,28 +163,42 @@ dependencies {
     runtimeOnly fg.deobf("curse.maven:oculus-581495:6020952")
 
     compileOnly fg.deobf("curse.maven:sophisticated-core-618298:7645911")
-//    runtimeOnly fg.deobf("curse.maven:sophisticated-core-618298:7645911")
-
     compileOnly fg.deobf("curse.maven:sophisticated-backpacks-422301:7645913")
-//    runtimeOnly fg.deobf("curse.maven:sophisticated-backpacks-422301:7645913")
+    runtimeOnly fg.deobf("curse.maven:sophisticated-core-618298:7645911")
+    runtimeOnly fg.deobf("curse.maven:sophisticated-backpacks-422301:7645913")
 
-    runtimeOnly fg.deobf("curse.maven:quark-243121:6427817")
-    runtimeOnly fg.deobf("curse.maven:zeta-968868:7335229")
+    compileOnly fg.deobf("curse.maven:emi-580555:6420945")
+
+    compileOnly fg.deobf("curse.maven:cloth-config-348521:5729105")
+    runtimeOnly fg.deobf("curse.maven:cloth-config-348521:5729105")
+
+    compileOnly fg.deobf("curse.maven:architectury-api-419699:5137938")
+    runtimeOnly fg.deobf("curse.maven:architectury-api-419699:5137938")
+    compileOnly fg.deobf("curse.maven:roughly-enough-items-310111:5846923")
+    runtimeOnly fg.deobf("curse.maven:roughly-enough-items-310111:5846923")
+
+    compileOnly fg.deobf("curse.maven:balm-531761:7420617")
+//    runtimeOnly fg.deobf("curse.maven:balm-531761:7420617")
+    compileOnly fg.deobf("curse.maven:trashslot-235577:7364652")
+//    runtimeOnly fg.deobf("curse.maven:trashslot-235577:7364652")
+
+    compileOnly fg.deobf("curse.maven:puzzles-lib-495476:6918565")
+//    runtimeOnly fg.deobf("curse.maven:puzzles-lib-495476:6918565")
+    compileOnly fg.deobf("curse.maven:overflowing-bars-852662:5763974")
+//    runtimeOnly fg.deobf("curse.maven:overflowing-bars-852662:5763974")
+
+
+    compileOnly fg.deobf("curse.maven:invmove-581854:7418952")
+//    runtimeOnly fg.deobf("curse.maven:invmove-581854:7418952")
+
+    compileOnly fg.deobf("curse.maven:immersive-ui-1021685:6023593")
+//    runtimeOnly fg.deobf("curse.maven:immersive-ui-1021685:6023593")
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
 //    compileOnly group: 'me.fzzyhmstrs', name: 'fzzy_config', version: "${fzzy_config_version}+forge"
     implementation(fg.deobf("me.fzzyhmstrs:fzzy_config:${fzzy_config_version}+forge"))
     implementation("thedarkcolour:kotlinforforge:4.11.0")
-
-    // Example mod dependency using a mod jar from ./libs with a flat dir repository
-    // This maps to ./libs/coolmod-${mc_version}-${coolmod_version}.jar
-    // The group id is ignored when searching -- in this case, it is "blank"
-    // implementation fg.deobf("blank:coolmod-${mc_version}:${coolmod_version}")
-
-    // For more info:
-    // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
-    // http://www.gradle.org/docs/current/userguide/dependency_management.html
 }
 
 mixin {

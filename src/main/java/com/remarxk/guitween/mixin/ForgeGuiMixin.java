@@ -54,9 +54,6 @@ public abstract class ForgeGuiMixin extends Gui {
     @Unique
     private static boolean gUITween$inArmorTween;
 
-    @Shadow(remap = false)
-    public int leftHeight;;
-
     @Inject(
             method = "renderArmor",
             at = @At(

@@ -13,6 +13,8 @@ public class GUITweenUtility {
     public static final float fFontMinAlpha = 0.02f;
     public static final int iFontMinAlpha = 5;
 
+    public static boolean beforeBackground = false;
+
     public static final HashSet<Class<?>> WINDOW_DELAY_TICK = new HashSet<>();
     public static final HashSet<Class<?>> COMPAT_WINDOW = new HashSet<>();
 

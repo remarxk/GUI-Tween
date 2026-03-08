@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.remarxk.guitween.GUITween;
+import com.remarxk.guitween.compat.ImmersiveUICompat;
 import com.remarxk.guitween.util.Ease;
 
 import me.fzzyhmstrs.fzzy_config.annotations.Translation;
@@ -229,7 +230,7 @@ public class GUITweenConfig extends Config {
     }
 
     public boolean isEnableHoverItem() {
-        return isEnable() && enableHover;
+        return isEnable() && enableHover && !ImmersiveUICompat.isLoaded;
     }
 
     public boolean isEnableTooltip() {
@@ -245,7 +246,7 @@ public class GUITweenConfig extends Config {
     }
 
     public boolean isEnableDragItem() {
-        return isEnable() && enableDrag;
+        return isEnable() && enableDrag && !ImmersiveUICompat.isLoaded;
     }
 
     public boolean isEnableQuickCraft() {
@@ -269,7 +270,7 @@ public class GUITweenConfig extends Config {
     }
 
     public boolean isEnableSelectMove() {
-        return isEnable() && enableSelectMove;
+        return isEnable() && enableSelectMove && !ImmersiveUICompat.isLoaded;
     }
 
     public boolean isEnableSelectedItemName() {
