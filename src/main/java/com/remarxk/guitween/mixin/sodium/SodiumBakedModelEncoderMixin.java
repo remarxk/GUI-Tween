@@ -1,4 +1,4 @@
-package com.remarxk.guitween.mixin;
+package com.remarxk.guitween.mixin.sodium;
 
 import com.remarxk.guitween.GUITweenUtility;
 import org.spongepowered.asm.mixin.Mixin;
@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Pseudo
-@Mixin(targets = "net.caffeinemc.mods.sodium.client.render.immediate.model.BakedModelEncoder", remap = false)
+@Mixin(targets = "net.caffeinemc.mods.sodium.client.render.immediate.model.BakedModelEncoder")
 public class SodiumBakedModelEncoderMixin {
     @ModifyVariable(
             method = "writeQuadVertices(Lnet/caffeinemc/mods/sodium/api/vertex/buffer/VertexBufferWriter;Lcom/mojang/blaze3d/vertex/PoseStack$Pose;Lnet/caffeinemc/mods/sodium/client/model/quad/ModelQuadView;IIIZ)V",

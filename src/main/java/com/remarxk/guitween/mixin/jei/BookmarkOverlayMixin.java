@@ -1,14 +1,11 @@
-package com.remarxk.guitween.mixin;
+package com.remarxk.guitween.mixin.jei;
 
-import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.remarxk.guitween.GUITween;
 import com.remarxk.guitween.GUITweenUtility;
 import com.remarxk.guitween.config.GUITweenConfig;
-import com.remarxk.guitween.util.Ease;
 import com.remarxk.guitween.util.TweenUtil;
-import mezz.jei.api.gui.handlers.IGuiProperties;
-import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.gui.overlay.IngredientListOverlay;
+import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import org.spongepowered.asm.mixin.Mixin;
@@ -16,12 +13,9 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-import java.util.Set;
-
-@Mixin(value = IngredientListOverlay.class, remap = false)
-public class IngredientListOverlayMixin {
+@Mixin(value = BookmarkOverlay.class)
+public class BookmarkOverlayMixin {
     @Unique
     private boolean gUITween$inTween;
 
@@ -35,10 +29,10 @@ public class IngredientListOverlayMixin {
         if (GUITweenUtility.openScreenName == null)
             return;
 
-        if (!GUITweenConfig.isEnableJeiRight())
+        if (!GUITweenConfig.isEnableJeiLeft())
             return;
 
-        float totalTick = Math.max(GUITweenConfig.window.jeiRightMoveDuration.get().floatValue(), 1);
+        float totalTick = Math.max(GUITweenConfig.window.jeiLeftMoveDuration.get().floatValue(), 1);
         float progress = GUITweenUtility.openScreenTick / totalTick;
 
         if (progress > 1){
@@ -50,10 +44,10 @@ public class IngredientListOverlayMixin {
         PoseStack poseStack = guiGraphics.pose();
         poseStack.pushPose();
 
-        float dx = TweenUtil.tween(GUITweenConfig.window.jeiRightMoveX.get().floatValue(), 0, progress, GUITweenConfig.window.jeiRightMoveEase.get());
-        float dy = TweenUtil.tween(GUITweenConfig.window.jeiRightMoveY.get().floatValue(), 0, progress, GUITweenConfig.window.jeiRightMoveEase.get());
+        float dx = TweenUtil.tween(GUITweenConfig.window.jeiLeftMoveX.get().floatValue(), 0, progress, GUITweenConfig.window.jeiLeftMoveEase.get());
+        float dY = TweenUtil.tween(GUITweenConfig.window.jeiLeftMoveY.get().floatValue(), 0, progress, GUITweenConfig.window.jeiLeftMoveEase.get());
 
-        poseStack.translate(dx, dy , 0);
+        poseStack.translate(dx, dY , 0);
     }
 
     @Inject(

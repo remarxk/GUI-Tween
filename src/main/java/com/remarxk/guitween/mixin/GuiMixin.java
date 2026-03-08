@@ -3,7 +3,7 @@ package com.remarxk.guitween.mixin;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.remarxk.guitween.GUITweenUtility;
-import com.remarxk.guitween.HotbarChangeListener;
+import com.remarxk.guitween.eventListener.HotbarChangeListener;
 import com.remarxk.guitween.anim.AttackTween;
 import com.remarxk.guitween.anim.Tween;
 import com.remarxk.guitween.anim.UseTween;

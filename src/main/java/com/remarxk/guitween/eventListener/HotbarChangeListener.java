@@ -1,5 +1,6 @@
-package com.remarxk.guitween;
+package com.remarxk.guitween.eventListener;
 
+import com.remarxk.guitween.GUITweenUtility;
 import com.remarxk.guitween.anim.Tween;
 import com.remarxk.guitween.anim.UseTween;
 import com.remarxk.guitween.config.GUITweenConfig;

@@ -149,6 +149,71 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
         gUITween$openTick = openTick;
     }
 
+    @Override
+    public Slot getGUITween$lastHoverSlot() {
+        return gUITween$lastHoverSlot;
+    }
+
+    @Override
+    public void setGUITween$lastHoverSlot(Slot slot) {
+        gUITween$lastHoverSlot = slot;
+    }
+
+    @Override
+    public HashMap<Slot, Tween> getGUITween$hoverSlotMap() {
+        return gUITween$hoverSlotMap;
+    }
+
+    @Override
+    public boolean getGUITween$inTooltipTween() {
+        return gUITween$inTooltip;
+    }
+
+    @Override
+    public void setGUITween$inTooltipTween(boolean value) {
+        gUITween$inTooltip = value;
+    }
+
+    @Override
+    public float getGUITween$tooltipShowTick() {
+        return gUITween$tooltipShowTick;
+    }
+
+    @Override
+    public void setGUITween$tooltipShowTick(float tick) {
+        gUITween$tooltipShowTick = tick;
+    }
+
+    @Override
+    public HashMap<Integer, Tuple<Integer, Integer>> getGUITween$quickTweenSlots() {
+        return gUITween$quickTweenSlots;
+    }
+
+    @Override
+    public HashMap<Integer, Float> getGUITween$quickTicks() {
+        return gUITween$quickTicks;
+    }
+
+    @Override
+    public boolean getGUITween$inSlotTween() {
+        return gUITween$inSlotTween;
+    }
+
+    @Override
+    public void setGUITween$inSlotTween(boolean value) {
+        gUITween$inSlotTween = value;
+    }
+
+    @Override
+    public boolean getGUITween$isRenderQuick() {
+        return gUITween$isRenderQuick;
+    }
+
+    @Override
+    public void setGUITween$isRenderQuick(boolean value) {
+        gUITween$isRenderQuick = value;
+    }
+
     @Inject(method = "init", at = @At("TAIL"))
     public void init(CallbackInfo ci) {
         gUITween$openTick = 0;
@@ -272,18 +337,18 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
         if (GUITweenUtility.COMPAT_WINDOW.contains(getClass()))
             return;
 
-        if (gUiTween$inTween) { // 某些界面重写了render方法，导致没有取消渲染动画，需要强行终止
-            gUITween$compatStop = true;
-            gUiTween$inTween = false;
-            gUITween$isDisableScreenTween = true;
-
-            GUITweenUtility.popAlpha();
-            guiGraphics.pose().popPose();
-        }
-
-        if (gUITween$compatStop) {
-            gUITween$openTick += GUITweenUtility.getDeltaTicks();
-        }
+//        if (gUiTween$inTween) { // 某些界面重写了render方法，导致没有取消渲染动画，需要强行终止
+//            gUITween$compatStop = true;
+//            gUiTween$inTween = false;
+//            gUITween$isDisableScreenTween = true;
+//
+//            GUITweenUtility.popAlpha();
+//            guiGraphics.pose().popPose();
+//        }
+//
+//        if (gUITween$compatStop) {
+//            gUITween$openTick += GUITweenUtility.getDeltaTicks();
+//        }
 
         GUITweenUtility.setOpenScreen(gUITween$screenName, gUITween$openTick);
 
@@ -314,22 +379,22 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
         GUITweenUtility.pushAlpha(alpha);
     }
 
-    @Inject(method = "render", at = @At(value = "TAIL"))
-    public void renderAfter(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
-        if (gUiTween$inTween) {
-            GUITweenUtility.popAlpha();
-
-            PoseStack poseStack = guiGraphics.pose();
-            poseStack.popPose();
-        }
-
-        if (GUITweenUtility.WINDOW_DELAY_TICK.contains(getClass()))
-            return;
-
-        gUiTween$inTween = false;
-
-        gUITween$openTick += GUITweenUtility.getDeltaTicks();
-    }
+//    @Inject(method = "render", at = @At(value = "TAIL"))
+//    public void renderAfter(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
+//        if (gUiTween$inTween) {
+//            GUITweenUtility.popAlpha();
+//
+//            PoseStack poseStack = guiGraphics.pose();
+//            poseStack.popPose();
+//        }
+//
+//        if (GUITweenUtility.WINDOW_DELAY_TICK.contains(getClass()))
+//            return;
+//
+//        gUiTween$inTween = false;
+//
+//        gUITween$openTick += GUITweenUtility.getDeltaTicks();
+//    }
 
     @Redirect(method = "renderSlotHighlight(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/world/inventory/Slot;IIF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/inventory/Slot;isHighlightable()Z"))
     public boolean renderSlotHighlightBefore(Slot instance) {
@@ -361,7 +426,7 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
         boolean isEmpty = !pSlot.hasItem();
 
         if (GUITweenConfig.isEnableOutput()) {
-            if (gUITween$OutputSlotDatas.containsKey(pSlot.index)) {
+            if (menu.getSlot(pSlot.index) == pSlot && gUITween$OutputSlotDatas.containsKey(pSlot.index)) {
                 ItemStack curItemStack = pSlot.getItem();
                 ItemStack lastItemStack = gUITween$OutputSlotDatas.get(pSlot.index);
                 boolean lastIsEmpty = lastItemStack.isEmpty();

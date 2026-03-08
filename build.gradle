@@ -107,7 +107,7 @@ dependencies {
     // runtimeOnly "mezz.jei:jei-${mc_version}-forge:${jei_version}"
 
     compileOnly "curse.maven:jei-238222:7270455"
-    runtimeOnly "curse.maven:jei-238222:7270455"
+//    runtimeOnly "curse.maven:jei-238222:7270455"
 
     compileOnly "curse.maven:jade-324717:7428884"
     runtimeOnly "curse.maven:jade-324717:7428884"
@@ -123,8 +123,34 @@ dependencies {
     compileOnly "curse.maven:sophisticated-backpacks-422301:7645643"
     runtimeOnly "curse.maven:sophisticated-backpacks-422301:7645643"
 
-    runtimeOnly "curse.maven:zeta-968868:7640154"
-    runtimeOnly "curse.maven:quark-243121:7640331"
+//    runtimeOnly "curse.maven:zeta-968868:7640154"
+//    runtimeOnly "curse.maven:quark-243121:7640331"
+
+    compileOnly "curse.maven:emi-580555:6420931"
+//    runtimeOnly "curse.maven:emi-580555:6420931"
+
+    compileOnly "curse.maven:cloth-config-348521:5729127"
+    runtimeOnly "curse.maven:cloth-config-348521:5729127"
+
+    compileOnly "curse.maven:architectury-api-419699:5786327"
+    runtimeOnly "curse.maven:architectury-api-419699:5786327"
+    compileOnly "curse.maven:roughly-enough-items-310111:6199140"
+    runtimeOnly "curse.maven:roughly-enough-items-310111:6199140"
+
+    compileOnly "curse.maven:balm-531761:7420963"
+    compileOnly "curse.maven:trashslot-235577:6319145"
+//    runtimeOnly "curse.maven:balm-531761:7420963"
+//    runtimeOnly "curse.maven:trashslot-235577:6319145"
+
+    compileOnly "curse.maven:puzzles-lib-495476:7140307"
+    compileOnly "curse.maven:overflowing-bars-852662:5770623"
+//    runtimeOnly "curse.maven:puzzles-lib-495476:7140307"
+//    runtimeOnly "curse.maven:puzzles-lib-495476:7140307"
+
+    compileOnly "curse.maven:invmove-581854:7418949"
+//    runtimeOnly "curse.maven:invmove-581854:7418949"
+
+    compileOnly "curse.maven:immersive-ui-1021685:6886575"
 
     // Example mod dependency using a mod jar from ./libs with a flat dir repository
     // This maps to ./libs/coolmod-${mc_version}-${coolmod_version}.jar

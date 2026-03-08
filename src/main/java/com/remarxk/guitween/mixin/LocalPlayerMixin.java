@@ -1,7 +1,7 @@
 package com.remarxk.guitween.mixin;
 
 import com.mojang.authlib.GameProfile;
-import com.remarxk.guitween.HotbarChangeListener;
+import com.remarxk.guitween.eventListener.HotbarChangeListener;
 import com.remarxk.guitween.config.GUITweenConfig;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;
