@@ -3,8 +3,8 @@
   "package": "com.remarxk.guitween.mixin",
   "refmap": "mixins.guitween.refmap.json",
   "compatibilityLevel": "JAVA_17",
-  "plugin" : "com.remarxk.guitween.mixin.GUITweenMixinPlugin",
-  "required" : false,
+  "plugin": "com.remarxk.guitween.mixin.GUITweenMixinPlugin",
+  "required": false,
   "client": [
     "AbstractContainerScreenMixin",
     "ChatComponentMixin",
@@ -22,9 +22,9 @@
     "jei.BookmarkOverlayMixin",
     "jei.IngredientListOverlayMixin",
     "overflowingbars.ArmorBarRendererMixin",
-    "rei.ScreenOverlayImpMixin",
     "rei.BatchedEntryRendererManagerMixin",
     "rei.DefaultScreenOverlayRendererMixin",
+    "rei.ScreenOverlayImpMixin",
     "sophisticated.StorageScreenBaseMixin"
   ],
   "injectors": {
@@ -32,5 +32,9 @@
   },
   "overwrites": {
     "requireAnnotations": false
-  }
+  },
+  "mixins": [
+    "InventoryMixin",
+    "watut.RenderHelperMixin"
+  ]
 }

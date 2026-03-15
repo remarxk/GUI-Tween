@@ -3,6 +3,8 @@ package com.remarxk.guitween.util;
 
 import net.minecraft.util.Mth;
 
+import java.util.Random;
+
 public class TweenUtil {
     public static float clamp(float value, float min, float max) {
         if (value < min)
@@ -133,19 +135,29 @@ public class TweenUtil {
         return 1f + oscillation * strength * decay;
     }
 
-    private static final long DEFAULT_SEED = 1337L;
+    public static final long DEFAULT_SEED = 1337L;
 
     public static float shake(int axis, float time, float duration, float strength) {
+        return shake(axis, time, duration, strength, 10f, DEFAULT_SEED);
+    }
+
+    public static float shake(int axis, float time, float duration, float strength, float frequency, long seed) {
         if (time <= 0 || time >= duration) return 0f;
 
-        // ===== 隐式参数 =====
-        long seed = DEFAULT_SEED;
-        int frame = (int)(time * 60); // 时间 → 帧
+        float ft = time * frequency;
+        int frame = (int)Math.floor(ft);
+        float frac = ft - frame;
+
+        float n1 = noise(seed, axis, frame);
+        float n2 = noise(seed, axis, frame + 1);
+
+        // 线性插值
+        float n = n1 + (n2 - n1) * frac;
 
         float t = time / duration;
         float decay = 1f - t;
 
-        return noise(seed, axis, frame) * strength * decay;
+        return n * strength * decay;
     }
 
     private static float noise(long seed, int axis, int frame) {

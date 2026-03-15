@@ -5,9 +5,11 @@ import com.remarxk.guitween.GUITween;
 import com.remarxk.guitween.GUITweenUtility;
 import com.remarxk.guitween.mixinAccess.AbstractContainerScreenMixinAccess;
 import com.remarxk.guitween.util.TweenUtil;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraftforge.client.event.ContainerScreenEvent;
 import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -28,6 +30,16 @@ public class ScreenRenderListener {
 
         if (!(containerScreen instanceof AbstractContainerScreenMixinAccess access)) {
             return;
+        }
+
+        GuiGraphics guiGraphics = event.getGuiGraphics();
+
+        if (access.getGUITween$inTween()) { // 某些界面重写了render方法，导致没有取消渲染动画，需要强行终止
+            access.setGUITween$inTween(false);
+            access.setGUITween$isDisableScreenTween(true);
+
+            GUITweenUtility.popAlpha();
+            guiGraphics.pose().popPose();
         }
 
         if (GUITweenUtility.COMPAT_WINDOW.contains(containerScreen.getClass()))
@@ -55,7 +67,7 @@ public class ScreenRenderListener {
         float dx = TweenUtil.tween(GUITween.CONFIG.windowMoveX, 0, moveProgress, GUITween.CONFIG.windowMoveEase.get());
         float dy = TweenUtil.tween(GUITween.CONFIG.windowMoveY, 0, moveProgress, GUITween.CONFIG.windowMoveEase.get());
 
-        PoseStack poseStack = event.getGuiGraphics().pose();
+        PoseStack poseStack = guiGraphics.pose();
 
         // 动画变换
         poseStack.pushPose();
@@ -77,10 +89,32 @@ public class ScreenRenderListener {
             return;
         }
 
-        if (!access.getGUITween$inTween())
-            return;
-
         GuiGraphics guiGraphics = event.getGuiGraphics();
+
+        if (GUITween.CONFIG.isEnableDebugWindow()) {
+            PoseStack poseStack = guiGraphics.pose();
+            poseStack.pushPose();
+            poseStack.translate(0, 0, 1000);
+
+            // 左上角偏移（界面内部）
+            int x = containerScreen.getGuiLeft() + 12;
+            int y = containerScreen.getGuiTop() - 10;
+
+            if ((containerScreen instanceof CreativeModeInventoryScreen)) {
+                y -= 30;
+            }
+
+            guiGraphics.drawString(
+                    Minecraft.getInstance().font,
+                    access.getGUITween$screenName(),
+                    x,
+                    y,
+                    0xFF0000, // 浅灰色
+                    false
+            );
+
+            poseStack.popPose();
+        }
 
         if (access.getGUITween$inTween()) {
             GUITweenUtility.popAlpha();

@@ -21,7 +21,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
-import net.minecraft.client.gui.screens.inventory.MerchantScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -99,6 +98,9 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
     @Shadow
     private Slot lastClickSlot;
 
+    @Shadow
+    private ItemStack draggingItem;
+
     protected AbstractContainerScreenMixin(Component pTitle) {
         super(pTitle);
     }
@@ -124,6 +126,11 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
     @Override
     public boolean getGUITween$isDisableScreenTween() {
         return gUITween$isDisableScreenTween;
+    }
+
+    @Override
+    public void setGUITween$isDisableScreenTween(boolean disable) {
+        gUITween$isDisableScreenTween = disable;
     }
 
     @Override
@@ -211,6 +218,31 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
         gUITween$isRenderQuick = value;
     }
 
+    @Override
+    public ItemStack gUITween$getDraggingItem() {
+        return draggingItem;
+    }
+
+    @Override
+    public ItemStack getGUITween$lastDraggingItem() {
+        return gUITween$lastDraggingItem;
+    }
+
+    @Override
+    public void setGUITween$lastDraggingItem(ItemStack itemStack) {
+        gUITween$lastDraggingItem = itemStack;
+    }
+
+    @Override
+    public float getGUITween$sameItemTick() {
+        return gUITween$sameItemTick;
+    }
+
+    @Override
+    public void setGUITween$sameItemTick(float tick) {
+        gUITween$sameItemTick = tick;
+    }
+
     @Inject(method = "init", at = @At("TAIL"))
     public void init(CallbackInfo ci) {
         gUITween$OutputSlotDatas.clear();
@@ -296,35 +328,18 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
                 }
             }
         }
-    }
 
-    @Inject(method = "render", at = @At(value = "TAIL"))
-    public void renderScreenName(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
-        if (!GUITween.CONFIG.isEnableDebugWindow())
-            return;
-
-        PoseStack poseStack = guiGraphics.pose();
-        poseStack.pushPose();
-        poseStack.translate(0, 0, 1000);
-
-        // 左上角偏移（界面内部）
-        int x = this.leftPos + 12;
-        int y = this.topPos - 10;
-
-        if ((((AbstractContainerScreen) (Object) this) instanceof CreativeModeInventoryScreen)) {
-            y -= 30;
+        if (GUITween.CONFIG.isEnableSameItem()) {
+            ItemStack draggingItem = this.draggingItem.isEmpty() ? this.menu.getCarried() : this.draggingItem;
+            if (!ItemStack.isSameItemSameTags(draggingItem, gUITween$lastDraggingItem)) {
+                gUITween$lastDraggingItem = draggingItem;
+                gUITween$sameItemTick = 0;
+            }
+            else if (!gUITween$lastDraggingItem.isEmpty()) {
+                gUITween$sameItemTick += GUITweenUtility.getDeltaTicks();
+                gUITween$sameItemTick %= GUITween.CONFIG.getSameItemTotalDuration();
+            }
         }
-
-        guiGraphics.drawString(
-                this.font,
-                gUITween$screenName,
-                x,
-                y,
-                0xFF0000, // 浅灰色
-                false
-        );
-
-        poseStack.popPose();
     }
 
     @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/inventory/Slot;isHighlightable()Z"))
@@ -344,10 +359,19 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
     @Unique
     private boolean gUITween$isRenderQuick = false;
 
+    @Unique
+    private ItemStack gUITween$lastDraggingItem = ItemStack.EMPTY;
+
+    @Unique
+    private float gUITween$sameItemTick = 0;
+
     @Inject(method = "renderSlot", at = @At(value = "HEAD"))
     public void renderItemBefore(GuiGraphics pGuiGraphics, Slot pSlot, CallbackInfo ci) {
         boolean haveTween = false;
         float scale = 1;
+//        float angle = 0;
+        float dx = 0;
+        float dy = 0;
 
         PoseStack poseStack = pGuiGraphics.pose();
         float itemSize = 16f; // 物品渲染尺寸（固定16x16）
@@ -469,6 +493,22 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
             }
         }
 
+        if (!gUITween$lastDraggingItem.isEmpty() && ItemStack.isSameItemSameTags(gUITween$lastDraggingItem, pSlot.getItem())) {
+            float delay = GUITween.CONFIG.sameItemDelay;
+            float duration = GUITween.CONFIG.sameItemShakeDuration;
+
+            if (gUITween$sameItemTick > delay && gUITween$sameItemTick < GUITween.CONFIG.sameItemDelay + duration) {
+                haveTween = true;
+
+                float strength = GUITween.CONFIG.sameItemShakeStrength;
+                float frequency = GUITween.CONFIG.sameItemShakeFrequency;
+
+                dx = TweenUtil.shake(0, gUITween$sameItemTick - delay, duration, strength, frequency, TweenUtil.DEFAULT_SEED + pSlot.index * 100L);
+                dy = TweenUtil.shake(1, gUITween$sameItemTick - delay, duration, strength, frequency, TweenUtil.DEFAULT_SEED + pSlot.index * 100L);
+//                angle = (TweenUtil.punch(0.15f, 2, gUITween$sameItemTick / 8) - 1) * 100;
+            }
+        }
+
         if (haveTween) {
             gUITween$inSlotTween = true;
 
@@ -477,7 +517,10 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
             // 矩阵操作：平移到中心 → 缩放 → 平移回原位置
             poseStack.translate(centerX, centerY, 0);
             poseStack.scale(scale, scale, 1.0f); // Z轴缩放不影响2D渲染，设为1
+//            poseStack.mulPose(Axis.ZP.rotationDegrees(angle));
             poseStack.translate(-centerX, -centerY, 50);
+
+            poseStack.translate(dx, dy, 50);
         }
     }
 

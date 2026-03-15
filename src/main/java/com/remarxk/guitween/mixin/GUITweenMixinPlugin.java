@@ -1,5 +1,6 @@
 package com.remarxk.guitween.mixin;
 
+import com.corosus.watut.WatutMod;
 import fuzs.overflowingbars.OverflowingBars;
 import mezz.jei.api.constants.ModIds;
 import net.minecraftforge.fml.loading.LoadingModList;
@@ -47,6 +48,10 @@ public class GUITweenMixinPlugin implements IMixinConfigPlugin {
 
         if (mixinClassName.contains("com.remarxk.guitween.mixin.sophisticated")) {
             return modIsLoad(SophisticatedBackpacks.MOD_ID);
+        }
+
+        if (mixinClassName.contains("com.remarxk.guitween.mixin.watut")) {
+            return modIsLoad(WatutMod.MODID);
         }
 
         return true;

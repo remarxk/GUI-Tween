@@ -155,11 +155,12 @@ dependencies {
 //     runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}")
 
     compileOnly fg.deobf("curse.maven:jei-238222:7270446")
-//    runtimeOnly fg.deobf("curse.maven:jei-238222:7270446")
+    runtimeOnly fg.deobf("curse.maven:jei-238222:7270446")
 
     compileOnly fg.deobf("curse.maven:embeddium-908741:5681725")
     runtimeOnly fg.deobf("curse.maven:embeddium-908741:5681725")
 
+    compileOnly fg.deobf("curse.maven:oculus-581495:6020952")
     runtimeOnly fg.deobf("curse.maven:oculus-581495:6020952")
 
     compileOnly fg.deobf("curse.maven:sophisticated-core-618298:7645911")
@@ -170,12 +171,12 @@ dependencies {
     compileOnly fg.deobf("curse.maven:emi-580555:6420945")
 
     compileOnly fg.deobf("curse.maven:cloth-config-348521:5729105")
-    runtimeOnly fg.deobf("curse.maven:cloth-config-348521:5729105")
+//    runtimeOnly fg.deobf("curse.maven:cloth-config-348521:5729105")
 
     compileOnly fg.deobf("curse.maven:architectury-api-419699:5137938")
-    runtimeOnly fg.deobf("curse.maven:architectury-api-419699:5137938")
+//    runtimeOnly fg.deobf("curse.maven:architectury-api-419699:5137938")
     compileOnly fg.deobf("curse.maven:roughly-enough-items-310111:5846923")
-    runtimeOnly fg.deobf("curse.maven:roughly-enough-items-310111:5846923")
+//    runtimeOnly fg.deobf("curse.maven:roughly-enough-items-310111:5846923")
 
     compileOnly fg.deobf("curse.maven:balm-531761:7420617")
 //    runtimeOnly fg.deobf("curse.maven:balm-531761:7420617")
@@ -193,6 +194,13 @@ dependencies {
 
     compileOnly fg.deobf("curse.maven:immersive-ui-1021685:6023593")
 //    runtimeOnly fg.deobf("curse.maven:immersive-ui-1021685:6023593")
+
+    runtimeOnly fg.deobf("curse.maven:coroutil-237749:5096038")
+
+    compileOnly fg.deobf("curse.maven:what-are-they-up-to-945479:6315241")
+//    runtimeOnly fg.deobf("curse.maven:what-are-they-up-to-945479:6315241")
+
+    runtimeOnly fg.deobf("curse.maven:gregtechceu-modern-890405:7625262")
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 

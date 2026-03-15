@@ -95,6 +95,18 @@ public class GUITweenConfig extends Config {
 
     public float dragSensitivity = 8f;
 
+    public boolean enableSameItem = true;
+
+    public float sameItemDelay = 8f;
+
+    public float sameItemShakeStrength = 1.5f;
+
+    public float sameItemShakeDuration = 8f;
+
+    public float sameItemShakeFrequency = 1f;
+
+    public float sameItemShakeWaitDuration = 20f;
+
     @ConfigGroup.Pop
     public boolean enableQuick = true;
     
@@ -141,9 +153,7 @@ public class GUITweenConfig extends Config {
 
     public boolean enableSelectMove = true;
 
-    public float selectMoveDuration = 2f;
-
-    public ValidatedChoice<Ease> selectMoveEase = new ValidatedChoice<>(Ease.OUT_CUBIC, Arrays.stream(Ease.values()).toList(), new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
+    public float selectMoveSpeed = 1.5f;
 
     public boolean enableExp = true;
 
@@ -191,6 +201,10 @@ public class GUITweenConfig extends Config {
 
     public float getHoldItemTotalDuration() {
         return holdZoomInDuration + holdZoomOutDuration;
+    }
+
+    public float getSameItemTotalDuration() {
+        return sameItemDelay + sameItemShakeDuration + sameItemShakeWaitDuration;
     }
 
     public float getSelectedItemNameDuration() {
@@ -247,6 +261,10 @@ public class GUITweenConfig extends Config {
 
     public boolean isEnableDragItem() {
         return isEnable() && enableDrag && !ImmersiveUICompat.isLoaded;
+    }
+
+    public boolean isEnableSameItem() {
+        return isEnable() && enableSameItem;
     }
 
     public boolean isEnableQuickCraft() {

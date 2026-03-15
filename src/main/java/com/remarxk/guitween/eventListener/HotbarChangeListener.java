@@ -27,6 +27,10 @@ public class HotbarChangeListener {
 
     public static float lackTick = 0;
 
+    public static int scrollDir = 0;
+
+    public static int scrollSelected = -1;
+
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
         Player player = event.player;
