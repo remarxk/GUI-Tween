@@ -6,9 +6,13 @@ import com.remarxk.guitween.config.GUITweenConfig;
 import com.remarxk.guitween.util.TweenUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
 
 public class UseTween {
+
     public int slot;
     private float tick;
     private boolean isUse;

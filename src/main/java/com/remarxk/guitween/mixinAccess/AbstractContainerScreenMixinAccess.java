@@ -3,6 +3,7 @@ package com.remarxk.guitween.mixinAccess;
 import com.remarxk.guitween.anim.Tween;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.HashMap;
 
@@ -36,6 +37,16 @@ public interface AbstractContainerScreenMixinAccess {
     public HashMap<Integer, Tuple<Integer, Integer>> getGUITween$quickTweenSlots();
 
     public HashMap<Integer, Float> getGUITween$quickTicks();
+
+    public ItemStack gUITween$getDraggingItem();
+
+    public ItemStack getGUITween$lastDraggingItem();
+
+    public void setGUITween$lastDraggingItem(ItemStack itemStack);
+
+    public float getGUITween$sameItemTick();
+
+    public void setGUITween$sameItemTick(float tick);
 
     public boolean getGUITween$inSlotTween();
 

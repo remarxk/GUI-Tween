@@ -1,9 +1,11 @@
 package com.remarxk.guitween.mixin;
 
+import com.corosus.watut.WatutMod;
 import fuzs.overflowingbars.OverflowingBars;
 import mezz.jei.api.constants.ModIds;
 import net.neoforged.fml.loading.LoadingModList;
 import net.p3pp3rf1y.sophisticatedbackpacks.SophisticatedBackpacks;
+import net.p3pp3rf1y.sophisticatedcore.SophisticatedCore;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
@@ -45,7 +47,11 @@ public class GUITweenMixinPlugin implements IMixinConfigPlugin {
         }
 
         if (mixinClassName.contains("com.remarxk.guitween.mixin.sophisticated")) {
-            return modIsLoad(SophisticatedBackpacks.MOD_ID);
+            return modIsLoad(SophisticatedCore.MOD_ID);
+        }
+
+        if (mixinClassName.contains("com.remarxk.guitween.mixin.watut")) {
+            return modIsLoad(WatutMod.MODID);
         }
 
         return true;

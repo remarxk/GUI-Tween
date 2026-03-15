@@ -46,9 +46,7 @@ public class HotbarTweenConfig {
 
     public final ModConfigSpec.BooleanValue enableSelectMove;
 
-    public final ModConfigSpec.DoubleValue selectMoveDuration;
-
-    public final ModConfigSpec.EnumValue<Ease> selectMoveEase;
+    public final ModConfigSpec.DoubleValue selectMoveSpeed;
 
     public final ModConfigSpec.BooleanValue enableExp;
 
@@ -155,13 +153,9 @@ public class HotbarTweenConfig {
                 .translation("guitween.config.enableSelectMove")
                 .define("enableSelectMove", true);
 
-        selectMoveDuration = builder
-                .translation("guitween.config.selectMoveDuration")
-                .defineInRange("selectMoveDuration", 2d, 0, 1000d);
-
-        selectMoveEase = builder
-                .translation("guitween.config.selectMoveEase")
-                .defineEnum("selectMoveEase", Ease.OUT_CUBIC);
+        selectMoveSpeed = builder
+                .translation("guitween.config.selectMoveSpeed")
+                .defineInRange("selectMoveSpeed", 1.5d, 0, 1000d);
 
         enableExp = builder
                 .translation("guitween.config.enableExp")

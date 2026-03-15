@@ -5,6 +5,7 @@ import com.remarxk.guitween.GUITween;
 import com.remarxk.guitween.GUITweenUtility;
 import com.remarxk.guitween.config.GUITweenConfig;
 import com.remarxk.guitween.mixinAccess.AbstractContainerScreenMixinAccess;
+import com.remarxk.guitween.util.DebugUtil;
 import com.remarxk.guitween.util.TweenUtil;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -15,7 +16,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ContainerScreenEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 
-@EventBusSubscriber
+@EventBusSubscriber(modid = GUITween.MODID)
 public class ScreenRenderListener {
 //    @SubscribeEvent(priority = EventPriority.HIGHEST)
 //    public static void onRenderBackground(ContainerScreenEvent.Render.Foreground event) {
@@ -71,9 +72,6 @@ public class ScreenRenderListener {
         if (!(containerScreen instanceof AbstractContainerScreenMixinAccess access)) {
             return;
         }
-
-        if (!access.getGUITween$inTween())
-            return;
 
         GuiGraphics guiGraphics = event.getGuiGraphics();
 

@@ -73,6 +73,10 @@ public class GUITweenConfig {
         return hotbar.holdZoomInDuration.get().floatValue() + hotbar.holdZoomOutDuration.get().floatValue();
     }
 
+    public static float getSameItemTotalDuration() {
+        return (float)(windowItem.sameItemDelay.get() + windowItem.sameItemShakeDuration.get() + windowItem.sameItemShakeWaitDuration.get());
+    }
+
     public static float getSelectedItemNameDuration() {
         return Math.max(hotbar.selectedItemNameMoveDuration.get().floatValue(), hotbar.selectedItemNameAlphaDuration.get().floatValue());
     }
@@ -127,6 +131,10 @@ public class GUITweenConfig {
 
     public static boolean isEnableDragItem() {
         return isEnable() && windowItem.enableDrag.get();
+    }
+
+    public static boolean isEnableSameItem() {
+        return isEnable() && windowItem.enableSameItem.get();
     }
 
     public static boolean isEnableQuickCraft() {

@@ -87,28 +87,28 @@ public abstract class StorageScreenBaseMixin<S extends StorageContainerMenuBase<
         GUITweenUtility.pushAlpha(alpha);
     }
 
-    @Inject(
-            method = "render",
-            at = @At(
-                    value = "TAIL"
-            )
-    )
-    public void renderAfter(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
-        if (!(this instanceof AbstractContainerScreenMixinAccess access))
-            return;
-
-        access.setGUITween$openTick(access.getGUITween$openTick() + GUITweenUtility.getDeltaTicks());
-
-        if (!access.getGUITween$inTween())
-            return;
-
-        GUITweenUtility.popAlpha();
-
-        PoseStack poseStack = guiGraphics.pose();
-        poseStack.popPose();
-
-        access.setGUITween$inTween(false);
-    }
+//    @Inject(
+//            method = "render",
+//            at = @At(
+//                    value = "TAIL"
+//            )
+//    )
+//    public void renderAfter(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
+//        if (!(this instanceof AbstractContainerScreenMixinAccess access))
+//            return;
+//
+//        access.setGUITween$openTick(access.getGUITween$openTick() + GUITweenUtility.getDeltaTicks());
+//
+//        if (!access.getGUITween$inTween())
+//            return;
+//
+//        GUITweenUtility.popAlpha();
+//
+//        PoseStack poseStack = guiGraphics.pose();
+//        poseStack.popPose();
+//
+//        access.setGUITween$inTween(false);
+//    }
 
     @Nullable
     @Shadow
@@ -165,6 +165,19 @@ public abstract class StorageScreenBaseMixin<S extends StorageContainerMenuBase<
                 }
             }
         }
+
+        if (GUITweenConfig.isEnableSameItem()) {
+            ItemStack screenDraggingItem = access.gUITween$getDraggingItem();
+
+            ItemStack draggingItem = screenDraggingItem.isEmpty() ? this.menu.getCarried() : screenDraggingItem;
+            if (!ItemStack.isSameItemSameComponents(draggingItem, access.getGUITween$lastDraggingItem())) {
+                access.setGUITween$lastDraggingItem(draggingItem);
+                access.setGUITween$sameItemTick(0);
+            }
+            else if (!access.getGUITween$lastDraggingItem().isEmpty()) {
+                access.setGUITween$sameItemTick((access.getGUITween$sameItemTick() + GUITweenUtility.getDeltaTicks()) % GUITweenConfig.getSameItemTotalDuration());;
+            }
+        }
     }
 
     @Redirect(
@@ -192,6 +205,9 @@ public abstract class StorageScreenBaseMixin<S extends StorageContainerMenuBase<
 
         boolean haveTween = false;
         float scale = 1;
+        //        float angle = 0;
+        float dx = 0;
+        float dy = 0;
 
         PoseStack poseStack = pGuiGraphics.pose();
         float itemSize = 16f; // 物品渲染尺寸（固定16x16）
@@ -262,6 +278,22 @@ public abstract class StorageScreenBaseMixin<S extends StorageContainerMenuBase<
                 tuple.setA(tuple.getB());
             }
         }
+        
+        if (!access.getGUITween$lastDraggingItem().isEmpty() && ItemStack.isSameItemSameComponents(access.getGUITween$lastDraggingItem(), pSlot.getItem())) {
+            float delay = GUITweenConfig.windowItem.sameItemDelay.get().floatValue();
+            float duration = GUITweenConfig.windowItem.sameItemShakeDuration.get().floatValue();
+
+            if (access.getGUITween$sameItemTick() > delay && access.getGUITween$sameItemTick() < GUITweenConfig.windowItem.sameItemDelay.get() + duration) {
+                haveTween = true;
+
+                float strength = GUITweenConfig.windowItem.sameItemShakeStrength.get().floatValue();
+                float frequency = GUITweenConfig.windowItem.sameItemShakeFrequency.get().floatValue();
+
+                dx = TweenUtil.shake(0, access.getGUITween$sameItemTick() - delay, duration, strength, frequency, TweenUtil.DEFAULT_SEED + pSlot.index * 100L);
+                dy = TweenUtil.shake(1, access.getGUITween$sameItemTick() - delay, duration, strength, frequency, TweenUtil.DEFAULT_SEED + pSlot.index * 100L);
+//                angle = (TweenUtil.punch(0.15f, 2, access.getGUITween$sameItemTick() / 8) - 1) * 100;
+            }
+        }
 
         if (haveTween) {
             access.setGUITween$inSlotTween(true);
@@ -271,7 +303,10 @@ public abstract class StorageScreenBaseMixin<S extends StorageContainerMenuBase<
             // 矩阵操作：平移到中心 → 缩放 → 平移回原位置
             poseStack.translate(centerX, centerY, 0);
             poseStack.scale(scale, scale, 1.0f); // Z轴缩放不影响2D渲染，设为1
+            //            poseStack.mulPose(Axis.ZP.rotationDegrees(angle));
             poseStack.translate(-centerX, -centerY, 50);
+
+            poseStack.translate(dx, dy, 50);
         }
     }
 

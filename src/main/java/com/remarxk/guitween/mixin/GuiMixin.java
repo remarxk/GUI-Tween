@@ -2,6 +2,7 @@ package com.remarxk.guitween.mixin;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import com.remarxk.guitween.GUITween;
 import com.remarxk.guitween.GUITweenUtility;
 import com.remarxk.guitween.eventListener.HotbarChangeListener;
 import com.remarxk.guitween.anim.AttackTween;
@@ -12,6 +13,7 @@ import com.remarxk.guitween.anim.TweenPool;
 import com.remarxk.guitween.util.Ease;
 import com.remarxk.guitween.util.TweenUtil;
 import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
@@ -25,6 +27,9 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(Gui.class)
 public class GuiMixin {
+    @Shadow
+    @Final
+    private Minecraft minecraft;
     @Unique
     private int gUITween$lastLevel = -1;
 
@@ -291,50 +296,93 @@ public class GuiMixin {
     }
 
     @Unique
-    private float gUITween$startSelectPos;
+    private float gUITween$curSelectPos = -1000;
 
-    @Unique
-    private int gUITween$targetSelectPos = -1000;
-
-    @Unique
-    float gUITween$selectMoveTick;
-
-    @ModifyArg(
+    @Redirect(
             method = "renderItemHotbar",
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lnet/minecraft/resources/ResourceLocation;IIII)V",
                     ordinal = 1
-            ),
-            index = 1
+            )
     )
-    public int modifyItemHotbarSelectPos(int x) {
-        if (!GUITweenConfig.isEnableSelectMove())
-            return x;
-
-        float duration = GUITweenConfig.hotbar.selectMoveDuration.get().floatValue();
-        Ease ease = GUITweenConfig.hotbar.selectMoveEase.get();
-
-        if (gUITween$targetSelectPos == -1000) {
-            gUITween$startSelectPos = x;
-            gUITween$targetSelectPos = x;
-            gUITween$selectMoveTick = duration;
-        }
-        else if (gUITween$targetSelectPos != x) {
-            gUITween$startSelectPos = TweenUtil.tween(gUITween$startSelectPos, gUITween$targetSelectPos, gUITween$selectMoveTick / duration, ease);
-
-            gUITween$targetSelectPos = x;
-            gUITween$selectMoveTick = 0;
-
-            x = (int) gUITween$startSelectPos;
-        }
-        else {
-            gUITween$selectMoveTick += GUITweenUtility.getDeltaTicks();
-
-            x = (int) TweenUtil.tween(gUITween$startSelectPos, gUITween$targetSelectPos, gUITween$selectMoveTick / duration, ease);;
+    public void renderHotbarSelect(GuiGraphics guiGraphics, ResourceLocation sprite, int pX, int pY, int pUWidth, int pVHeight) {
+        if (!GUITweenConfig.isEnableSelectMove()) {
+            guiGraphics.blitSprite(sprite, pX, pY, pUWidth, pVHeight);
+            return;
         }
 
-        return x;
+        Player player = minecraft.player;
+        if (player == null) {
+            guiGraphics.blitSprite(sprite, pX, pY, pUWidth, pVHeight);
+            return;
+        }
+
+        // 重置滚动状态
+        if (HotbarChangeListener.scrollSelected >= 0 && HotbarChangeListener.scrollSelected != player.getInventory().selected) {
+            HotbarChangeListener.scrollSelected = -1;
+            HotbarChangeListener.scrollDir = 0;
+        }
+
+        int left = guiGraphics.guiWidth() / 2 - 91 - 1;
+        int width = 9 * 20;
+        int right = left + width + (pUWidth - 20) / 2;
+
+        if (gUITween$curSelectPos == -1000) {
+            gUITween$curSelectPos = pX;
+        }
+
+        float target = pX;
+
+        float delta = GUITweenUtility.getDeltaTicks(); // 每帧经过的时间，单位秒
+        float speed = GUITweenConfig.hotbar.selectMoveSpeed.get().floatValue(); // 过渡速度，每秒接近目标的比例
+
+        // 根据 scrollDir 判断循环距离
+        if (HotbarChangeListener.scrollDir != 0) {
+            if (HotbarChangeListener.scrollDir < 0 && gUITween$curSelectPos < target) {
+                target = left - (right - target) - 0.5f;
+            }
+            else if (HotbarChangeListener.scrollDir > 0 && gUITween$curSelectPos > target) {
+                target = right + (target - left) + 0.5f;
+            }
+
+            gUITween$curSelectPos += (target - gUITween$curSelectPos) * (1 - (float)Math.exp(-speed * delta));
+
+            if (gUITween$curSelectPos <= left - 20) {
+                gUITween$curSelectPos = right - (left - gUITween$curSelectPos);
+            }
+            else if (gUITween$curSelectPos >= right) {
+                gUITween$curSelectPos = left + gUITween$curSelectPos - right;
+            }
+        } else {
+            gUITween$curSelectPos += (target - gUITween$curSelectPos) * (1 - (float)Math.exp(-speed * delta));
+        }
+
+        if (Math.abs(gUITween$curSelectPos - pX) < 1) {
+            gUITween$curSelectPos = pX;
+        }
+
+        boolean needScissor = false;
+        float mirrorX = 0;
+
+        if (gUITween$curSelectPos < left) {
+            needScissor = true;
+            mirrorX = right - (left - gUITween$curSelectPos);
+        } else if (gUITween$curSelectPos > right - pUWidth) {
+            needScissor = true;
+            mirrorX = left - (right - gUITween$curSelectPos);
+        }
+
+        if (needScissor) {
+            guiGraphics.enableScissor(left + (pUWidth - 20) / 2, pY, right, pY + pVHeight);
+            guiGraphics.blitSprite(sprite, (int) mirrorX, pY, pUWidth, pVHeight);
+        }
+
+        guiGraphics.blitSprite(sprite, (int) gUITween$curSelectPos, pY, pUWidth, pVHeight);
+
+        if (needScissor) {
+            guiGraphics.disableScissor();
+        }
     }
 
     @Inject(

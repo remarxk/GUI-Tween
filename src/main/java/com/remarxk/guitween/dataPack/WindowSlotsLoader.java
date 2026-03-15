@@ -46,7 +46,7 @@ public class WindowSlotsLoader extends SimpleJsonResourceReloadListener {
                 WindowSlotsConfig config = WindowSlotsConfig.fromJson(entry.getValue().getAsJsonObject());
                 if (config.name != null && !config.name.isEmpty()) {
                     configs.put(config.name, config);
-                    GUITween.LOGGER.info("添加数据包:{}", config.name);
+//                    GUITween.LOGGER.info("添加数据包:{}", config.name);
                 }
             } catch (Exception ex) {
                 System.err.println("Failed to load output slots: " + entry.getKey());

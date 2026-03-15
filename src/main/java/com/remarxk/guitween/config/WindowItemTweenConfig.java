@@ -38,6 +38,18 @@ public class WindowItemTweenConfig {
 
     public final ModConfigSpec.DoubleValue dragSensitivity;
 
+    public final ModConfigSpec.BooleanValue enableSameItem;
+
+    public final ModConfigSpec.DoubleValue sameItemDelay;
+
+    public final ModConfigSpec.DoubleValue sameItemShakeStrength;
+
+    public final ModConfigSpec.DoubleValue sameItemShakeDuration;
+
+    public final ModConfigSpec.DoubleValue sameItemShakeFrequency;
+
+    public final ModConfigSpec.DoubleValue sameItemShakeWaitDuration;
+
     public final ModConfigSpec.BooleanValue enableQuick;
 
     public WindowItemTweenConfig(ModConfigSpec.Builder builder) {
@@ -110,6 +122,30 @@ public class WindowItemTweenConfig {
         dragSensitivity = builder
                 .translation("guitween.config.dragSensitivity")
                 .defineInRange("dragSensitivity", 8d, 0, 1000);
+
+        enableSameItem = builder
+                .translation("guitween.config.enableSameItem")
+                .define("enableSameItem", true);
+
+        sameItemDelay = builder
+                .translation("guitween.config.sameItemDelay")
+                .defineInRange("sameItemDelay", 8d, 0, 1000);
+
+        sameItemShakeStrength = builder
+                .translation("guitween.config.sameItemShakeStrength")
+                .defineInRange("sameItemShakeStrength", 1.5d, 0, 1000);
+
+        sameItemShakeDuration = builder
+                .translation("guitween.config.sameItemShakeDuration")
+                .defineInRange("sameItemShakeDuration", 8d, 0, 1000);
+
+        sameItemShakeFrequency = builder
+                .translation("guitween.config.sameItemShakeFrequency")
+                .defineInRange("sameItemShakeFrequency", 1d, 0, 1000);
+
+        sameItemShakeWaitDuration = builder
+                .translation("guitween.config.sameItemShakeWaitDuration")
+                .defineInRange("sameItemShakeWaitDuration", 20d, 0, 1000);
 
         enableQuick = builder
                 .translation("guitween.config.enableQuick")

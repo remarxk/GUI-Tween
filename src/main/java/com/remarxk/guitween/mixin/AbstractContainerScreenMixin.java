@@ -86,9 +86,6 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
     private float gUITween$openTick;
 
     @Unique
-    private boolean gUITween$compatStop;
-
-    @Unique
     private boolean gUITween$inTooltip;
 
     @Unique
@@ -101,6 +98,9 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
     @Nullable
     @Shadow
     private Slot lastClickSlot;
+
+    @Shadow
+    private ItemStack draggingItem;
 
     protected AbstractContainerScreenMixin(Component pTitle) {
         super(pTitle);
@@ -214,6 +214,31 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
         gUITween$isRenderQuick = value;
     }
 
+    @Override
+    public ItemStack gUITween$getDraggingItem() {
+        return draggingItem;
+    }
+
+    @Override
+    public ItemStack getGUITween$lastDraggingItem() {
+        return gUITween$lastDraggingItem;
+    }
+
+    @Override
+    public void setGUITween$lastDraggingItem(ItemStack itemStack) {
+        gUITween$lastDraggingItem = itemStack;
+    }
+
+    @Override
+    public float getGUITween$sameItemTick() {
+        return gUITween$sameItemTick;
+    }
+
+    @Override
+    public void setGUITween$sameItemTick(float tick) {
+        gUITween$sameItemTick = tick;
+    }
+
     @Inject(method = "init", at = @At("TAIL"))
     public void init(CallbackInfo ci) {
         gUITween$openTick = 0;
@@ -295,6 +320,18 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
                 }
             }
         }
+
+        if (GUITweenConfig.isEnableSameItem()) {
+            ItemStack draggingItem = this.draggingItem.isEmpty() ? this.menu.getCarried() : this.draggingItem;
+            if (!ItemStack.isSameItemSameComponents(draggingItem, gUITween$lastDraggingItem)) {
+                gUITween$lastDraggingItem = draggingItem;
+                gUITween$sameItemTick = 0;
+            }
+            else if (!gUITween$lastDraggingItem.isEmpty()) {
+                gUITween$sameItemTick += GUITweenUtility.getDeltaTicks();
+                gUITween$sameItemTick %= GUITweenConfig.getSameItemTotalDuration();
+            }
+        }
     }
 
     @Inject(method = "render", at = @At(value = "TAIL"))
@@ -337,18 +374,13 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
         if (GUITweenUtility.COMPAT_WINDOW.contains(getClass()))
             return;
 
-//        if (gUiTween$inTween) { // 某些界面重写了render方法，导致没有取消渲染动画，需要强行终止
-//            gUITween$compatStop = true;
-//            gUiTween$inTween = false;
-//            gUITween$isDisableScreenTween = true;
-//
-//            GUITweenUtility.popAlpha();
-//            guiGraphics.pose().popPose();
-//        }
-//
-//        if (gUITween$compatStop) {
-//            gUITween$openTick += GUITweenUtility.getDeltaTicks();
-//        }
+        if (gUiTween$inTween) { // 某些界面重写了render方法，导致没有取消渲染动画，需要强行终止
+            gUiTween$inTween = false;
+            gUITween$isDisableScreenTween = true;
+
+            GUITweenUtility.popAlpha();
+            guiGraphics.pose().popPose();
+        }
 
         GUITweenUtility.setOpenScreen(gUITween$screenName, gUITween$openTick);
 
@@ -413,10 +445,19 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
     @Unique
     private boolean gUITween$isRenderQuick = false;
 
+    @Unique
+    private ItemStack gUITween$lastDraggingItem = ItemStack.EMPTY;
+
+    @Unique
+    private float gUITween$sameItemTick = 0;
+
     @Inject(method = "renderSlot", at = @At(value = "HEAD"))
     public void renderItemBefore(GuiGraphics pGuiGraphics, Slot pSlot, CallbackInfo ci) {
         boolean haveTween = false;
         float scale = 1;
+        //        float angle = 0;
+        float dx = 0;
+        float dy = 0;
 
         PoseStack poseStack = pGuiGraphics.pose();
         float itemSize = 16f; // 物品渲染尺寸（固定16x16）
@@ -538,6 +579,22 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
             }
         }
 
+        if (!gUITween$lastDraggingItem.isEmpty() && ItemStack.isSameItemSameComponents(gUITween$lastDraggingItem, pSlot.getItem())) {
+            float delay = GUITweenConfig.windowItem.sameItemDelay.get().floatValue();
+            float duration = GUITweenConfig.windowItem.sameItemShakeDuration.get().floatValue();
+
+            if (gUITween$sameItemTick > delay && gUITween$sameItemTick < GUITweenConfig.windowItem.sameItemDelay.get() + duration) {
+                haveTween = true;
+
+                float strength = GUITweenConfig.windowItem.sameItemShakeStrength.get().floatValue();
+                float frequency = GUITweenConfig.windowItem.sameItemShakeFrequency.get().floatValue();
+
+                dx = TweenUtil.shake(0, gUITween$sameItemTick - delay, duration, strength, frequency, TweenUtil.DEFAULT_SEED + pSlot.index * 100L);
+                dy = TweenUtil.shake(1, gUITween$sameItemTick - delay, duration, strength, frequency, TweenUtil.DEFAULT_SEED + pSlot.index * 100L);
+//                angle = (TweenUtil.punch(0.15f, 2, gUITween$sameItemTick / 8) - 1) * 100;
+            }
+        }
+
         if (haveTween) {
             gUITween$inSlotTween = true;
 
@@ -546,7 +603,10 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
             // 矩阵操作：平移到中心 → 缩放 → 平移回原位置
             poseStack.translate(centerX, centerY, 0);
             poseStack.scale(scale, scale, 1.0f); // Z轴缩放不影响2D渲染，设为1
+            //            poseStack.mulPose(Axis.ZP.rotationDegrees(angle));
             poseStack.translate(-centerX, -centerY, 50);
+
+            poseStack.translate(dx, dy, 50);
         }
     }
 
