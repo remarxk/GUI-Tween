@@ -12,6 +12,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ScreenEvent;
+import org.joml.Matrix3x2fStack;
 
 @EventBusSubscriber
 public class InvMoveCompat {
@@ -59,11 +60,11 @@ public class InvMoveCompat {
         float dx = TweenUtil.tween(GUITweenConfig.window.moveX.get().floatValue(), 0, moveProgress, GUITweenConfig.window.moveEase.get());
         float dy = TweenUtil.tween(GUITweenConfig.window.moveY.get().floatValue(), 0, moveProgress, GUITweenConfig.window.moveEase.get());
 
-        PoseStack poseStack = event.getGuiGraphics().pose();
+        Matrix3x2fStack poseStack = event.getGuiGraphics().pose();
 
         // 动画变换
-        poseStack.pushPose();
-        poseStack.translate(dx, dy, 0);  // 上移
+        poseStack.pushMatrix();
+        poseStack.translate(dx, dy);  // 上移
 
         float alpha = TweenUtil.tween(0.05f, 1, gradientProgress, GUITweenConfig.window.gradientEase.get());
         GUITweenUtility.pushAlpha(alpha);

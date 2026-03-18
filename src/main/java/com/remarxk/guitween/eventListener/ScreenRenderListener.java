@@ -5,16 +5,17 @@ import com.remarxk.guitween.GUITween;
 import com.remarxk.guitween.GUITweenUtility;
 import com.remarxk.guitween.config.GUITweenConfig;
 import com.remarxk.guitween.mixinAccess.AbstractContainerScreenMixinAccess;
-import com.remarxk.guitween.util.DebugUtil;
-import com.remarxk.guitween.util.TweenUtil;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ContainerScreenEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
+import org.joml.Matrix3x2fStack;
 
 @EventBusSubscriber(modid = GUITween.MODID)
 public class ScreenRenderListener {
@@ -74,12 +75,31 @@ public class ScreenRenderListener {
         }
 
         GuiGraphics guiGraphics = event.getGuiGraphics();
+        Matrix3x2fStack poseStack = guiGraphics.pose();
+
+        if (GUITweenConfig.isEnableDebugWindow()) {
+            // 左上角偏移（界面内部）
+            int x = containerScreen.getGuiLeft() + 12;
+            int y = containerScreen.getGuiTop() - 10;
+
+            if ((containerScreen instanceof CreativeModeInventoryScreen)) {
+                y -= 30;
+            }
+
+            guiGraphics.drawString(
+                    Minecraft.getInstance().font,
+                    access.getGUITween$screenName(),
+                    x,
+                    y,
+                    0xFFFF0000, // 浅灰色
+                    false
+            );
+        }
 
         if (access.getGUITween$inTween()) {
             GUITweenUtility.popAlpha();
 
-            PoseStack poseStack = guiGraphics.pose();
-            poseStack.popPose();
+            poseStack.popMatrix();
         }
 
         access.setGUITween$inTween(false);

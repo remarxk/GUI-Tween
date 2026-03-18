@@ -11,6 +11,7 @@ import me.shedaniel.rei.impl.client.gui.ScreenOverlayImpl;
 import me.shedaniel.rei.impl.client.gui.widget.entrylist.EntryListWidget;
 import me.shedaniel.rei.impl.client.gui.widget.favorites.FavoritesListWidget;
 import net.minecraft.client.gui.GuiGraphics;
+import org.joml.Matrix3x2fStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -31,7 +32,7 @@ public class ScreenOverlayImpMixin {
                 float progress = GUITweenUtility.openScreenTick / totalTick;
 
                 if (progress < 1){
-                    PoseStack poseStack = guiGraphics.pose();
+                    Matrix3x2fStack poseStack = guiGraphics.pose();
 
                     float dx = TweenUtil.tween(GUITweenConfig.window.jeiLeftMoveX.get().floatValue(), 0, progress, GUITweenConfig.window.jeiLeftMoveEase.get());
                     float dy = TweenUtil.tween(GUITweenConfig.window.jeiLeftMoveY.get().floatValue(), 0, progress, GUITweenConfig.window.jeiLeftMoveEase.get());
@@ -40,12 +41,12 @@ public class ScreenOverlayImpMixin {
                     ReiCompat.dx = dx;
                     ReiCompat.dy = dy;
 
-                    poseStack.pushPose();
-                    poseStack.translate(dx, dy, 0);
+                    poseStack.pushMatrix();
+                    poseStack.translate(dx, dy);
 
                     widget.render(guiGraphics, mouseX, mouseY, delta);
 
-                    poseStack.popPose();
+                    poseStack.popMatrix();
 
                     ReiCompat.inTween = false;
 
@@ -58,7 +59,7 @@ public class ScreenOverlayImpMixin {
                 float progress = GUITweenUtility.openScreenTick / totalTick;
 
                 if (progress < 1){
-                    PoseStack poseStack = guiGraphics.pose();
+                    Matrix3x2fStack poseStack = guiGraphics.pose();
 
                     float dx = TweenUtil.tween(GUITweenConfig.window.jeiRightMoveX.get().floatValue(), 0, progress, GUITweenConfig.window.jeiRightMoveEase.get());
                     float dy = TweenUtil.tween(GUITweenConfig.window.jeiRightMoveY.get().floatValue(), 0, progress, GUITweenConfig.window.jeiRightMoveEase.get());
@@ -67,12 +68,12 @@ public class ScreenOverlayImpMixin {
                     ReiCompat.dx = dx;
                     ReiCompat.dy = dy;
 
-                    poseStack.pushPose();
-                    poseStack.translate(dx, dy, 0);
+                    poseStack.pushMatrix();
+                    poseStack.translate(dx, dy);
 
                     widget.render(guiGraphics, mouseX, mouseY, delta);
 
-                    poseStack.popPose();
+                    poseStack.popMatrix();
 
                     ReiCompat.inTween = false;
 

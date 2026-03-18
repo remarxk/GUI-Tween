@@ -1,6 +1,7 @@
 package com.remarxk.guitween.mixinAccess;
 
 import com.remarxk.guitween.anim.Tween;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -55,4 +56,10 @@ public interface AbstractContainerScreenMixinAccess {
     public boolean getGUITween$isRenderQuick();
 
     public void setGUITween$isRenderQuick(boolean value);
+
+    public void setGUITween$clickTime(float time);
+
+    public float getGUITween$clickTime();
+
+    public void gUITween$renderSlotHighlightBack(GuiGraphics guiGraphics, int x, int y);
 }

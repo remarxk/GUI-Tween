@@ -9,6 +9,7 @@ import com.remarxk.guitween.util.TweenUtil;
 import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import org.joml.Matrix3x2fStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -42,13 +43,13 @@ public class BookmarkOverlayMixin {
 
         gUITween$inTween = true;
 
-        PoseStack poseStack = guiGraphics.pose();
-        poseStack.pushPose();
+        Matrix3x2fStack poseStack = guiGraphics.pose();
+        poseStack.pushMatrix();
 
         float dx = TweenUtil.tween(GUITweenConfig.window.jeiLeftMoveX.get().floatValue(), 0, progress, GUITweenConfig.window.jeiLeftMoveEase.get());
         float dY = TweenUtil.tween(GUITweenConfig.window.jeiLeftMoveY.get().floatValue(), 0, progress, GUITweenConfig.window.jeiLeftMoveEase.get());
 
-        poseStack.translate(dx, dY , 0);
+        poseStack.translate(dx, dY);
     }
 
     @Inject(
@@ -64,7 +65,7 @@ public class BookmarkOverlayMixin {
 
         gUITween$inTween = false;
 
-        PoseStack poseStack = guiGraphics.pose();
-        poseStack.popPose();
+        Matrix3x2fStack poseStack = guiGraphics.pose();
+        poseStack.popMatrix();
     }
 }

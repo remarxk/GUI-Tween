@@ -9,6 +9,7 @@ import com.remarxk.guitween.util.TweenUtil;
 import dev.architectury.event.events.client.ClientGuiEvent;
 import me.shedaniel.rei.api.client.registry.screen.OverlayRendererProvider;
 import me.shedaniel.rei.impl.client.registry.screen.DefaultScreenOverlayRenderer;
+import org.joml.Matrix3x2fStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -32,10 +33,10 @@ public class DefaultScreenOverlayRendererMixin {
                 return;
             }
 
-            PoseStack poseStack = graphics.pose();
+            Matrix3x2fStack poseStack = graphics.pose();
 
             if (access.getGUITween$inTween()) {
-                poseStack.popPose();
+                poseStack.pushMatrix();
                 GUITweenUtility.popAlpha();
             }
 
@@ -52,8 +53,8 @@ public class DefaultScreenOverlayRendererMixin {
                 float dy = TweenUtil.tween(GUITweenConfig.window.moveY.get().floatValue(), 0, moveProgress, GUITweenConfig.window.moveEase.get());
 
                 // 动画变换
-                poseStack.pushPose();
-                poseStack.translate(dx, dy, 0);  // 上移
+                poseStack.pushMatrix();
+                poseStack.translate(dx, dy);  // 上移
 
                 float alpha = TweenUtil.tween(0.05f, 1, gradientProgress, GUITweenConfig.window.gradientEase.get());
                 GUITweenUtility.pushAlpha(alpha);

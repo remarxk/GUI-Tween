@@ -9,21 +9,21 @@
     "AbstractContainerScreenMixin",
     "ChatComponentMixin",
     "ChatScreenMixin",
-    "FontMixin",
+    "GuiGraphicsMixin",
+    "GuiItemRenderStateMixin",
     "GuiMixin",
-    "ItemRendererMixin",
+    "GuiRendererMixin",
+    "GuiRenderStateMixin",
     "LocalPlayerMixin",
     "MinecraftMixin",
-    "emi.EmiClientForgeMixin",
-    "emi.EmiScreenManagerMixin",
-    "emi.EmiStackBatcherMixin",
+    "PictureInPictureRendererMixin",
+    "ScrollWheelHandlerMixin",
     "jei.BookmarkOverlayMixin",
+    "jei.GuiEventHandlerMixin",
     "jei.IngredientListOverlayMixin",
     "overflowingbars.ArmorBarRendererMixin",
-    "rei.BatchedEntryRendererManagerMixin",
     "rei.DefaultScreenOverlayRendererMixin",
     "rei.ScreenOverlayImpMixin",
-    "sodium.SodiumBakedModelEncoderMixin",
     "sophisticated.StorageScreenBaseMixin"
   ],
   "injectors": {
@@ -33,7 +33,5 @@
     "requireAnnotations": false
   },
   "mixins": [
-    "InventoryMixin",
-    "watut.RenderHelperMixin"
   ]
 }

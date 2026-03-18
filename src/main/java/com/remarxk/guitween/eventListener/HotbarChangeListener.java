@@ -37,7 +37,7 @@ public class HotbarChangeListener {
         Level level = player.level();
 
         // 仅处理客户端玩家 + 主 Tick 阶段
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             if (GUITweenConfig.isEnableUse()) {
                 UseTween usingTween = GUITweenUtility.getUsingTween();
 
@@ -47,7 +47,7 @@ public class HotbarChangeListener {
                     int useSlot = -1;
 
                     if (hand == InteractionHand.MAIN_HAND) {
-                        useSlot = player.getInventory().selected;
+                        useSlot = player.getInventory().getSelectedSlot();
                     } else if (hand == InteractionHand.OFF_HAND) {
                         useSlot = 9;
                     }
@@ -56,7 +56,7 @@ public class HotbarChangeListener {
                 }
             }
 
-            int index = player.getInventory().selected;
+            int index = player.getInventory().getSelectedSlot();
 
             // 判断是否切换了选中物品
             if (lastSelected != index) {
@@ -81,7 +81,7 @@ public class HotbarChangeListener {
                 lastSelected = index;
 
                 lackTick = GUITweenConfig.hotbar.lackDuration.get().floatValue();
-                hasItem = player.getInventory().getSelected().getCount() > 0;
+                hasItem = player.getInventory().getSelectedItem().getCount() > 0;
 
                 if (GUITweenConfig.isEnableHoldItem()) {
                     Tween tween = hotbarAnimStateMap.getOrDefault(index, null);
@@ -108,7 +108,7 @@ public class HotbarChangeListener {
                 }
             }
             else {
-                ItemStack selectedItem = player.getInventory().getSelected();
+                ItemStack selectedItem = player.getInventory().getSelectedItem();
 
                 boolean curHasItem = selectedItem.getCount() > 0;
                 if (curHasItem != hasItem) {

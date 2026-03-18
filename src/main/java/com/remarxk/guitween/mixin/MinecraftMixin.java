@@ -25,7 +25,7 @@ public class MinecraftMixin {
             return;
 
         UseTween usingTween = GUITweenUtility.getUsingTween();
-        usingTween.use(player.getInventory().selected);
+        usingTween.use(player.getInventory().getSelectedSlot());
     }
 
     @Inject(
@@ -41,7 +41,7 @@ public class MinecraftMixin {
             return;
 
         AttackTween attackTween = GUITweenUtility.getAttackTween();
-        attackTween.resetProgress(player.getInventory().selected);
+        attackTween.resetProgress(player.getInventory().getSelectedSlot());
     }
 
     @Inject(
@@ -57,6 +57,6 @@ public class MinecraftMixin {
             return;
 
         AttackTween attackTween = GUITweenUtility.getAttackTween();
-        attackTween.resetProgress(player.getInventory().selected);
+        attackTween.resetProgress(player.getInventory().getSelectedSlot());
     }
 }
