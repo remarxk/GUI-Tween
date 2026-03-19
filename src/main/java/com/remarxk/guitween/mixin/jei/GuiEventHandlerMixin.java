@@ -40,6 +40,7 @@ public class GuiEventHandlerMixin {
             gUITween$dx = TweenUtil.tween(GUITweenConfig.window.moveX.get().floatValue(), 0, moveProgress, GUITweenConfig.window.moveEase.get());
             gUITween$dy = TweenUtil.tween(GUITweenConfig.window.moveY.get().floatValue(), 0, moveProgress, GUITweenConfig.window.moveEase.get());
 
+            // 取消动画
             Matrix3x2fStack matrix3x2fStack = guiGraphics.pose();
             matrix3x2fStack.translate(-gUITween$dx, -gUITween$dy);
         }
@@ -61,9 +62,8 @@ public class GuiEventHandlerMixin {
 
             Matrix3x2fStack poseStack = guiGraphics.pose();
 
-            // 动画变换
-            poseStack.pushMatrix();
-            poseStack.translate(gUITween$dx, gUITween$dy);  // 上移
+            // 还原动画
+            poseStack.translate(gUITween$dx, gUITween$dy);
 
             float alpha = TweenUtil.tween(GUITweenUtility.fFontMinAlpha, 1, gradientProgress, GUITweenConfig.window.gradientEase.get());
             GUITweenUtility.pushAlpha(alpha);

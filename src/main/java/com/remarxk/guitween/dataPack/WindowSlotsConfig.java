@@ -8,10 +8,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public record WindowSlotsConfig (String name, List<Integer> outputSlots) {
-    public static final Codec<WindowSlotsConfig> CODEC = RecordCodecBuilder.create(
-            instance -> instance.group(
-                    Codec.STRING.fieldOf("name").forGetter(WindowSlotsConfig::name),
-                    Codec.INT.listOf().fieldOf("outputSlots").forGetter(WindowSlotsConfig::outputSlots)
-            ).apply(instance, WindowSlotsConfig::new)
-    );
+    public static final Codec<WindowSlotsConfig> CODEC =
+            RecordCodecBuilder.create(instance -> instance.group(
+                    Codec.STRING.optionalFieldOf("name", "")
+                            .forGetter(WindowSlotsConfig::name),
+
+                    Codec.list(Codec.INT)
+                            .fieldOf("output_slots")
+                            .forGetter(WindowSlotsConfig::outputSlots)
+            ).apply(instance, WindowSlotsConfig::new));
 }
