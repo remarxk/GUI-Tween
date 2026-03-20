@@ -107,12 +107,13 @@ dependencies {
     // runtimeOnly "mezz.jei:jei-${mc_version}-forge:${jei_version}"
 
     compileOnly "curse.maven:jei-238222:7428957"
-    runtimeOnly "curse.maven:jei-238222:7428957"
+//    runtimeOnly "curse.maven:jei-238222:7428957"
 
     compileOnly "curse.maven:jade-324717:7742809"
+    runtimeOnly "curse.maven:jade-324717:7742809"
 
     compileOnly "curse.maven:sodium-394468:7669899"
-    compileOnly "curse.maven:sodium-394468:7669899"
+//    runtimeOnly "curse.maven:sodium-394468:7669899"
 
     compileOnly "curse.maven:sophisticated-core-618298:7757865"
     runtimeOnly "curse.maven:sophisticated-core-618298:7757865"
@@ -120,15 +121,22 @@ dependencies {
     runtimeOnly "curse.maven:sophisticated-backpacks-422301:7765845"
 
     compileOnly "curse.maven:cloth-config-348521:7361439"
+    runtimeOnly "curse.maven:cloth-config-348521:7361439"
 
     compileOnly "curse.maven:architectury-api-419699:7339257"
     compileOnly "curse.maven:roughly-enough-items-310111:7486490"
+    runtimeOnly "curse.maven:architectury-api-419699:7339257"
+    runtimeOnly "curse.maven:roughly-enough-items-310111:7486490"
 
-    compileOnly "curse.maven:balm-531761:7750378"
-    compileOnly "curse.maven:trashslot-235577:7364659"
+//    compileOnly "curse.maven:balm-531761:7750378"
+//    compileOnly "curse.maven:trashslot-235577:7364659"
+//    runtimeOnly "curse.maven:balm-531761:7750378"
+//    runtimeOnly "curse.maven:trashslot-235577:7364659"
 
     compileOnly "curse.maven:puzzles-lib-495476:7613333"
     compileOnly "curse.maven:overflowing-bars-852662:7347867"
+//    runtimeOnly "curse.maven:puzzles-lib-495476:7613333"
+//    runtimeOnly "curse.maven:overflowing-bars-852662:7347867"
 
     compileOnly "curse.maven:invmove-581854:7418947"
 

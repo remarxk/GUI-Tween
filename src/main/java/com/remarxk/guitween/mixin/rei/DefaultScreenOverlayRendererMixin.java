@@ -36,7 +36,7 @@ public class DefaultScreenOverlayRendererMixin {
             Matrix3x2fStack poseStack = graphics.pose();
 
             if (access.getGUITween$inTween()) {
-                poseStack.pushMatrix();
+                poseStack.popMatrix();
                 GUITweenUtility.popAlpha();
             }
 

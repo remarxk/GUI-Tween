@@ -9,14 +9,14 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Minecraft.class)
 public class MinecraftMixin {
     @Inject(
-            method = "handleKeybinds",
+            method = "startUseItem",
             at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/client/Minecraft;startUseItem()V"
+                    value = "HEAD"
             )
     )
     public void onStartUseItem(CallbackInfo ci) {
@@ -29,13 +29,12 @@ public class MinecraftMixin {
     }
 
     @Inject(
-            method = "handleKeybinds",
+            method = "startAttack",
             at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/client/Minecraft;startAttack()Z"
+                    value = "HEAD"
             )
     )
-    public void onStartAttack(CallbackInfo ci) {
+    public void onStartAttack(CallbackInfoReturnable<Boolean> cir) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null)
             return;

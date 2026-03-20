@@ -11,7 +11,7 @@ import net.p3pp3rf1y.sophisticatedcore.client.gui.StorageScreenBase;
 public class SophisticatedBackpackCompat {
     public static void init() {
         if (ModList.get().isLoaded("sophisticatedbackpacks")) {
-            GUITweenUtility.COMPAT_WINDOW.add(screenClass -> StorageScreenBase.class.isAssignableFrom(screenClass));
+            GUITweenUtility.addCompatWindow(screenClass -> StorageScreenBase.class.isAssignableFrom(screenClass));
         }
     }
 

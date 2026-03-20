@@ -31,7 +31,7 @@ public class InvMoveCompat {
             return;
         }
 
-        if (GUITweenUtility.COMPAT_WINDOW.contains(containerScreen.getClass()))
+        if (GUITweenUtility.isCompatWindow(containerScreen.getClass()))
             return;
 
         if (!InvMove.instance().shouldDisableScreenBackground(screen)) {

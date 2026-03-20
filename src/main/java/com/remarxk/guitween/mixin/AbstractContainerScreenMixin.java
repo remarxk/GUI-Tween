@@ -776,12 +776,7 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
 
         gUITween$inTooltip = true;
 
-        float progress = gUITween$tooltipShowTick / duration;
-        float alpha = TweenUtil.tween(0, 1, progress, GUITweenConfig.windowItem.tooltipEase.get());
-        GUITweenUtility.pushSpriteAlpha(alpha);
-        GUITweenUtility.pushFontAlpha(alpha);
-
-        gUITween$tooltipShowTick += GUITweenUtility.getDeltaTicks();
+        GUITweenUtility.startTooltipTween(gUITween$tooltipShowTick);
     }
 
     @Inject(method = "renderTooltip", at = @At(value = "TAIL"))
@@ -790,8 +785,10 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
             return;
 
         gUITween$inTooltip = false;
-        GUITweenUtility.popSpriteAlpha();
-        GUITweenUtility.popFontAlpha();
+
+        gUITween$tooltipShowTick += GUITweenUtility.getDeltaTicks();
+
+        GUITweenUtility.endTooltipTween();
     }
 
     @Inject(method = "onClose", at = @At("TAIL"))

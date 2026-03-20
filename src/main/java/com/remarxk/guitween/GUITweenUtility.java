@@ -17,13 +17,16 @@ public class GUITweenUtility {
         public boolean isCompatWindow(Class<?> screenClass);
     }
 
-    public static final float fFontMinAlpha = 0.02f;
-    public static final int iFontMinAlpha = 5;
+    public static final float fFontMinAlpha = 0;
+    public static final int iFontMinAlpha = 0;
 
-    public static final List<CompatWindowCheck> COMPAT_WINDOW = new ArrayList<>();
+    private static final List<CompatWindowCheck> COMPAT_WINDOW = new ArrayList<>();
 
     public static String openScreenName;
     public static float openScreenTick;
+
+    public static boolean inTooltipTween;
+    public static float tooltipTweenTick;
 
     private static final Stack<Float> itemAlphaStack = new Stack<>();
     private static final Stack<Float> fontAlphaStack = new Stack<>();
@@ -32,6 +35,10 @@ public class GUITweenUtility {
     private final static AttackTween attackTween = new AttackTween();
     private final static UseTween usingTween = new UseTween();
     private final static DragTween dragTween = new DragTween();
+
+    public static void addCompatWindow(CompatWindowCheck check) {
+        COMPAT_WINDOW.add(check);
+    }
 
     public static boolean isCompatWindow(Class<?> screenClass) {
         for (var check : COMPAT_WINDOW) {
@@ -54,6 +61,15 @@ public class GUITweenUtility {
     public static void deleteOpenScreen() {
         openScreenName = null;
         openScreenTick = 0;
+    }
+
+    public static void startTooltipTween(float tick) {
+        inTooltipTween = true;
+        tooltipTweenTick = tick;
+    }
+
+    public static void endTooltipTween() {
+        inTooltipTween = false;
     }
 
     public static void pushAlpha(float alpha) {
