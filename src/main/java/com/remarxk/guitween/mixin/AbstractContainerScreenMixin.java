@@ -129,6 +129,11 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
     }
 
     @Override
+    public void setGUITween$isDisableScreenTween(boolean isDisableScreenTween) {
+        gUITween$isDisableScreenTween = isDisableScreenTween;
+    }
+
+    @Override
     public boolean getGUITween$isDisableScreenTween() {
         return gUITween$isDisableScreenTween;
     }
