@@ -38,16 +38,6 @@ public abstract class StorageScreenBaseMixin<S extends StorageContainerMenuBase<
         super(menu, playerInventory, title);
     }
 
-    @Redirect(
-            method = "render",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/p3pp3rf1y/sophisticatedcore/client/gui/StorageScreenBase;renderBackground(Lnet/minecraft/client/gui/GuiGraphics;IIF)V")
-    )
-    public void onlyRenderBackground(StorageScreenBase instance, GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
-        this.renderTransparentBackground(guiGraphics);
-    }
-
     @Inject(
             method = "render",
             at = @At(
@@ -62,6 +52,14 @@ public abstract class StorageScreenBaseMixin<S extends StorageContainerMenuBase<
 
         if (!GUITweenConfig.isEnableWindow())
             return;
+
+        if (access.getGUITween$inTween()) { // 某些界面重写了render方法，导致没有取消渲染动画，需要强行终止
+            access.setGUITween$inTween(false);
+            access.setGUITween$isDisableScreenTween(true);
+
+            GUITweenUtility.popAlpha();
+            guiGraphics.pose().popPose();
+        }
 
         if (access.getGUITween$isDisableScreenTween())
             return;

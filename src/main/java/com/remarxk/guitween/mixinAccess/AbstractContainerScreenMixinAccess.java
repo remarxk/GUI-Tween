@@ -10,6 +10,8 @@ import java.util.HashMap;
 public interface AbstractContainerScreenMixinAccess {
     public String getGUITween$screenName();
 
+    public void setGUITween$isDisableScreenTween(boolean isDisableScreenTween);
+
     public boolean getGUITween$isDisableScreenTween();
 
     public boolean getGUITween$inTween();

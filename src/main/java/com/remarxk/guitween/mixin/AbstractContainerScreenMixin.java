@@ -125,6 +125,11 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
     }
 
     @Override
+    public void setGUITween$isDisableScreenTween(boolean isDisableScreenTween) {
+        gUITween$isDisableScreenTween = isDisableScreenTween;
+    }
+
+    @Override
     public boolean getGUITween$isDisableScreenTween() {
         return gUITween$isDisableScreenTween;
     }
@@ -334,35 +339,6 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
         }
     }
 
-    @Inject(method = "render", at = @At(value = "TAIL"))
-    public void renderScreenName(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
-        if (!GUITweenConfig.isEnableDebugWindow())
-            return;
-
-        PoseStack poseStack = guiGraphics.pose();
-        poseStack.pushPose();
-        poseStack.translate(0, 0, 1000);
-
-        // 左上角偏移（界面内部）
-        int x = this.leftPos + 12;
-        int y = this.topPos - 10;
-
-        if ((((AbstractContainerScreen) (Object) this) instanceof CreativeModeInventoryScreen)) {
-            y -= 30;
-        }
-
-        guiGraphics.drawString(
-                this.font,
-                gUITween$screenName,
-                x,
-                y,
-                0xFF0000, // 浅灰色
-                false
-        );
-
-        poseStack.popPose();
-    }
-
     @Inject(
             method = "renderBackground",
             at = @At(
@@ -371,7 +347,7 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
             )
     )
     public void renderBgBefore(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
-        if (GUITweenUtility.COMPAT_WINDOW.contains(getClass()))
+        if (GUITweenUtility.isCompatWindow(getClass()))
             return;
 
         if (gUiTween$inTween) { // 某些界面重写了render方法，导致没有取消渲染动画，需要强行终止

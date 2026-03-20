@@ -5,13 +5,13 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.p3pp3rf1y.sophisticatedbackpacks.client.gui.BackpackScreen;
+import net.p3pp3rf1y.sophisticatedcore.client.gui.StorageScreenBase;
 
 @EventBusSubscriber
 public class SophisticatedBackpackCompat {
     public static void init() {
         if (ModList.get().isLoaded("sophisticatedbackpacks")) {
-            GUITweenUtility.COMPAT_WINDOW.add(BackpackScreen.class);
+            GUITweenUtility.addCompatWindow(screenClass -> StorageScreenBase.class.isAssignableFrom(screenClass));
         }
     }
 
