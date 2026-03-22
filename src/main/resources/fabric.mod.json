@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "id": "guitween",
+  "version": "${version}",
+  "name": "GUI Tween",
+  "description": "${mod_description}",
+  "authors": [
+    "${mod_authors}"
+  ],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/guitween/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "fabric-datagen": [
+      "com.remarxk.guitween.client.GUITweenDataGenerator"
+    ],
+    "client": [
+      "com.remarxk.guitween.client.GUITweenClient"
+    ],
+    "main": [
+      "com.remarxk.guitween.GUITween"
+    ]
+  },
+  "mixins": [
+    {
+      "config": "guitween.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric-api": "*",
+    "minecraft": "${minecraft_version}",
+    "fzzy_config": "0.7.6+1.21.11"
+  }
+}
