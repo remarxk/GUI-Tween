@@ -6,6 +6,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -13,7 +15,7 @@ import net.minecraftforge.fml.common.Mod;
 import java.util.HashMap;
 import java.util.Map;
 
-@Mod.EventBusSubscriber
+@Mod.EventBusSubscriber(modid = GUITween.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class WindowSlotsLoader extends SimpleJsonResourceReloadListener {
     private static final Gson GSON = new GsonBuilder().create();
 
@@ -23,10 +25,6 @@ public class WindowSlotsLoader extends SimpleJsonResourceReloadListener {
 
     public WindowSlotsLoader() {
         super(GSON,  "window_slots"); // 对应 data/<modid>/custom_slots
-    }
-
-    public WindowSlotsLoader(Gson gson, String directory) {
-        super(gson, directory);
     }
 
     public static WindowSlotsLoader getInstance() {
@@ -64,7 +62,7 @@ public class WindowSlotsLoader extends SimpleJsonResourceReloadListener {
     }
 
     @SubscribeEvent
-    public static void onAddReloadListenerEvent(AddReloadListenerEvent event) {
-        event.addListener(getInstance());
+    public static void onAddReloadListenerEvent(RegisterClientReloadListenersEvent event) {
+        event.registerReloadListener(getInstance());
     }
 }

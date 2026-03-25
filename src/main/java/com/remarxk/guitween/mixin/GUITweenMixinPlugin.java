@@ -1,10 +1,12 @@
 package com.remarxk.guitween.mixin;
 
 import com.corosus.watut.WatutMod;
+import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import dev.ftb.mods.ftblibrary.FTBLibrary;
 import fuzs.overflowingbars.OverflowingBars;
 import mezz.jei.api.constants.ModIds;
 import net.minecraftforge.fml.loading.LoadingModList;
-import net.p3pp3rf1y.sophisticatedbackpacks.SophisticatedBackpacks;
+import net.p3pp3rf1y.sophisticatedcore.SophisticatedCore;
 import org.embeddedt.embeddium.api.EmbeddiumConstants;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
@@ -47,11 +49,19 @@ public class GUITweenMixinPlugin implements IMixinConfigPlugin {
         }
 
         if (mixinClassName.contains("com.remarxk.guitween.mixin.sophisticated")) {
-            return modIsLoad(SophisticatedBackpacks.MOD_ID);
+            return modIsLoad(SophisticatedCore.MOD_ID);
         }
 
         if (mixinClassName.contains("com.remarxk.guitween.mixin.watut")) {
             return modIsLoad(WatutMod.MODID);
+        }
+
+        if (mixinClassName.contains("com.remarxk.guitween.mixin.touhoulittlemaid")) {
+            return modIsLoad(TouhouLittleMaid.MOD_ID);
+        }
+
+        if (mixinClassName.contains("com.remarxk.guitween.mixin.ftblibrary")) {
+            return modIsLoad(FTBLibrary.MOD_ID);
         }
 
         return true;

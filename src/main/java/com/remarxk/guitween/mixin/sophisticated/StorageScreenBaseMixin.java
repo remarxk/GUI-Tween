@@ -5,6 +5,7 @@ import com.remarxk.guitween.GUITween;
 import com.remarxk.guitween.GUITweenUtility;
 import com.remarxk.guitween.anim.Tween;
 import com.remarxk.guitween.anim.TweenPool;
+import com.remarxk.guitween.compat.CompatUtility;
 import com.remarxk.guitween.config.GUITweenConfig;
 import com.remarxk.guitween.mixinAccess.AbstractContainerScreenMixinAccess;
 import com.remarxk.guitween.util.Ease;
@@ -66,6 +67,9 @@ public abstract class StorageScreenBaseMixin<S extends StorageContainerMenuBase<
 
         float dx = TweenUtil.tween(GUITween.CONFIG.windowMoveX, 0, moveProgress, GUITween.CONFIG.windowMoveEase.get());
         float dy = TweenUtil.tween(GUITween.CONFIG.windowMoveY, 0, moveProgress, GUITween.CONFIG.windowMoveEase.get());
+        float alpha = TweenUtil.tween(GUITweenUtility.fFontMinAlpha, 1, gradientProgress, GUITween.CONFIG.windowGradientEase.get());
+
+        CompatUtility.startOpenTween(dx, dy, alpha);
 
         PoseStack poseStack = guiGraphics.pose();
 
@@ -73,7 +77,6 @@ public abstract class StorageScreenBaseMixin<S extends StorageContainerMenuBase<
         poseStack.pushPose();
         poseStack.translate(dx, dy, 0);  // 上移
 
-        float alpha = TweenUtil.tween(GUITweenUtility.fFontMinAlpha, 1, gradientProgress, GUITween.CONFIG.windowGradientEase.get());
         GUITweenUtility.pushAlpha(alpha);
     }
 

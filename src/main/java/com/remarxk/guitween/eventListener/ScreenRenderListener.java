@@ -3,6 +3,7 @@ package com.remarxk.guitween.eventListener;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.remarxk.guitween.GUITween;
 import com.remarxk.guitween.GUITweenUtility;
+import com.remarxk.guitween.compat.CompatUtility;
 import com.remarxk.guitween.mixinAccess.AbstractContainerScreenMixinAccess;
 import com.remarxk.guitween.util.TweenUtil;
 import net.minecraft.client.Minecraft;
@@ -42,7 +43,7 @@ public class ScreenRenderListener {
             guiGraphics.pose().popPose();
         }
 
-        if (GUITweenUtility.COMPAT_WINDOW.contains(containerScreen.getClass()))
+        if (GUITweenUtility.isCompatWindow(containerScreen.getClass()))
             return;
 
         String gUITween$screenName = access.getGUITween$screenName();
@@ -66,6 +67,8 @@ public class ScreenRenderListener {
 
         float dx = TweenUtil.tween(GUITween.CONFIG.windowMoveX, 0, moveProgress, GUITween.CONFIG.windowMoveEase.get());
         float dy = TweenUtil.tween(GUITween.CONFIG.windowMoveY, 0, moveProgress, GUITween.CONFIG.windowMoveEase.get());
+        float alpha = TweenUtil.tween(0.05f, 1, gradientProgress, GUITween.CONFIG.windowGradientEase.get());
+        CompatUtility.startOpenTween(dx, dy, alpha);
 
         PoseStack poseStack = guiGraphics.pose();
 
@@ -73,7 +76,6 @@ public class ScreenRenderListener {
         poseStack.pushPose();
         poseStack.translate(dx, dy, 0);  // 上移
 
-        float alpha = TweenUtil.tween(0.05f, 1, gradientProgress, GUITween.CONFIG.windowGradientEase.get());
         GUITweenUtility.pushAlpha(alpha);
     }
 
@@ -121,6 +123,8 @@ public class ScreenRenderListener {
 
             PoseStack poseStack = guiGraphics.pose();
             poseStack.popPose();
+
+            CompatUtility.endOpenTween();
         }
 
         access.setGUITween$inTween(false);

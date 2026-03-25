@@ -6,17 +6,20 @@ import com.remarxk.guitween.anim.UseTween;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.MerchantScreen;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Stack;
 
 public class GUITweenUtility {
+    public interface CompatWindowCheck {
+        public boolean isCompatWindow(Class<?> screenClass);
+    }
+
     public static final float fFontMinAlpha = 0.02f;
     public static final int iFontMinAlpha = 5;
 
-    public static boolean beforeBackground = false;
-
-    public static final HashSet<Class<?>> WINDOW_DELAY_TICK = new HashSet<>();
-    public static final HashSet<Class<?>> COMPAT_WINDOW = new HashSet<>();
+    private static final List<CompatWindowCheck> COMPAT_WINDOW = new ArrayList<>();
 
     public static String openScreenName;
     public static float openScreenTick;
@@ -28,12 +31,21 @@ public class GUITweenUtility {
     private final static UseTween usingTween = new UseTween();
     private final static DragTween dragTween = new DragTween();
 
-    static {
-        WINDOW_DELAY_TICK.add(MerchantScreen.class);
-    }
-
     public static float getDeltaTicks() {
         return Minecraft.getInstance().getDeltaFrameTime();
+    }
+
+    public static void addCompatWindow(CompatWindowCheck check) {
+        COMPAT_WINDOW.add(check);
+    }
+
+    public static boolean isCompatWindow(Class<?> screenClass) {
+        for (var check : COMPAT_WINDOW) {
+            if (check.isCompatWindow(screenClass))
+                return true;
+        }
+
+        return false;
     }
 
     public static void setOpenScreen(String screenName, float tick) {

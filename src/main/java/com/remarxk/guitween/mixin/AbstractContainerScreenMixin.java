@@ -518,9 +518,9 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
             poseStack.translate(centerX, centerY, 0);
             poseStack.scale(scale, scale, 1.0f); // Z轴缩放不影响2D渲染，设为1
 //            poseStack.mulPose(Axis.ZP.rotationDegrees(angle));
-            poseStack.translate(-centerX, -centerY, 50);
+            poseStack.translate(-centerX, -centerY, 0);
 
-            poseStack.translate(dx, dy, 50);
+            poseStack.translate(dx, dy, 0);
         }
     }
 

@@ -25,7 +25,9 @@
     "rei.BatchedEntryRendererManagerMixin",
     "rei.DefaultScreenOverlayRendererMixin",
     "rei.ScreenOverlayImpMixin",
-    "sophisticated.StorageScreenBaseMixin"
+    "sophisticated.StorageScreenBaseMixin",
+    "ftblibrary.SidebarGroupGuiButtonMixin",
+    "touhoulittlemaid.AbstractMaidContainerGuiMixin"
   ],
   "injectors": {
     "defaultRequire": 0

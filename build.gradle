@@ -164,7 +164,6 @@ dependencies {
     runtimeOnly fg.deobf("curse.maven:oculus-581495:6020952")
 
     compileOnly fg.deobf("curse.maven:sophisticated-core-618298:7645911")
-    compileOnly fg.deobf("curse.maven:sophisticated-backpacks-422301:7645913")
     runtimeOnly fg.deobf("curse.maven:sophisticated-core-618298:7645911")
     runtimeOnly fg.deobf("curse.maven:sophisticated-backpacks-422301:7645913")
 
@@ -174,7 +173,7 @@ dependencies {
 //    runtimeOnly fg.deobf("curse.maven:cloth-config-348521:5729105")
 
     compileOnly fg.deobf("curse.maven:architectury-api-419699:5137938")
-//    runtimeOnly fg.deobf("curse.maven:architectury-api-419699:5137938")
+    runtimeOnly fg.deobf("curse.maven:architectury-api-419699:5137938")
     compileOnly fg.deobf("curse.maven:roughly-enough-items-310111:5846923")
 //    runtimeOnly fg.deobf("curse.maven:roughly-enough-items-310111:5846923")
 
@@ -200,7 +199,11 @@ dependencies {
     compileOnly fg.deobf("curse.maven:what-are-they-up-to-945479:6315241")
 //    runtimeOnly fg.deobf("curse.maven:what-are-they-up-to-945479:6315241")
 
-    runtimeOnly fg.deobf("curse.maven:gregtechceu-modern-890405:7625262")
+    compileOnly fg.deobf("curse.maven:touhou-little-maid-355044:7510714")
+    runtimeOnly fg.deobf("curse.maven:touhou-little-maid-355044:7510714")
+
+    compileOnly fg.deobf("curse.maven:ftb-library-forge-404465:7296748")
+    runtimeOnly fg.deobf("curse.maven:ftb-library-forge-404465:7296748")
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
