@@ -298,6 +298,7 @@ public abstract class AbstractContainerScreenMixin <T extends ScreenHandler> ext
                     8, 8,
                     new ButtonTextures(COPY_TEXTURE, COPY_TEXTURE, COPY_HOVER_TEXTURE),
                     button -> {
+                        GUITween.LOGGER.info(gUITween$screenName);
                         MinecraftClient.getInstance().keyboard.setClipboard(gUITween$screenName);
                     }
             );
@@ -311,7 +312,7 @@ public abstract class AbstractContainerScreenMixin <T extends ScreenHandler> ext
             }
             gUITween$copyNameBtn.setPosition(x, y);
 
-            addDrawable(gUITween$copyNameBtn);
+            addDrawableChild(gUITween$copyNameBtn);
         }
         else {
             remove(gUITween$copyNameBtn);
