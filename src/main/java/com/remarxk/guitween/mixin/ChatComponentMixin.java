@@ -1,5 +1,7 @@
 package com.remarxk.guitween.mixin;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.remarxk.guitween.GUITweenUtility;
 import com.remarxk.guitween.anim.ChatTween;
 import com.remarxk.guitween.config.GUITweenConfig;
@@ -15,6 +17,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.profiling.Profiler;
 import net.minecraft.util.profiling.ProfilerFiller;
 import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.injection.At;
 
 import java.util.List;
 
@@ -81,8 +84,19 @@ public abstract class ChatComponentMixin {
      * @author remarxk
      * @reason add animation
      */
-    @Overwrite
-    private void render(final ChatComponent.ChatGraphicsAccess chatGraphicsAccess, int height, int tickCount, boolean focused) {
+    @WrapOperation(
+            method = "render(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/gui/Font;IIIZZ)V",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/gui/components/ChatComponent;render(Lnet/minecraft/client/gui/components/ChatComponent$ChatGraphicsAccess;IIZ)V"
+            )
+    )
+    private void render(ChatComponent instance, ChatComponent.ChatGraphicsAccess chatGraphicsAccess, int height, int tickCount, boolean focused, Operation<Void> original) {
+        if (!GUITweenConfig.isEnableChatComp()) {
+            original.call(instance, chatGraphicsAccess, height, tickCount, focused);
+            return;
+        }
+
         if (!this.isChatHidden()) {
             int i = this.trimmedMessages.size();
             if (i > 0) {

@@ -10,6 +10,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -17,7 +18,7 @@ import net.neoforged.neoforge.client.event.ContainerScreenEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import org.joml.Matrix3x2fStack;
 
-@EventBusSubscriber(modid = GUITween.MODID)
+@EventBusSubscriber(modid = GUITween.MODID, value = Dist.CLIENT)
 public class ScreenRenderListener {
 //    @SubscribeEvent(priority = EventPriority.HIGHEST)
 //    public static void onRenderBackground(ContainerScreenEvent.Render.Foreground event) {
