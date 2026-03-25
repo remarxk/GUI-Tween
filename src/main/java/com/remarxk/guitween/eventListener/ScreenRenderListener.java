@@ -3,6 +3,7 @@ package com.remarxk.guitween.eventListener;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.remarxk.guitween.GUITween;
 import com.remarxk.guitween.GUITweenUtility;
+import com.remarxk.guitween.compat.CompatUtility;
 import com.remarxk.guitween.config.GUITweenConfig;
 import com.remarxk.guitween.mixinAccess.AbstractContainerScreenMixinAccess;
 import com.remarxk.guitween.util.DebugUtil;
@@ -101,6 +102,8 @@ public class ScreenRenderListener {
             GUITweenUtility.popAlpha();
 
             poseStack.popPose();
+
+            CompatUtility.endOpenTween();
         }
 
         access.setGUITween$inTween(false);

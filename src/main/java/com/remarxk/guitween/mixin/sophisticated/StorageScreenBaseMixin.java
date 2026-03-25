@@ -5,6 +5,7 @@ import com.remarxk.guitween.GUITween;
 import com.remarxk.guitween.GUITweenUtility;
 import com.remarxk.guitween.anim.Tween;
 import com.remarxk.guitween.anim.TweenPool;
+import com.remarxk.guitween.compat.CompatUtility;
 import com.remarxk.guitween.config.GUITweenConfig;
 import com.remarxk.guitween.mixinAccess.AbstractContainerScreenMixinAccess;
 import com.remarxk.guitween.util.Ease;
@@ -42,7 +43,8 @@ public abstract class StorageScreenBaseMixin<S extends StorageContainerMenuBase<
             method = "render",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/p3pp3rf1y/sophisticatedcore/client/gui/UpgradeSettingsTabControl;render(Lnet/minecraft/client/gui/GuiGraphics;IIF)V")
+                    target = "Lnet/p3pp3rf1y/sophisticatedcore/client/gui/UpgradeSettingsTabControl;render(Lnet/minecraft/client/gui/GuiGraphics;IIF)V"
+            )
     )
     public void renderBefore(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
         if (!(this instanceof AbstractContainerScreenMixinAccess access))
@@ -74,6 +76,9 @@ public abstract class StorageScreenBaseMixin<S extends StorageContainerMenuBase<
 
         float dx = TweenUtil.tween(GUITweenConfig.window.moveX.get().floatValue(), 0, moveProgress, GUITweenConfig.window.moveEase.get());
         float dy = TweenUtil.tween(GUITweenConfig.window.moveY.get().floatValue(), 0, moveProgress, GUITweenConfig.window.moveEase.get());
+        float alpha = TweenUtil.tween(GUITweenUtility.fFontMinAlpha, 1, gradientProgress, GUITweenConfig.window.gradientEase.get());
+
+        CompatUtility.startOpenTween(dx, dy, alpha);
 
         PoseStack poseStack = guiGraphics.pose();
 
@@ -81,7 +86,6 @@ public abstract class StorageScreenBaseMixin<S extends StorageContainerMenuBase<
         poseStack.pushPose();
         poseStack.translate(dx, dy, 0);  // 上移
 
-        float alpha = TweenUtil.tween(GUITweenUtility.fFontMinAlpha, 1, gradientProgress, GUITweenConfig.window.gradientEase.get());
         GUITweenUtility.pushAlpha(alpha);
     }
 

@@ -6,8 +6,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 
 import java.util.HashMap;
@@ -23,10 +25,6 @@ public class WindowSlotsLoader extends SimpleJsonResourceReloadListener {
 
     public WindowSlotsLoader() {
         super(GSON,  "window_slots"); // 对应 data/<modid>/custom_slots
-    }
-
-    public WindowSlotsLoader(Gson gson, String directory) {
-        super(gson, directory);
     }
 
     public static WindowSlotsLoader getInstance() {
@@ -64,7 +62,7 @@ public class WindowSlotsLoader extends SimpleJsonResourceReloadListener {
     }
 
     @SubscribeEvent
-    public static void onAddReloadListenerEvent(AddReloadListenerEvent event) {
-        event.addListener(getInstance());
+    public static void onAddReloadListenerEvent(RegisterClientReloadListenersEvent event) {
+        event.registerReloadListener(getInstance());
     }
 }

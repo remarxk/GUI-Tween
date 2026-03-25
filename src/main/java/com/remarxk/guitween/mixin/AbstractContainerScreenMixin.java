@@ -5,6 +5,7 @@ import com.mojang.math.Axis;
 import com.remarxk.guitween.GUITween;
 import com.remarxk.guitween.anim.DragTween;
 import com.remarxk.guitween.anim.Tween;
+import com.remarxk.guitween.compat.CompatUtility;
 import com.remarxk.guitween.dataPack.WindowSlotsConfig;
 import com.remarxk.guitween.dataPack.WindowSlotsLoader;
 import com.remarxk.guitween.GUITweenUtility;
@@ -376,6 +377,9 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
 
         float dx = TweenUtil.tween(GUITweenConfig.window.moveX.get().floatValue(), 0, moveProgress, GUITweenConfig.window.moveEase.get());
         float dy = TweenUtil.tween(GUITweenConfig.window.moveY.get().floatValue(), 0, moveProgress, GUITweenConfig.window.moveEase.get());
+        float alpha = TweenUtil.tween(GUITweenUtility.fFontMinAlpha, 1, gradientProgress, GUITweenConfig.window.gradientEase.get());
+
+        CompatUtility.startOpenTween(dx, dy, alpha);
 
         PoseStack poseStack = guiGraphics.pose();
 
@@ -383,7 +387,6 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
         poseStack.pushPose();
         poseStack.translate(dx, dy, 0);  // 上移
 
-        float alpha = TweenUtil.tween(GUITweenUtility.fFontMinAlpha, 1, gradientProgress, GUITweenConfig.window.gradientEase.get());
         GUITweenUtility.pushAlpha(alpha);
     }
 
@@ -580,9 +583,9 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
             poseStack.translate(centerX, centerY, 0);
             poseStack.scale(scale, scale, 1.0f); // Z轴缩放不影响2D渲染，设为1
             //            poseStack.mulPose(Axis.ZP.rotationDegrees(angle));
-            poseStack.translate(-centerX, -centerY, 50);
+            poseStack.translate(-centerX, -centerY, 0);
 
-            poseStack.translate(dx, dy, 50);
+            poseStack.translate(dx, dy, 0);
         }
     }
 

@@ -133,7 +133,7 @@ dependencies {
 //    runtimeOnly "curse.maven:cloth-config-348521:5729127"
 
     compileOnly "curse.maven:architectury-api-419699:5786327"
-//    runtimeOnly "curse.maven:architectury-api-419699:5786327"
+    runtimeOnly "curse.maven:architectury-api-419699:5786327"
     compileOnly "curse.maven:roughly-enough-items-310111:6199140"
 //    runtimeOnly "curse.maven:roughly-enough-items-310111:6199140"
 
@@ -158,20 +158,11 @@ dependencies {
     compileOnly "curse.maven:what-are-they-up-to-945479:6418577"
     runtimeOnly "curse.maven:what-are-they-up-to-945479:6418577"
 
-    // Example mod dependency using a mod jar from ./libs with a flat dir repository
-    // This maps to ./libs/coolmod-${mc_version}-${coolmod_version}.jar
-    // The group id is ignored when searching -- in this case, it is "blank"
-    // implementation "blank:coolmod-${mc_version}:${coolmod_version}"
+    compileOnly "curse.maven:touhou-little-maid-355044:7510722"
+    runtimeOnly "curse.maven:touhou-little-maid-355044:7510722"
 
-    // Example mod dependency using a file as dependency
-    // implementation files("libs/coolmod-${mc_version}-${coolmod_version}.jar")
-
-    // Example project dependency using a sister or child project:
-    // implementation project(":myproject")
-
-    // For more info:
-    // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
-    // http://www.gradle.org/docs/current/userguide/dependency_management.html
+    compileOnly "curse.maven:ftb-library-forge-404465:7746959"
+    runtimeOnly "curse.maven:ftb-library-forge-404465:7746959"
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

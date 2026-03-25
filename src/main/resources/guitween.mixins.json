@@ -17,6 +17,7 @@
     "emi.EmiClientForgeMixin",
     "emi.EmiScreenManagerMixin",
     "emi.EmiStackBatcherMixin",
+    "ftblibrary.SidebarGroupGuiButtonMixin",
     "jei.BookmarkOverlayMixin",
     "jei.IngredientListOverlayMixin",
     "overflowingbars.ArmorBarRendererMixin",
@@ -24,7 +25,8 @@
     "rei.DefaultScreenOverlayRendererMixin",
     "rei.ScreenOverlayImpMixin",
     "sodium.SodiumBakedModelEncoderMixin",
-    "sophisticated.StorageScreenBaseMixin"
+    "sophisticated.StorageScreenBaseMixin",
+    "touhoulittlemaid.AbstractMaidContainerGuiMixin"
   ],
   "injectors": {
     "defaultRequire": 0
