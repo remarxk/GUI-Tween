@@ -41,6 +41,8 @@ public class ScreenRenderListener {
 
             GUITweenUtility.popAlpha();
             guiGraphics.pose().popPose();
+
+            CompatUtility.endOpenTween();
         }
 
         if (GUITweenUtility.isCompatWindow(containerScreen.getClass()))

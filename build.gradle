@@ -205,6 +205,8 @@ dependencies {
     compileOnly fg.deobf("curse.maven:ftb-library-forge-404465:7296748")
     runtimeOnly fg.deobf("curse.maven:ftb-library-forge-404465:7296748")
 
+    runtimeOnly fg.deobf("curse.maven:create-328085:7178761")
+
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
 //    compileOnly group: 'me.fzzyhmstrs', name: 'fzzy_config', version: "${fzzy_config_version}+forge"

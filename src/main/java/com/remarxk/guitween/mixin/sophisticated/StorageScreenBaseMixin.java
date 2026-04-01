@@ -54,6 +54,16 @@ public abstract class StorageScreenBaseMixin<S extends StorageContainerMenuBase<
         if (!GUITween.CONFIG.isEnableWindow())
             return;
 
+        if (access.getGUITween$inTween()) { // 某些界面重写了render方法，导致没有取消渲染动画，需要强行终止
+            access.setGUITween$inTween(false);
+            access.setGUITween$isDisableScreenTween(true);
+
+            GUITweenUtility.popAlpha();
+            guiGraphics.pose().popPose();
+
+            CompatUtility.endOpenTween();
+        }
+
         if (access.getGUITween$isDisableScreenTween())
             return;
 
