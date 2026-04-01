@@ -142,6 +142,8 @@ public class GUITweenUtility {
         return dragTween;
     }
 
+    public static boolean enablePictureMatrix = false;
+
     private final static HashMap<PictureInPictureRenderState, Matrix3x2f> pictureMatrix = new HashMap<>();
 
     public static void pushPictureMatrix(PictureInPictureRenderState renderState, Matrix3x2f matrix) {

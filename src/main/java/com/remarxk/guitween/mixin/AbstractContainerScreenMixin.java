@@ -373,6 +373,7 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
             gUITween$isDisableScreenTween = true;
 
             GUITweenUtility.popAlpha();
+            GUITweenUtility.enablePictureMatrix = false;
             guiGraphics.pose().popMatrix();
         }
 
@@ -403,6 +404,7 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
 
         float alpha = TweenUtil.tween(GUITweenUtility.fFontMinAlpha, 1, gradientProgress, GUITweenConfig.window.gradientEase.get());
         GUITweenUtility.pushAlpha(alpha);
+        GUITweenUtility.enablePictureMatrix = true;
     }
 
 //    @Inject(method = "render", at = @At(value = "TAIL"))

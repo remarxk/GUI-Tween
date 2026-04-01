@@ -99,6 +99,7 @@ public class ScreenRenderListener {
 
         if (access.getGUITween$inTween()) {
             GUITweenUtility.popAlpha();
+            GUITweenUtility.enablePictureMatrix = false;
 
             poseStack.popMatrix();
         }
