@@ -357,6 +357,8 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
 
             GUITweenUtility.popAlpha();
             guiGraphics.pose().popPose();
+
+            CompatUtility.endOpenTween();
         }
 
         GUITweenUtility.setOpenScreen(gUITween$screenName, gUITween$openTick);

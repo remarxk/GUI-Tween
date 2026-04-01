@@ -3,6 +3,7 @@ package com.remarxk.guitween;
 import com.remarxk.guitween.anim.AttackTween;
 import com.remarxk.guitween.anim.DragTween;
 import com.remarxk.guitween.anim.UseTween;
+import com.remarxk.guitween.util.DebugUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.MerchantScreen;
 

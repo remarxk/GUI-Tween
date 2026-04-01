@@ -156,13 +156,19 @@ dependencies {
     runtimeOnly "curse.maven:coroutil-237749:5622966"
 
     compileOnly "curse.maven:what-are-they-up-to-945479:6418577"
-    runtimeOnly "curse.maven:what-are-they-up-to-945479:6418577"
+//    runtimeOnly "curse.maven:what-are-they-up-to-945479:6418577"
 
     compileOnly "curse.maven:touhou-little-maid-355044:7510722"
     runtimeOnly "curse.maven:touhou-little-maid-355044:7510722"
 
     compileOnly "curse.maven:ftb-library-forge-404465:7746959"
     runtimeOnly "curse.maven:ftb-library-forge-404465:7746959"
+
+//    runtimeOnly "curse.maven:ftb-jei-extras-1103259:6695679"
+//    runtimeOnly "curse.maven:ftb-quests-forge-289412:7775452"
+//    runtimeOnly "curse.maven:ftb-teams-forge-404468:7369021"
+
+    runtimeOnly "curse.maven:create-328085:7408951"
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

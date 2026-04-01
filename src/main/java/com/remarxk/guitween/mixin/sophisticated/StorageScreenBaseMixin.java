@@ -61,6 +61,8 @@ public abstract class StorageScreenBaseMixin<S extends StorageContainerMenuBase<
 
             GUITweenUtility.popAlpha();
             guiGraphics.pose().popPose();
+
+            CompatUtility.endOpenTween();
         }
 
         if (access.getGUITween$isDisableScreenTween())
