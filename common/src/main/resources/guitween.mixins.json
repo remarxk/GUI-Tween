@@ -1,0 +1,32 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.remarxk.guitween.mixin",
+  "refmap": "${mod_id}.refmap.json",
+  "compatibilityLevel": "JAVA_18",
+  "plugin": "com.remarxk.guitween.mixin.GUITweenMixinPlugin",
+  "mixins": [],
+  "client": [
+    "AbstractContainerScreenMixin",
+    "ChatComponentMixin",
+    "ChatScreenMixin",
+    "GuiMixin",
+    "GuiGraphicsMixin",
+    "GuiItemRenderStateMixin",
+    "GuiRendererMixin",
+    "GuiRenderStateMixin",
+    "LocalPlayerMixin",
+    "MinecraftMixin",
+    "PictureInPictureRendererMixin",
+    "ScreenMixin",
+    "ScrollWheelHandlerMixin",
+    "jei.BookmarkOverlayMixin",
+    "jei.GuiEventHandlerMixin",
+    "jei.IngredientListOverlayMixin"
+  ],
+  "server": [],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
+

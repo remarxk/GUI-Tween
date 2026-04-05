@@ -1,0 +1,346 @@
+package com.remarxk.guitween.config;
+
+import com.remarxk.guitween.util.Ease;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class NeoForgeConfigAdapter implements IGUITweenConfig {
+    @Override public boolean enable() { return NeoforgeGUITweenConfig.enable.get(); }
+    @Override public boolean enableDebugWindow() { return NeoforgeGUITweenConfig.enableDebugWindow.get(); }
+
+    @Override
+    public boolean isEnableDebugWindow() {
+        return NeoforgeGUITweenConfig.isEnableDebugWindow();
+    }
+
+    @Override public boolean enableWindow() { return NeoforgeGUITweenConfig.window.enable.get(); }
+    @Override public boolean enableCloseWindow() { return NeoforgeGUITweenConfig.window.enableCloseWindow.get(); }
+    @Override public boolean enableJeiLeft() { return NeoforgeGUITweenConfig.window.enableJeiLeft.get(); }
+    @Override public boolean enableJeiRight() { return NeoforgeGUITweenConfig.window.enableJeiRight.get(); }
+
+    @Override public float windowMoveDuration() { return NeoforgeGUITweenConfig.window.moveDuration.get().floatValue(); }
+
+    @Override
+    public Ease windowMoveEase() {
+        return NeoforgeGUITweenConfig.window.moveEase.get();
+    }
+
+    @Override
+    public float windowMoveX() {
+        return NeoforgeGUITweenConfig.window.moveX.get().floatValue();
+    }
+
+    @Override
+    public float windowMoveY() {
+        return NeoforgeGUITweenConfig.window.moveY.get().floatValue();
+    }
+
+    @Override public float windowGradientDuration() { return NeoforgeGUITweenConfig.window.gradientDuration.get().floatValue(); }
+
+    @Override
+    public Ease windowGradientEase() {
+        return NeoforgeGUITweenConfig.window.gradientEase.get();
+    }
+
+    @Override
+    public float closeWindowSpeed() {
+        return NeoforgeGUITweenConfig.window.closeWindowSpeed.get().floatValue();
+    }
+
+    @Override public float jeiLeftMoveDuration() { return NeoforgeGUITweenConfig.window.jeiLeftMoveDuration.get().floatValue(); }
+
+    @Override
+    public Ease jeiLeftMoveEase() {
+        return NeoforgeGUITweenConfig.window.jeiLeftMoveEase.get();
+    }
+
+    @Override
+    public float jeiLeftMoveX() {
+        return NeoforgeGUITweenConfig.window.jeiLeftMoveX.get().floatValue();
+    }
+
+    @Override
+    public float jeiLeftMoveY() {
+        return NeoforgeGUITweenConfig.window.jeiRightMoveY.get().floatValue();
+    }
+
+    @Override public float jeiRightMoveDuration() { return NeoforgeGUITweenConfig.window.jeiRightMoveDuration.get().floatValue(); }
+
+    @Override
+    public Ease jeiRightMoveEase() {
+        return NeoforgeGUITweenConfig.window.jeiRightMoveEase.get();
+    }
+
+    @Override
+    public float jeiRightMoveX() {
+        return NeoforgeGUITweenConfig.window.jeiRightMoveX.get().floatValue();
+    }
+
+    @Override
+    public float jeiRightMoveY() {
+        return NeoforgeGUITweenConfig.window.jeiRightMoveY.get().floatValue();
+    }
+
+    @Override public List<String> disableNames() { return castStringList(NeoforgeGUITweenConfig.window.disableNames.get()); }
+
+    @Override public boolean enableHover() { return NeoforgeGUITweenConfig.windowItem.enableHover.get(); }
+
+    @Override
+    public float hoverDuration() {
+        return NeoforgeGUITweenConfig.windowItem.hoverDuration.get().floatValue();
+    }
+
+    @Override
+    public Ease hoverEase() {
+        return NeoforgeGUITweenConfig.windowItem.hoverEase.get();
+    }
+
+    @Override
+    public float hoverScale() {
+        return NeoforgeGUITweenConfig.windowItem.hoverScale.get().floatValue();
+    }
+
+    @Override public boolean enableTooltip() { return NeoforgeGUITweenConfig.windowItem.enableTooltip.get(); }
+
+    @Override
+    public float tooltipDuration() {
+        return NeoforgeGUITweenConfig.windowItem.tooltipDuration.get().floatValue();
+    }
+
+    @Override
+    public Ease tooltipEase() {
+        return NeoforgeGUITweenConfig.windowItem.tooltipEase.get();
+    }
+
+    @Override public boolean enableClickItem() { return NeoforgeGUITweenConfig.windowItem.enableClickItem.get(); }
+
+    @Override
+    public float clickItemScale() {
+        return NeoforgeGUITweenConfig.windowItem.clickItemScale.get().floatValue();
+    }
+
+    @Override
+    public float clickZoomStrength() {
+        return NeoforgeGUITweenConfig.windowItem.clickZoomStrength.get().floatValue();
+    }
+
+    @Override
+    public float clickItemDuration() {
+        return NeoforgeGUITweenConfig.windowItem.clickItemDuration.get().floatValue();
+    }
+
+    @Override public boolean enableOutput() { return NeoforgeGUITweenConfig.windowItem.enableOutput.get(); }
+
+    @Override
+    public float outputDuration() {
+        return NeoforgeGUITweenConfig.windowItem.outputDuration.get().floatValue();
+    }
+
+    @Override
+    public Ease outputEase() {
+        return NeoforgeGUITweenConfig.windowItem.outputEase.get();
+    }
+
+    @Override public boolean enableDrag() { return NeoforgeGUITweenConfig.windowItem.enableDrag.get(); }
+
+    @Override
+    public float dragMaxAngle() {
+        return NeoforgeGUITweenConfig.windowItem.dragMaxAngle.get().floatValue();
+    }
+
+    @Override
+    public float dragSensitivity() {
+        return NeoforgeGUITweenConfig.windowItem.dragSensitivity.get().floatValue();
+    }
+
+    @Override public boolean enableSameItem() { return NeoforgeGUITweenConfig.windowItem.enableSameItem.get(); }
+    @Override public boolean enableQuick() { return NeoforgeGUITweenConfig.windowItem.enableQuick.get(); }
+
+    @Override public float sameItemDelay() { return NeoforgeGUITweenConfig.windowItem.sameItemDelay.get().floatValue(); }
+
+    @Override
+    public float sameItemShakeStrength() {
+        return NeoforgeGUITweenConfig.windowItem.sameItemShakeStrength.get().floatValue();
+    }
+
+    @Override public float sameItemShakeDuration() { return NeoforgeGUITweenConfig.windowItem.sameItemShakeDuration.get().floatValue(); }
+
+    @Override
+    public float sameItemShakeFrequency() {
+        return NeoforgeGUITweenConfig.windowItem.sameItemShakeFrequency.get().floatValue();
+    }
+
+    @Override public float sameItemShakeWaitDuration() { return NeoforgeGUITweenConfig.windowItem.sameItemShakeWaitDuration.get().floatValue(); }
+
+    @Override public boolean enableHoldItem() { return NeoforgeGUITweenConfig.hotbar.enableHoldItem.get(); }
+
+    @Override
+    public boolean enableHoldZoomTransition() {
+        return NeoforgeGUITweenConfig.hotbar.enableHoldZoomTransition.get();
+    }
+
+    @Override public float holdZoomInDuration() { return NeoforgeGUITweenConfig.hotbar.holdZoomInDuration.get().floatValue(); }
+
+    @Override
+    public Ease holdZoomInEase() {
+        return NeoforgeGUITweenConfig.hotbar.holdZoomInEase.get();
+    }
+
+    @Override
+    public float holdZoomScale() {
+        return NeoforgeGUITweenConfig.hotbar.holdZoomScale.get().floatValue();
+    }
+
+    @Override public float holdZoomOutDuration() { return NeoforgeGUITweenConfig.hotbar.holdZoomOutDuration.get().floatValue(); }
+
+    @Override
+    public Ease holdZoomOutEase() {
+        return NeoforgeGUITweenConfig.hotbar.holdZoomOutEase.get();
+    }
+
+    @Override public boolean enableSelectedItemName() { return NeoforgeGUITweenConfig.hotbar.enableSelectedItemName.get(); }
+
+    @Override public float selectedItemNameMoveDuration() { return NeoforgeGUITweenConfig.hotbar.selectedItemNameMoveDuration.get().floatValue(); }
+
+    @Override
+    public float selectedItemNameMoveY() {
+        return NeoforgeGUITweenConfig.hotbar.selectedItemNameMoveY.get().floatValue();
+    }
+
+    @Override
+    public Ease selectedItemNameMoveEase() {
+        return NeoforgeGUITweenConfig.hotbar.selectedItemNameMoveEase.get();
+    }
+
+    @Override public float selectedItemNameAlphaDuration() { return NeoforgeGUITweenConfig.hotbar.selectedItemNameAlphaDuration.get().floatValue(); }
+
+    @Override
+    public Ease selectedItemNameAlphaEase() {
+        return NeoforgeGUITweenConfig.hotbar.selectedItemNameAlphaEase.get();
+    }
+
+    @Override public boolean enableAttack() { return NeoforgeGUITweenConfig.hotbar.enableAttack.get(); }
+
+    @Override
+    public float attackMaxAngle() {
+        return NeoforgeGUITweenConfig.hotbar.attackMaxAngle.get().floatValue();
+    }
+
+    @Override public boolean enableUse() { return NeoforgeGUITweenConfig.hotbar.enableUse.get(); }
+
+    @Override
+    public float useStrength() {
+        return NeoforgeGUITweenConfig.hotbar.useStrength.get().floatValue();
+    }
+
+    @Override public boolean enableLack() { return NeoforgeGUITweenConfig.hotbar.enableLack.get(); }
+
+    @Override
+    public float lackDuration() {
+        return NeoforgeGUITweenConfig.hotbar.lackDuration.get().floatValue();
+    }
+
+    @Override
+    public float lackShakeStrength() {
+        return NeoforgeGUITweenConfig.hotbar.lackShakeStrength.get().floatValue();
+    }
+
+    @Override public boolean enableSelectMove() { return NeoforgeGUITweenConfig.hotbar.enableSelectMove.get(); }
+
+    @Override
+    public float selectMoveSpeed() {
+        return NeoforgeGUITweenConfig.hotbar.selectMoveSpeed.get().floatValue();
+    }
+
+    @Override public boolean enableExp() { return NeoforgeGUITweenConfig.hotbar.enableExp.get(); }
+
+    @Override
+    public float expDuration() {
+        return NeoforgeGUITweenConfig.hotbar.expDuration.get().floatValue();
+    }
+
+    @Override
+    public Ease expEase() {
+        return NeoforgeGUITweenConfig.hotbar.expEase.get();
+    }
+
+    @Override
+    public float expScale() {
+        return NeoforgeGUITweenConfig.hotbar.expScale.get().floatValue();
+    }
+
+    @Override public boolean enableArmor() { return NeoforgeGUITweenConfig.hotbar.enableArmor.get(); }
+
+    @Override
+    public float armorDuration() {
+        return NeoforgeGUITweenConfig.hotbar.armorDuration.get().floatValue();
+    }
+
+    @Override
+    public float upArmorScale() {
+        return NeoforgeGUITweenConfig.hotbar.upArmorScale.get().floatValue();
+    }
+
+    @Override
+    public Ease upArmorEase() {
+        return NeoforgeGUITweenConfig.hotbar.upArmorEase.get();
+    }
+
+    @Override
+    public float downArmorShakeStrength() {
+        return NeoforgeGUITweenConfig.hotbar.downArmorShakeStrength.get().floatValue();
+    }
+
+    @Override public boolean enableChat() { return NeoforgeGUITweenConfig.chat.enableChat.get(); }
+    @Override public boolean enableCloseChat() { return NeoforgeGUITweenConfig.chat.enableCloseChat.get(); }
+    @Override public boolean enableChatComp() { return NeoforgeGUITweenConfig.chat.enableChatComp.get(); }
+
+    @Override public float chatOpenMoveDuration() { return NeoforgeGUITweenConfig.chat.openMoveDuration.get().floatValue(); }
+
+    @Override
+    public Ease chatOpenMoveEase() {
+        return NeoforgeGUITweenConfig.chat.openMoveEase.get();
+    }
+
+    @Override public float chatOpenGradientDuration() { return NeoforgeGUITweenConfig.chat.openGradientDuration.get().floatValue(); }
+
+    @Override
+    public Ease chatOpenGradientEase() {
+        return NeoforgeGUITweenConfig.chat.openGradientEase.get();
+    }
+
+    @Override
+    public float closeChatSpeed() {
+        return NeoforgeGUITweenConfig.chat.closeChatSpeed.get().floatValue();
+    }
+
+    @Override public float chatCompMoveDuration() { return NeoforgeGUITweenConfig.chat.compMoveDuration.get().floatValue(); }
+
+    @Override
+    public Ease chatCompMoveEase() {
+        return NeoforgeGUITweenConfig.chat.compMoveEase.get();
+    }
+
+    @Override public float chatCompGradientDuration() { return NeoforgeGUITweenConfig.chat.compGradientDuration.get().floatValue(); }
+
+    @Override
+    public Ease chatCompGradientEase() {
+        return NeoforgeGUITweenConfig.chat.compGradientEase.get();
+    }
+
+    @SuppressWarnings("unchecked")
+    public static List<String> castStringList(List<?> list) {
+        // 快速路径：空 or 已经是 String
+        if (list.isEmpty() || list.get(0) instanceof String) {
+            return (List<String>) list;
+        }
+
+        // 慢路径：逐个转换（防止类型污染）
+        List<String> result = new ArrayList<>(list.size());
+        for (Object o : list) {
+            result.add(String.valueOf(o));
+        }
+        return result;
+    }
+}

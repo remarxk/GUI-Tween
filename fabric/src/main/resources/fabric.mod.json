@@ -1,0 +1,45 @@
+{
+    "schemaVersion": 1,
+    "id": "${mod_id}",
+    "version": "${version}",
+    "name": "${mod_name}",
+    "description": "${description}",
+    "authors": [
+        "${mod_author}"
+    ],
+    "contact": {
+        "homepage": "https://github.com/remarxk",
+        "sources": "https://github.com/remarxk/GUI-Tween"
+    },
+    "license": "${license}",
+    "icon": "assets/${mod_id}/icon.png",
+    "environment": "*",
+    "entrypoints": {
+        "main": [
+            "com.remarxk.guitween.GUITween"
+        ],
+        "client": [
+            "com.remarxk.guitween.client.GUITweenClient"
+        ]
+    },
+    "mixins": [
+        {
+          "config": "${mod_id}.mixins.json",
+          "environment": "client"
+        },
+        {
+          "config": "${mod_id}.fabric.mixins.json",
+          "environment": "client"
+        }
+    ],
+    "depends": {
+        "fabricloader": ">=${fabric_loader_version}",
+        "fabric-api": "*",
+        "minecraft": "~${minecraft_version}",
+        "java": ">=${java_version}"
+    },
+    "suggests": {
+        "another-mod": "*"
+    }
+}
+  
