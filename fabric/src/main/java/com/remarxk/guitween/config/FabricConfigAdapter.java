@@ -132,4 +132,69 @@ public class FabricConfigAdapter implements IGUITweenConfig {
     @Override public Ease chatCompMoveEase() { return c.chatCompMoveEase.get(); }
     @Override public float chatCompGradientDuration() { return c.chatCompGradientDuration; }
     @Override public Ease chatCompGradientEase() { return c.chatCompGradientEase.get(); }
+
+    @Override
+    public boolean enableBossShow() {
+        return c.enableBossShow;
+    }
+
+    @Override
+    public float bossShowDuration() {
+        return c.bossShowDuration;
+    }
+
+    @Override
+    public Ease bossShowEase() {
+        return c.bossShowEase.get();
+    }
+
+    @Override
+    public float bossShowFadeDuration() {
+        return c.bossShowFadeDuration;
+    }
+
+    @Override
+    public Ease bossShowFadeEase() {
+        return c.bossShowFadeEase.get();
+    }
+
+    @Override
+    public boolean enableBossHide() {
+        return c.enableBossHide;
+    }
+
+    @Override
+    public float bossHideDuration() {
+        return c.bossHideDuration;
+    }
+
+    @Override
+    public Ease bossHideEase() {
+        return c.bossHideEase.get();
+    }
+
+    @Override
+    public float bossHideFadeDuration() {
+        return c.bossHideFadeDuration;
+    }
+
+    @Override
+    public Ease bossHideFadeEase() {
+        return c.bossHideFadeEase.get();
+    }
+
+    @Override
+    public boolean enableBossHurt() {
+        return c.enableBossHurt;
+    }
+
+    @Override
+    public float bossHurtShakeStrength() {
+        return c.bossHurtShakeStrength;
+    }
+
+    @Override
+    public float bossHurtDuration() {
+        return c.bossHurtDuration;
+    }
 }

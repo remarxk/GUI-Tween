@@ -329,6 +329,71 @@ public class NeoForgeConfigAdapter implements IGUITweenConfig {
         return NeoforgeGUITweenConfig.chat.compGradientEase.get();
     }
 
+    @Override
+    public boolean enableBossShow() {
+        return NeoforgeGUITweenConfig.boss.enableBossShow.get();
+    }
+
+    @Override
+    public float bossShowDuration() {
+        return NeoforgeGUITweenConfig.boss.bossShowDuration.get().floatValue();
+    }
+
+    @Override
+    public Ease bossShowEase() {
+        return NeoforgeGUITweenConfig.boss.bossShowEase.get();
+    }
+
+    @Override
+    public float bossShowFadeDuration() {
+        return NeoforgeGUITweenConfig.boss.bossShowFadeDuration.get().floatValue();
+    }
+
+    @Override
+    public Ease bossShowFadeEase() {
+        return NeoforgeGUITweenConfig.boss.bossShowFadeEase.get();
+    }
+
+    @Override
+    public boolean enableBossHide() {
+        return NeoforgeGUITweenConfig.boss.enableBossHide.get();
+    }
+
+    @Override
+    public float bossHideDuration() {
+        return NeoforgeGUITweenConfig.boss.bossHideDuration.get().floatValue();
+    }
+
+    @Override
+    public Ease bossHideEase() {
+        return NeoforgeGUITweenConfig.boss.bossHideEase.get();
+    }
+
+    @Override
+    public float bossHideFadeDuration() {
+        return NeoforgeGUITweenConfig.boss.bossHideFadeDuration.get().floatValue();
+    }
+
+    @Override
+    public Ease bossHideFadeEase() {
+        return NeoforgeGUITweenConfig.boss.bossHideFadeEase.get();
+    }
+
+    @Override
+    public boolean enableBossHurt() {
+        return NeoforgeGUITweenConfig.boss.enableBossHurt.get();
+    }
+
+    @Override
+    public float bossHurtShakeStrength() {
+        return NeoforgeGUITweenConfig.boss.bossHurtShakeStrength.get().floatValue();
+    }
+
+    @Override
+    public float bossHurtDuration() {
+        return NeoforgeGUITweenConfig.boss.bossHurtDuration.get().floatValue();
+    }
+
     @SuppressWarnings("unchecked")
     public static List<String> castStringList(List<?> list) {
         // 快速路径：空 or 已经是 String

@@ -8,11 +8,12 @@
   "mixins": [],
   "client": [
     "AbstractContainerScreenMixin",
+    "BossHealthOverlayMixin",
     "ChatComponentMixin",
     "ChatScreenMixin",
-    "GuiMixin",
     "GuiGraphicsMixin",
     "GuiItemRenderStateMixin",
+    "GuiMixin",
     "GuiRendererMixin",
     "GuiRenderStateMixin",
     "LocalPlayerMixin",

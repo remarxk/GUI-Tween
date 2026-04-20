@@ -130,6 +130,23 @@ public interface IGUITweenConfig {
     float chatCompGradientDuration();
     Ease chatCompGradientEase();
 
+    // ===== boss =====
+    boolean enableBossShow();
+    float bossShowDuration();
+    Ease bossShowEase();
+    float bossShowFadeDuration();
+    Ease bossShowFadeEase();
+
+    boolean enableBossHide();
+    float bossHideDuration();
+    Ease bossHideEase();
+    float bossHideFadeDuration();
+    Ease bossHideFadeEase();
+
+    boolean enableBossHurt();
+    float bossHurtShakeStrength();
+    float bossHurtDuration();
+
     // ===== 默认逻辑（复用 Fabric）=====
     default float getWindowTotalDuration() {
         float windowMax = Math.max(windowMoveDuration(), windowGradientDuration());
@@ -155,6 +172,14 @@ public interface IGUITweenConfig {
 
     default float getChatCompMaxDuration() {
         return Math.max(chatCompMoveDuration(), chatCompGradientDuration());
+    }
+
+    default float getBossShowMaxDuration() {
+        return Math.max(bossShowDuration(), bossShowFadeDuration());
+    }
+
+    default float getBossHideMaxDuration() {
+        return Math.max(bossHideDuration(), bossHideFadeDuration());
     }
 
     default boolean isDisableTweenWindow(String name) {
@@ -248,5 +273,17 @@ public interface IGUITweenConfig {
 
     default boolean isEnableChatComp() {
         return enable() && enableChatComp();
+    }
+
+    default boolean isEnableBossShow() {
+        return enable() && enableBossShow();
+    }
+
+    default boolean isEnableBossHide() {
+        return enable() && enableBossHide();
+    }
+
+    default boolean isEnableBossHurt() {
+        return enable() && enableBossHurt();
     }
 }

@@ -26,6 +26,10 @@ public class NeoforgeGUITweenConfig {
     public static final ChatTweenConfig chat;
     public static final ModConfigSpec chatSpec;
 
+    /// boss
+    public static final BossTweenConfig boss;
+    public static final ModConfigSpec bossSpec;
+
     public static final ModConfigSpec SPEC;
 
     static {
@@ -60,6 +64,12 @@ public class NeoforgeGUITweenConfig {
 
         chat = chatPair.getLeft();
         chatSpec = chatPair.getRight();
+
+        Pair<BossTweenConfig, ModConfigSpec> bossPair =
+                BUILDER.configure(BossTweenConfig::new);
+
+        boss = bossPair.getLeft();
+        bossSpec = bossPair.getRight();
 
         SPEC = BUILDER.build();
     }

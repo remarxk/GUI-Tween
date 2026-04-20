@@ -16,6 +16,8 @@ import java.util.List;
 
 @Translation(prefix = "guitween.config")
 public class FabricGUITweenConfig extends Config {
+    public final static List<Ease> EASE_LIST = Arrays.stream(Ease.values()).toList();
+
     public boolean enable = true;
 
     public boolean enableDebugWindow = false;
@@ -27,7 +29,7 @@ public class FabricGUITweenConfig extends Config {
 
     public float windowMoveDuration = 6;
 
-    public ValidatedChoice<Ease> windowMoveEase = new ValidatedChoice<>(Ease.OUT_BACK, Arrays.stream(Ease.values()).toList(), new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
+    public ValidatedChoice<Ease> windowMoveEase = new ValidatedChoice<>(Ease.OUT_BACK, EASE_LIST, new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
 
     public float windowMoveX = 0;
 
@@ -35,7 +37,7 @@ public class FabricGUITweenConfig extends Config {
 
     public float windowGradientDuration = 8;
 
-    public ValidatedChoice<Ease> windowGradientEase  = new ValidatedChoice<>(Ease.IN_OUT_SINE, Arrays.stream(Ease.values()).toList(), new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
+    public ValidatedChoice<Ease> windowGradientEase  = new ValidatedChoice<>(Ease.IN_OUT_SINE, EASE_LIST, new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
 
     public boolean enableCloseWindow = false;
 
@@ -45,7 +47,7 @@ public class FabricGUITweenConfig extends Config {
 
     public float jeiLeftMoveDuration = 6f;
 
-    public ValidatedChoice<Ease> jeiLeftMoveEase = new ValidatedChoice<>(Ease.OUT_BACK, Arrays.stream(Ease.values()).toList(), new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);;;
+    public ValidatedChoice<Ease> jeiLeftMoveEase = new ValidatedChoice<>(Ease.OUT_BACK, EASE_LIST, new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);;;
 
     public float jeiLeftMoveX = -50f;
 
@@ -55,7 +57,7 @@ public class FabricGUITweenConfig extends Config {
 
     public float jeiRightMoveDuration = 6f;
 
-    public ValidatedChoice<Ease> jeiRightMoveEase = new ValidatedChoice<>(Ease.OUT_BACK, Arrays.stream(Ease.values()).toList(), new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);;
+    public ValidatedChoice<Ease> jeiRightMoveEase = new ValidatedChoice<>(Ease.OUT_BACK, EASE_LIST, new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);;
 
     public float jeiRightMoveX = 50f;
 
@@ -67,7 +69,7 @@ public class FabricGUITweenConfig extends Config {
 
     public float hoverDuration = 4;
 
-    public ValidatedChoice<Ease> hoverEase = new ValidatedChoice<>(Ease.IN_OUT_SINE, Arrays.stream(Ease.values()).toList(), new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
+    public ValidatedChoice<Ease> hoverEase = new ValidatedChoice<>(Ease.IN_OUT_SINE, EASE_LIST, new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
 
     public float hoverScale = 1.2f;
 
@@ -75,7 +77,7 @@ public class FabricGUITweenConfig extends Config {
 
     public float tooltipDuration = 6;
 
-    public ValidatedChoice<Ease> tooltipEase = new ValidatedChoice<>(Ease.OUT_CIRC, Arrays.stream(Ease.values()).toList(), new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
+    public ValidatedChoice<Ease> tooltipEase = new ValidatedChoice<>(Ease.OUT_CIRC, EASE_LIST, new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
 
     public float clickItemScale = 1.2f;
 
@@ -89,7 +91,7 @@ public class FabricGUITweenConfig extends Config {
 
     public float outputDuration = 5;
 
-    public ValidatedChoice<Ease> outputEase = new ValidatedChoice<>(Ease.OUT_BACK, Arrays.stream(Ease.values()).toList(), new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
+    public ValidatedChoice<Ease> outputEase = new ValidatedChoice<>(Ease.OUT_BACK, EASE_LIST, new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
 
     public boolean enableDrag = true;
 
@@ -119,13 +121,13 @@ public class FabricGUITweenConfig extends Config {
 
     public float holdZoomInDuration = 8;
 
-    public ValidatedChoice<Ease> holdZoomInEase = new ValidatedChoice<>(Ease.OUT_QUINT, Arrays.stream(Ease.values()).toList(), new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
+    public ValidatedChoice<Ease> holdZoomInEase = new ValidatedChoice<>(Ease.OUT_QUINT, EASE_LIST, new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
 
     public float holdZoomScale = 1.4f;
 
     public float holdZoomOutDuration = 2;
 
-    public ValidatedChoice<Ease> holdZoomOutEase = new ValidatedChoice<>(Ease.OUT_QUART, Arrays.stream(Ease.values()).toList(), new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
+    public ValidatedChoice<Ease> holdZoomOutEase = new ValidatedChoice<>(Ease.OUT_QUART, EASE_LIST, new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
 
     public boolean enableSelectedItemName = true;
 
@@ -133,11 +135,11 @@ public class FabricGUITweenConfig extends Config {
 
     public float selectedItemNameMoveY = 5f;
 
-    public ValidatedChoice<Ease> selectedItemNameMoveEase = new ValidatedChoice<>(Ease.IN_OUT_SINE, Arrays.stream(Ease.values()).toList(), new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
+    public ValidatedChoice<Ease> selectedItemNameMoveEase = new ValidatedChoice<>(Ease.IN_OUT_SINE, EASE_LIST, new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
 
     public float selectedItemNameAlphaDuration = 6f;
 
-    public ValidatedChoice<Ease> selectedItemNameAlphaEase  = new ValidatedChoice<>(Ease.IN_OUT_SINE, Arrays.stream(Ease.values()).toList(), new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
+    public ValidatedChoice<Ease> selectedItemNameAlphaEase  = new ValidatedChoice<>(Ease.IN_OUT_SINE, EASE_LIST, new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
 
     public boolean enableAttack = true;
 
@@ -161,7 +163,7 @@ public class FabricGUITweenConfig extends Config {
 
     public float expDuration = 4f;
 
-    public ValidatedChoice<Ease> expEase = new ValidatedChoice<>(Ease.OUT_BACK, Arrays.stream(Ease.values()).toList(), new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
+    public ValidatedChoice<Ease> expEase = new ValidatedChoice<>(Ease.OUT_BACK, EASE_LIST, new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
 
     public float expScale = 4f;
 
@@ -171,7 +173,7 @@ public class FabricGUITweenConfig extends Config {
 
     public float upArmorScale = 1.5f;
 
-    public ValidatedChoice<Ease> upArmorEase = new ValidatedChoice<>(Ease.IN_OUT_SINE, Arrays.stream(Ease.values()).toList(), new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
+    public ValidatedChoice<Ease> upArmorEase = new ValidatedChoice<>(Ease.IN_OUT_SINE, EASE_LIST, new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
 
     @ConfigGroup.Pop
     public float downArmorShakeStrength = 3f;
@@ -181,11 +183,11 @@ public class FabricGUITweenConfig extends Config {
 
     public float chatOpenMoveDuration = 4f;
 
-    public ValidatedChoice<Ease> chatOpenMoveEase = new ValidatedChoice<>(Ease.IN_OUT_SINE, Arrays.stream(Ease.values()).toList(), new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
+    public ValidatedChoice<Ease> chatOpenMoveEase = new ValidatedChoice<>(Ease.IN_OUT_SINE, EASE_LIST, new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
 
     public float chatOpenGradientDuration = 6f;
 
-    public ValidatedChoice<Ease> chatOpenGradientEase = new ValidatedChoice<>(Ease.IN_OUT_SINE, Arrays.stream(Ease.values()).toList(), new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
+    public ValidatedChoice<Ease> chatOpenGradientEase = new ValidatedChoice<>(Ease.IN_OUT_SINE, EASE_LIST, new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
 
     public boolean enableCloseChat = true;
 
@@ -195,11 +197,39 @@ public class FabricGUITweenConfig extends Config {
 
     public float chatCompMoveDuration = 4f;
 
-    public ValidatedChoice<Ease> chatCompMoveEase = new ValidatedChoice<>(Ease.IN_OUT_SINE, Arrays.stream(Ease.values()).toList(), new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
+    public ValidatedChoice<Ease> chatCompMoveEase = new ValidatedChoice<>(Ease.IN_OUT_SINE, EASE_LIST, new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
 
     public float chatCompGradientDuration = 6f;
 
-    public ValidatedChoice<Ease> chatCompGradientEase = new ValidatedChoice<>(Ease.IN_OUT_SINE, Arrays.stream(Ease.values()).toList(), new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
+    @ConfigGroup.Pop
+    public ValidatedChoice<Ease> chatCompGradientEase = new ValidatedChoice<>(Ease.IN_OUT_SINE, EASE_LIST, new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
+
+    public ConfigGroup bossGroup = new ConfigGroup("boss tween");
+    public boolean enableBossShow = true;
+
+    public float bossShowDuration = 10f;
+
+    public ValidatedChoice<Ease> bossShowEase = new ValidatedChoice<>(Ease.IN_OUT_SINE, EASE_LIST, new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
+
+    public float bossShowFadeDuration = 10f;
+
+    public ValidatedChoice<Ease> bossShowFadeEase = new ValidatedChoice<>(Ease.IN_OUT_SINE, EASE_LIST, new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
+
+    public boolean enableBossHide = true;
+
+    public float bossHideDuration = 6f;
+
+    public ValidatedChoice<Ease> bossHideEase = new ValidatedChoice<>(Ease.IN_OUT_SINE, EASE_LIST, new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
+
+    public float bossHideFadeDuration = 6f;
+
+    public ValidatedChoice<Ease> bossHideFadeEase = new ValidatedChoice<>(Ease.IN_OUT_SINE, EASE_LIST, new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
+
+    public boolean enableBossHurt = true;
+
+    public float bossHurtShakeStrength = 1.5f;
+
+    public float bossHurtDuration = 4f;
 
     public FabricGUITweenConfig() {
         super(Identifier.fromNamespaceAndPath(Constants.MODID, "config"));

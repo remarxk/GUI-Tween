@@ -1,6 +1,7 @@
 package com.remarxk.guitween;
 
 import com.remarxk.guitween.config.GUITweenConfig;
+import com.remarxk.guitween.config.GUITweenConfigFilter;
 import com.remarxk.guitween.config.NeoForgeConfigAdapter;
 import com.remarxk.guitween.config.NeoforgeGUITweenConfig;
 import com.remarxk.guitween.dataPack.WindowSlotsLoader;
@@ -27,13 +28,13 @@ import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 public class GUITweenClient {
     public GUITweenClient(ModContainer container) {
         container.registerConfig(ModConfig.Type.CLIENT, NeoforgeGUITweenConfig.SPEC);
-        container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
+        container.registerExtensionPoint(IConfigScreenFactory.class, (mod, parent) -> new ConfigurationScreen(mod, parent, new GUITweenConfigFilter()));
 
         GUITweenConfig.setConfig(new NeoForgeConfigAdapter());
     }
 
     @EventBusSubscriber(modid = Constants.MODID, value = Dist.CLIENT)
-    public static class ClientReloadEventListener {
+    public static class DataReloadEventListener {
         @SubscribeEvent
         public static void onClientReload(final AddClientReloadListenersEvent event) {
             event.addListener(Identifier.fromNamespaceAndPath(Constants.MODID, "window_slots"), WindowSlotsLoader.getInstance());

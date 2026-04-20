@@ -41,7 +41,6 @@ public abstract class ScreenMixin extends AbstractContainerEventHandler implemen
 
             GUITweenUtility.popAlpha();
             GUITweenUtility.enablePictureMatrix = false;
-            guiGraphics.pose().popMatrix();
 
             CompatUtility.endOpenTween();
         }

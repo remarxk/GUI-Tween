@@ -172,4 +172,76 @@ public final class GUITweenConfig {
 
     public static float getChatOpenMaxDuration() { return cfg().getChatOpenMaxDuration(); }
     public static float getChatCompMaxDuration() { return cfg().getChatCompMaxDuration(); }
+
+    public static boolean isEnableBossShow() {
+        return cfg().isEnableBossShow();
+    }
+
+    public static boolean enableBossShow() {
+        return cfg().enableBossShow();
+    }
+
+    public static float bossShowDuration() {
+        return cfg().bossShowDuration();
+    }
+
+    public static Ease bossShowEase() {
+        return cfg().bossShowEase();
+    }
+
+    public static float bossShowFadeDuration() {
+        return cfg().bossShowFadeDuration();
+    }
+
+    public static Ease bossShowFadeEase() {
+        return cfg().bossShowEase();
+    }
+
+    public static boolean isEnableBossHide() {
+        return cfg().isEnableBossHide();
+    }
+
+    public static boolean enableBossHide() {
+        return cfg().enableBossHide();
+    }
+
+    public static float bossHideDuration() {
+        return cfg().bossHideDuration();
+    }
+
+    public static Ease bossHideEase() {
+        return cfg().bossHideEase();
+    }
+
+    public static float bossHideFadeDuration() {
+        return cfg().bossHideFadeDuration();
+    }
+
+    public static Ease bossHideFadeEase() {
+        return cfg().bossHideFadeEase();
+    }
+
+    public static boolean isEnableBossHurt() {
+        return cfg().isEnableBossHurt();
+    }
+
+    public static boolean enableBossHurt() {
+        return cfg().enableBossHurt();
+    }
+
+    public static float bossHurtShakeStrength() {
+        return cfg().bossHurtShakeStrength();
+    }
+
+    public static float bossHurtDuration() {
+        return cfg().bossHurtDuration();
+    }
+
+    public static float getBossShowMaxDuration() {
+        return cfg().getBossShowMaxDuration();
+    }
+
+    public static float getBossHideMaxDuration() {
+        return cfg().getBossHideMaxDuration();
+    }
 }

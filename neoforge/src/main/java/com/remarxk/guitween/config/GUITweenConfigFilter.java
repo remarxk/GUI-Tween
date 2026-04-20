@@ -2,48 +2,55 @@ package com.remarxk.guitween.config;
 
 import com.remarxk.guitween.Constants;
 import com.remarxk.guitween.GUITween;
+import com.remarxk.guitween.gui.DropdownWidget;
+import com.remarxk.guitween.util.Ease;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.PopupScreen;
 import net.minecraft.network.chat.Component;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
+import net.neoforged.neoforge.common.ModConfigSpec;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Arrays;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class GUITweenConfigFilter implements ConfigurationScreen.ConfigurationSectionScreen.Filter {
     @Override
     public ConfigurationScreen.ConfigurationSectionScreen.@Nullable Element filterEntry(ConfigurationScreen.ConfigurationSectionScreen.Context context, String key, ConfigurationScreen.ConfigurationSectionScreen.Element original) {
         if (key.contains("Ease")) {
+            ModConfigSpec.EnumValue<Ease> configValue = null;
+
+            for (var entry : context.entries()) {
+                if (entry.getKey().equals(key)) {
+                    configValue = entry.getRawValue();
+                    break;
+                }
+            }
+
+            DropdownWidget dropdownWidget = new DropdownWidget(
+                0, 0, Button.DEFAULT_WIDTH, Button.DEFAULT_HEIGHT,
+                Arrays.stream(Ease.values())
+                        .map(e -> Component.literal(e.name()))
+                        .collect(Collectors.toList()),
+                index -> {
+                    for (var entry : context.entries()) {
+                        if (entry.getKey().equals(key)) {
+                            var cv = (ModConfigSpec.EnumValue<Ease>) entry.getRawValue();
+                            cv.set(Ease.values()[index]);
+                            break;
+                        }
+                    }
+                }
+            );
+
+            dropdownWidget.setSelectedIndex(configValue.get().ordinal());
+
             return new ConfigurationScreen.ConfigurationSectionScreen.Element(
                     original.name(),
                     original.tooltip(),
-                    Button.builder(
-                            Component.literal("Ease"),
-                            new Button.OnPress() {
-                                @Override
-                                public void onPress(Button button) {
-                                    var popupScreen = new PopupScreen.Builder(context.parent(), original.name());
-                                    popupScreen.addButton(Component.literal("name1"), screen -> {
-                                        Constants.LOGGER.info("点击1");
-                                        button.setMessage(Component.literal("name1"));
-                                        screen.onClose();
-                                    });
-
-                                    popupScreen.addButton(Component.literal("name2"), screen -> {
-                                        Constants.LOGGER.info("点击2");
-                                        button.setMessage(Component.literal("name2"));
-                                        screen.onClose();
-                                    });
-
-                                    popupScreen.addButton(Component.literal("name3"), screen -> {
-                                        Constants.LOGGER.info("点击3");
-                                        button.setMessage(Component.literal("name3"));
-                                        screen.onClose();
-                                    });
-
-                                    Minecraft.getInstance().setScreen(popupScreen.build());
-                                }
-                            }
-                    ).build()
+                    dropdownWidget
             );
         }
 
