@@ -210,7 +210,7 @@ dependencies {
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
 //    compileOnly group: 'me.fzzyhmstrs', name: 'fzzy_config', version: "${fzzy_config_version}+forge"
-    implementation(fg.deobf("me.fzzyhmstrs:fzzy_config:${fzzy_config_version}+forge"))
+    implementation(fg.deobf("me.fzzyhmstrs:fzzy_config:${fzzy_config_version}"))
     implementation("thedarkcolour:kotlinforforge:4.11.0")
 }
 

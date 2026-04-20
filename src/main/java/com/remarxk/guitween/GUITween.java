@@ -5,7 +5,6 @@ import org.slf4j.Logger;
 import com.mojang.logging.LogUtils;
 import com.remarxk.guitween.config.GUITweenConfig;
 
-import kotlin.jvm.functions.Function0;
 import me.fzzyhmstrs.fzzy_config.api.ConfigApi;
 import me.fzzyhmstrs.fzzy_config.api.RegisterType;
 import net.minecraftforge.client.event.ScreenEvent;
@@ -27,7 +26,7 @@ public class GUITween
 
     public GUITween(FMLJavaModLoadingContext context)
     {
-        CONFIG = ConfigApi.registerAndLoadConfig((Function0<? extends GUITweenConfig>) () -> new GUITweenConfig(), RegisterType.CLIENT);
+        CONFIG = ConfigApi.registerAndLoadConfig(GUITweenConfig::new, RegisterType.CLIENT);
 
         MinecraftForge.EVENT_BUS.register(this);
     }
