@@ -1,8 +1,5 @@
 package com.remarxk.guitween.config;
 
-import com.remarxk.guitween.GUITween;
-import com.remarxk.guitween.util.Ease;
-
 import net.neoforged.neoforge.common.ModConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -29,11 +26,13 @@ public class GUITweenConfig {
     public static final ChatTweenConfig chat;
     public static final ModConfigSpec chatSpec;
 
+    /// boss
+    public static final BossTweenConfig boss;
+    public static final ModConfigSpec bossSpec;
+
     public static final ModConfigSpec SPEC;
 
     static {
-        GUITween.LOGGER.info("GUITweenConfig 初始化");
-
         enable = BUILDER
                 .translation("guitween.config.enable")
                 .define("enable", true);
@@ -66,7 +65,19 @@ public class GUITweenConfig {
         chat = chatPair.getLeft();
         chatSpec = chatPair.getRight();
 
+        Pair<BossTweenConfig, ModConfigSpec> bossPair =
+                BUILDER.configure(BossTweenConfig::new);
+
+        boss = bossPair.getLeft();
+        bossSpec = bossPair.getRight();
+
         SPEC = BUILDER.build();
+    }
+
+    public static float getWindowTotalDuration() {
+        float windowMax = Math.max(window.moveDuration.get().floatValue(), window.gradientDuration.get().floatValue());
+        float jeiMax = Math.max(window.jeiLeftMoveDuration.get().floatValue(), window.jeiRightMoveDuration.get().floatValue());
+        return Math.max(windowMax, jeiMax);
     }
 
     public static float getHoldItemTotalDuration() {
@@ -89,6 +100,14 @@ public class GUITweenConfig {
         return Math.max(chat.compMoveDuration.get().floatValue(), chat.compGradientDuration.get().floatValue());
     }
 
+    public static float getBossShowMaxDuration() {
+        return Math.max(boss.bossShowDuration.get().floatValue(), boss.bossShowFadeDuration.get().floatValue());
+    }
+
+    public static float getBossHideMaxDuration() {
+        return Math.max(boss.bossHideDuration.get().floatValue(), boss.bossHideFadeDuration.get().floatValue());
+    }
+
     public static boolean isDisableTweenWindow(String screenName) {
         return window.disableNames.get().contains(screenName);
     }
@@ -99,6 +118,10 @@ public class GUITweenConfig {
 
     public static boolean isEnableWindow() {
         return isEnable() && window.enable.get();
+    }
+
+    public static boolean isEnableCloseWindow() {
+        return isEnable() && window.enableCloseWindow.get();
     }
 
     public static boolean isEnableJeiLeft() {
@@ -179,5 +202,21 @@ public class GUITweenConfig {
 
     public static boolean isEnableChatComp() {
         return isEnable() && chat.enableChatComp.get();
+    }
+
+    public static boolean isEnableCloseChat() {
+        return isEnable() && chat.enableCloseChat.get();
+    }
+
+    public static boolean isEnableBossShow() {
+        return isEnable() && boss.enableBossShow.get();
+    }
+
+    public static boolean isEnableBossHide() {
+        return isEnable() && boss.enableBossHide.get();
+    }
+
+    public static boolean isEnableBossHurt() {
+        return isEnable() && boss.enableBossHurt.get();
     }
 }

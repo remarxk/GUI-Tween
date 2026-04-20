@@ -5,6 +5,7 @@ import com.remarxk.guitween.GUITweenUtility;
 import com.remarxk.guitween.config.GUITweenConfig;
 import com.remarxk.guitween.util.Ease;
 import com.remarxk.guitween.util.TweenUtil;
+import net.minecraft.util.Mth;
 
 public class DragTween {
     private DragTweenState state;
@@ -46,7 +47,7 @@ public class DragTween {
     public void update() {
         if (state == DragTweenState.Move) {
             float gotoSpeed = velocity * 3f;
-            curAngle = curAngle + gotoSpeed;
+            curAngle = Mth.lerp(0.3f, curAngle, curAngle + gotoSpeed);
 
             if (velocity > 0) {
                 curAngle = Math.min(curAngle, maxAngle);
@@ -89,11 +90,11 @@ public class DragTween {
         }
         else {
             float lastVel = velocity;
-            float curVel = x - lastX;
+            velocity = Mth.lerp(0.3f, lastVel, x - lastX);
 
             lastX = x;
 
-            if (Math.abs(curVel) < 1f) {
+            if (Math.abs(velocity) < 1f) {
                 if (state == DragTweenState.Move) {
                     state = DragTweenState.Stop;
                     maxAngle = Math.abs(curAngle);
@@ -104,8 +105,6 @@ public class DragTween {
                 }
             }
             else {
-                velocity = curVel;
-
                 state = DragTweenState.Move;
                 maxAngle = calMaxAngle(velocity);
             }

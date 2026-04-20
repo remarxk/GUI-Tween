@@ -23,6 +23,10 @@ public class WindowTweenConfig {
 
     public final ModConfigSpec.EnumValue<Ease> gradientEase;
 
+    public final ModConfigSpec.BooleanValue enableCloseWindow;
+
+    public final ModConfigSpec.DoubleValue closeWindowSpeed;
+
     public final ModConfigSpec.BooleanValue enableJeiLeft;
 
     public final ModConfigSpec.DoubleValue jeiLeftMoveDuration;
@@ -122,6 +126,14 @@ public class WindowTweenConfig {
         jeiRightMoveY = BUILDER
                 .translation("guitween.config.jeiRightMoveY")
                 .defineInRange("jeiRightMoveY", 0f, -10000, 10000);
+
+        enableCloseWindow = BUILDER
+                .translation("guitween.config.enableCloseWindow")
+                .define("enableCloseWindow", false);
+
+        closeWindowSpeed = BUILDER
+                .translation("guitween.config.closeWindowSpeed")
+                .defineInRange("closeWindowSpeed", 1.5d, 0, 1000d);
 
         BUILDER.pop();
     }

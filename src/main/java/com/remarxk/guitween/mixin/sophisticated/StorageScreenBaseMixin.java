@@ -9,6 +9,7 @@ import com.remarxk.guitween.compat.CompatUtility;
 import com.remarxk.guitween.config.GUITweenConfig;
 import com.remarxk.guitween.mixinAccess.AbstractContainerScreenMixinAccess;
 import com.remarxk.guitween.util.Ease;
+import com.remarxk.guitween.util.Tuple;
 import com.remarxk.guitween.util.TweenUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -16,7 +17,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
-import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -60,7 +60,6 @@ public abstract class StorageScreenBaseMixin<S extends StorageContainerMenuBase<
             access.setGUITween$isDisableScreenTween(true);
 
             GUITweenUtility.popAlpha();
-            guiGraphics.pose().popPose();
 
             CompatUtility.endOpenTween();
         }

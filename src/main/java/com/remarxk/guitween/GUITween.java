@@ -1,5 +1,6 @@
 package com.remarxk.guitween;
 
+import com.remarxk.guitween.config.GUITweenConfigFilter;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -22,10 +23,8 @@ public class GUITween
     public GUITween(IEventBus modEventBus, ModContainer modContainer)
     {
         modContainer.registerConfig(ModConfig.Type.CLIENT, GUITweenConfig.SPEC);
-        modContainer.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
-
-//        modContainer.registerExtensionPoint(IConfigScreenFactory.class, (mod, parent) -> {
-//            return new ConfigurationScreen(mod, parent, new GUITweenConfigFilter());
-//        });
+        modContainer.registerExtensionPoint(IConfigScreenFactory.class, (mod, parent) -> {
+            return new ConfigurationScreen(mod, parent, new GUITweenConfigFilter());
+        });
     }
 }

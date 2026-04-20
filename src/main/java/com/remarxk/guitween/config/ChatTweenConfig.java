@@ -14,6 +14,10 @@ public class ChatTweenConfig {
 
     public final ModConfigSpec.EnumValue<Ease> openGradientEase;
 
+    public final ModConfigSpec.BooleanValue enableCloseChat;
+
+    public final ModConfigSpec.DoubleValue closeChatSpeed;
+
     public final ModConfigSpec.BooleanValue enableChatComp;
 
     public final ModConfigSpec.DoubleValue compMoveDuration;
@@ -66,6 +70,14 @@ public class ChatTweenConfig {
         compGradientEase = builder
                 .translation("guitween.config.chatCompGradientEase")
                 .defineEnum("chatCompGradientEase", Ease.IN_OUT_SINE);
+
+        enableCloseChat = builder
+                .translation("guitween.config.enableCloseChat")
+                .define("enableCloseChat", true);
+
+        closeChatSpeed = builder
+                .translation("guitween.config.closeChatSpeed")
+                .defineInRange("closeChatSpeed", 1.2f, 0d, 1000d);
 
         builder.pop();
     }

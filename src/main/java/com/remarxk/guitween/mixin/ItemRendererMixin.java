@@ -6,6 +6,7 @@ import com.remarxk.guitween.GUITweenUtility;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
@@ -44,7 +45,13 @@ public abstract class ItemRendererMixin implements ResourceManagerReloadListener
     )
     private RenderType modifyRenderType(RenderType renderType) {
         if (GUITweenUtility.hasItemAlpha()) {
-            ResourceLocation resourceLocation = gUITween$bakedModel.getParticleIcon(ModelData.EMPTY).atlasLocation();
+            TextureAtlasSprite sprite = gUITween$bakedModel.getParticleIcon(ModelData.EMPTY);
+            if (sprite == null) {
+                // 如果模型没有 particle，使用默认缺失纹理
+                sprite = net.minecraft.client.Minecraft.getInstance().getModelManager().getMissingModel().getParticleIcon();
+            }
+
+            ResourceLocation resourceLocation = sprite.atlasLocation();
             RenderType transRenderType = gUITween$cacheTransRenderType.getOrDefault(resourceLocation, null);
             if (transRenderType == null) {
                 transRenderType = RenderType.ENTITY_TRANSLUCENT_CULL.apply(resourceLocation);

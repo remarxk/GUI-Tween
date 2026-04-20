@@ -1,5 +1,7 @@
 package com.remarxk.guitween.mixin;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.remarxk.guitween.GUITween;
@@ -13,6 +15,7 @@ import com.remarxk.guitween.config.GUITweenConfig;
 import com.remarxk.guitween.mixinAccess.AbstractContainerScreenMixinAccess;
 import com.remarxk.guitween.anim.TweenPool;
 import com.remarxk.guitween.util.Ease;
+import com.remarxk.guitween.util.Tuple;
 import com.remarxk.guitween.util.TweenUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -26,7 +29,6 @@ import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Tuple;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -50,6 +52,12 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
 
     @Unique
     private static final ResourceLocation COPY_HOVER_TEXTURE = ResourceLocation.fromNamespaceAndPath(GUITween.MODID, "copy_hover");
+
+    @Unique
+    private boolean gUITween$inClosingTween;
+
+    @Unique
+    private boolean gUITween$needClose;
 
     @Unique
     private boolean gUITween$isDisableScreenTween;
@@ -245,6 +253,31 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
         gUITween$sameItemTick = tick;
     }
 
+    @Override
+    public boolean gUITween$playCloseTween() {
+        if (!GUITweenConfig.isEnableCloseWindow()) {
+            return false;
+        }
+
+        gUITween$inClosingTween = !gUITween$inClosingTween;
+        return gUITween$inClosingTween;
+    }
+
+    @Override
+    public boolean gUITween$inCloseTween() {
+        return gUITween$inClosingTween;
+    }
+
+    @Override
+    public void gUITween$setNeedClose(boolean close) {
+        gUITween$needClose = close;
+    }
+
+    @Override
+    public boolean gUITween$getNeedClose() {
+        return gUITween$needClose;
+    }
+
     @Inject(method = "init", at = @At("TAIL"))
     public void init(CallbackInfo ci) {
         gUITween$openTick = 0;
@@ -356,7 +389,6 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
             gUITween$isDisableScreenTween = true;
 
             GUITweenUtility.popAlpha();
-            guiGraphics.pose().popPose();
 
             CompatUtility.endOpenTween();
         }
@@ -595,7 +627,8 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
             method = "renderSlot",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/client/gui/GuiGraphics;fill(IIIII)V"
+                    target = "Lnet/minecraft/client/gui/GuiGraphics;fill(IIIII)V",
+                    shift = At.Shift.AFTER
             )
     )
     public void renderQuickItem(GuiGraphics guiGraphics, Slot slot, CallbackInfo ci) {
@@ -763,6 +796,19 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
         gUITween$inTooltip = false;
         GUITweenUtility.popFontAlpha();
         guiGraphics.setColor(1, 1, 1, 1);
+    }
+
+    @WrapOperation(
+            method = "keyPressed",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/gui/screens/inventory/AbstractContainerScreen;onClose()V"
+            )
+    )
+    private void onCloseBefore(AbstractContainerScreen screen, Operation<Void> original) {
+        if (!gUITween$playCloseTween()) {
+            original.call(screen);
+        }
     }
 
     @Inject(method = "onClose", at = @At("TAIL"))
