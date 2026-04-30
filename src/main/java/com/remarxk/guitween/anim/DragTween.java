@@ -47,7 +47,7 @@ public class DragTween {
     public void update() {
         if (state == DragTweenState.Move) {
             float gotoSpeed = velocity * 3f;
-            curAngle = curAngle + gotoSpeed;
+            curAngle = Mth.lerp(0.3f, curAngle, curAngle + gotoSpeed);
 
             if (velocity > 0) {
                 curAngle = Math.min(curAngle, maxAngle);

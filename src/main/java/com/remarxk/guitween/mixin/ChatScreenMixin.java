@@ -15,9 +15,13 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ChatScreen.class)
 public abstract class ChatScreenMixin extends Screen {
+    @Unique
+    private boolean gUITween$inCloseTween;
+
     @Unique
     private float gUITween$openTick;
 
@@ -30,6 +34,8 @@ public abstract class ChatScreenMixin extends Screen {
 
     @Inject(method = "init", at = @At(value = "HEAD"))
     public void initOpenTick(CallbackInfo ci) {
+        gUITween$inCloseTween = false;
+
         gUITween$openTick = 0;
     }
 
@@ -59,8 +65,6 @@ public abstract class ChatScreenMixin extends Screen {
 
         poseStack.translate(0, dy, 0);
         guiGraphics.setColor(1, 1, 1, alpha);
-
-        gUITween$openTick += GUITweenUtility.getDeltaTicks();
     }
 
     @Inject(method = "render", at = @At(value = "TAIL"))
@@ -71,5 +75,39 @@ public abstract class ChatScreenMixin extends Screen {
         gUITween$inTween = false;
         guiGraphics.pose().popPose();
         guiGraphics.setColor(1, 1, 1, 1);
+
+        float sign = gUITween$inCloseTween ? -GUITween.CONFIG.closeChatSpeed : 1;
+        gUITween$openTick = gUITween$openTick + sign * GUITweenUtility.getDeltaTicks();
+
+        if (gUITween$openTick <= 0 && gUITween$inCloseTween) {
+            onClose();
+        }
+    }
+
+    @Unique
+    private boolean guiTween$playCloseTween(){
+        if (!GUITween.CONFIG.isEnableCloseChat())
+            return false;
+
+        gUITween$inCloseTween = !gUITween$inCloseTween;
+
+        if (gUITween$inCloseTween) {
+            gUITween$openTick = Math.min(gUITween$openTick, GUITween.CONFIG.getChatOpenMaxDuration());
+        }
+
+        return gUITween$inCloseTween;
+    }
+
+    @Inject(
+            method = "keyPressed",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/Minecraft;setScreen(Lnet/minecraft/client/gui/screens/Screen;)V"
+            ),
+            cancellable = true)
+    private void onCloseBefore(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> cir) {
+        if (guiTween$playCloseTween()) {
+            cir.setReturnValue(true);
+        }
     }
 }

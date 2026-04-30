@@ -138,6 +138,8 @@ repositories {
         name = "KotlinForForge"
         url = "https://thedarkcolour.github.io/KotlinForForge/"
     }
+
+    maven { url = 'https://jitpack.io' }
 }
 
 dependencies {
@@ -148,11 +150,16 @@ dependencies {
     // then special handling is done to allow a setup of a vanilla dependency without the use of an external repository.
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
-    // Example mod dependency with JEI - using fg.deobf() ensures the dependency is remapped to your development mappings
-    // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
-//     compileOnly fg.deobf("mezz.jei:jei-${mc_version}-common-api:${jei_version}")
-//     compileOnly fg.deobf("mezz.jei:jei-${mc_version}-forge-api:${jei_version}")
-//     runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}")
+    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.5.4"))
+    implementation(jarJar("io.github.llamalad7:mixinextras-forge:0.5.4")) {
+        jarJar.ranged(it, "[0.5.4,)")
+    }
+
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+
+//    compileOnly group: 'me.fzzyhmstrs', name: 'fzzy_config', version: "${fzzy_config_version}+forge"
+    implementation(fg.deobf("me.fzzyhmstrs:fzzy_config:${fzzy_config_version}"))
+    implementation("thedarkcolour:kotlinforforge:4.11.0")
 
     compileOnly fg.deobf("curse.maven:jei-238222:7270446")
     runtimeOnly fg.deobf("curse.maven:jei-238222:7270446")
@@ -206,12 +213,6 @@ dependencies {
     runtimeOnly fg.deobf("curse.maven:ftb-library-forge-404465:7296748")
 
     runtimeOnly fg.deobf("curse.maven:create-328085:7178761")
-
-    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
-
-//    compileOnly group: 'me.fzzyhmstrs', name: 'fzzy_config', version: "${fzzy_config_version}+forge"
-    implementation(fg.deobf("me.fzzyhmstrs:fzzy_config:${fzzy_config_version}"))
-    implementation("thedarkcolour:kotlinforforge:4.11.0")
 }
 
 mixin {
