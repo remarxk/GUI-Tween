@@ -89,11 +89,11 @@ public class DragTween {
         }
         else {
             float lastVel = velocity;
-            velocity =Mth.lerp(0.3f, lastVel, x - lastX);
+            float curVel = x - lastX;
 
             lastX = x;
 
-            if (Math.abs(velocity) < 1f) {
+            if (Math.abs(curVel) < 1f) {
                 if (state == DragTweenState.Move) {
                     state = DragTweenState.Stop;
                     maxAngle = Math.abs(curAngle);
@@ -104,6 +104,8 @@ public class DragTween {
                 }
             }
             else {
+                velocity = curVel;
+
                 state = DragTweenState.Move;
                 maxAngle = calMaxAngle(velocity);
             }

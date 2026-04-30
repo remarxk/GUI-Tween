@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(PictureInPictureRenderer.class)
+@Mixin(value = PictureInPictureRenderer.class, priority = 2000)
 public class PictureInPictureRendererMixin<T extends PictureInPictureRenderState> {
     @Unique
     private T gUITween$curRenderState;
