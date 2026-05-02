@@ -3,7 +3,6 @@ package com.remarxk.guitween.mixin;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.remarxk.guitween.GUITween;
 import com.remarxk.guitween.GUITweenUtility;
 import com.remarxk.guitween.config.GUITweenConfig;
 import com.remarxk.guitween.util.TweenUtil;
@@ -126,38 +125,6 @@ public class BossHealthOverlayMixin {
 
         if (haveTween) {
             poseStack.popPose();
-
-            if (addTick != null) {
-                float nextTick = addTick + GUITweenUtility.getDeltaTicks();
-                if (nextTick < GUITweenConfig.getBossShowMaxDuration()) {
-                    gUITween$addTweenTicks.put(uuid, nextTick);
-                }
-                else {
-                    gUITween$addTweenTicks.remove(uuid);
-                }
-            }
-
-            if (removeTick != null) {
-                float nextTick = removeTick + GUITweenUtility.getDeltaTicks();
-                if (nextTick < GUITweenConfig.getBossHideMaxDuration()) {
-                    gUITween$removeTweenTicks.put(uuid, nextTick);
-                }
-                else {
-                    gUITween$removeTweenTicks.remove(uuid);
-
-                    gUITween$removeQueue.add(uuid);
-                }
-            }
-
-            if (shakeTick != null) {
-                float nextTick = shakeTick + GUITweenUtility.getDeltaTicks();
-                if (nextTick < GUITweenConfig.boss.bossHurtDuration.get()) {
-                    gUITween$shakeTweenTicks.put(uuid, nextTick);
-                }
-                else {
-                    gUITween$shakeTweenTicks.remove(uuid);
-                }
-            }
         }
     }
 
@@ -173,14 +140,14 @@ public class BossHealthOverlayMixin {
             GUITweenUtility.pushFontAlpha(gUITween$alpha);
         }
 
-        original.call(instance, font, text, x, y, color);
+        int value = original.call(instance, font, text, x, y, color);
 
         if (gUITween$alpha != null) {
             GUITweenUtility.popFontAlpha();
 
             gUITween$alpha = null;
         }
-        return x;
+        return value;
     }
 
     @Inject(
@@ -190,6 +157,45 @@ public class BossHealthOverlayMixin {
             )
     )
     private void extractRenderStateAfter(GuiGraphics guiGraphics, CallbackInfo ci) {
+        for(LerpingBossEvent lerpingbossevent : this.events.values()) {
+            UUID uuid = lerpingbossevent.getId();
+
+            Float addTick = gUITween$addTweenTicks.get(uuid);
+            if (addTick != null) {
+                float nextTick = addTick + GUITweenUtility.getDeltaTicks();
+                if (nextTick < GUITweenConfig.getBossShowMaxDuration()) {
+                    gUITween$addTweenTicks.put(uuid, nextTick);
+                }
+                else {
+                    gUITween$addTweenTicks.remove(uuid);
+                }
+            }
+
+            Float removeTick = gUITween$removeTweenTicks.get(uuid);
+            if (removeTick != null) {
+                float nextTick = removeTick + GUITweenUtility.getDeltaTicks();
+                if (nextTick < GUITweenConfig.getBossHideMaxDuration()) {
+                    gUITween$removeTweenTicks.put(uuid, nextTick);
+                }
+                else {
+                    gUITween$removeTweenTicks.remove(uuid);
+
+                    gUITween$removeQueue.add(uuid);
+                }
+            }
+
+            Float shakeTick = gUITween$shakeTweenTicks.get(uuid);
+            if (shakeTick != null) {
+                float nextTick = shakeTick + GUITweenUtility.getDeltaTicks();
+                if (nextTick < GUITweenConfig.boss.bossHurtDuration.get()) {
+                    gUITween$shakeTweenTicks.put(uuid, nextTick);
+                }
+                else {
+                    gUITween$shakeTweenTicks.remove(uuid);
+                }
+            }
+        }
+
         while (!gUITween$removeQueue.isEmpty()) {
             var uuid = gUITween$removeQueue.remove();
             events.remove(uuid);
@@ -205,6 +211,7 @@ public class BossHealthOverlayMixin {
     private void redirectUpdate(ClientboundBossEventPacket instance, ClientboundBossEventPacket.Handler handler, Operation<Void> original) {
         if (!GUITweenConfig.isEnable()) {
             original.call(instance, handler);
+            return;
         }
 
         instance.dispatch(new ClientboundBossEventPacket.Handler() {
