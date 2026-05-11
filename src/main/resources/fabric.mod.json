@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "id": "guitween",
+  "version": "${version}",
+  "name": "GUITween",
+  "description": "",
+  "authors": [],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/guitween/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "fabric-datagen": [
+      "com.remarxk.guitween.client.GUITweenDataGenerator"
+    ],
+    "client": [
+      "com.remarxk.guitween.client.GUITweenClient"
+    ],
+    "main": [
+      "com.remarxk.guitween.GUITween"
+    ]
+  },
+  "mixins": [
+    "guitween-fabric.mixins.json",
+    {
+      "config": "guitween-fabric.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric-api": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}

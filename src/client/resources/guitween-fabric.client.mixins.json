@@ -1,0 +1,36 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.remarxk.guitween.client.mixin",
+  "plugin": "com.remarxk.guitween.client.mixin.GUITweenMixinPlugin",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "AbstractContainerScreenMixin",
+    "BossHealthOverlayMixin",
+    "ChatComponentMixin",
+    "ChatScreenMixin",
+    "FontMixin",
+    "GuiMixin",
+    "InventoryMixin",
+    "ItemRendererMixin",
+    "LocalPlayerMixin",
+    "MinecraftMixin",
+    "ScreenMixin",
+    "overflowingbars.ArmorBarRendererMixin",
+    "ftblibrary.SidebarGroupGuiButtonMixin",
+    "jei.BookmarkOverlayMixin",
+    "jei.IngredientListOverlayMixin",
+    "rei.BatchedEntryRendererManagerMixin",
+    "rei.DefaultScreenOverlayRendererMixin",
+    "rei.ScreenOverlayImpMixin",
+    "sodium.SodiumBakedModelEncoderMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  },
+  "mixins": [
+  ]
+}
