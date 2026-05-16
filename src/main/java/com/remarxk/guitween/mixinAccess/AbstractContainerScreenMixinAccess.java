@@ -36,9 +36,9 @@ public interface AbstractContainerScreenMixinAccess {
 
     public void setGUITween$tooltipShowTick(float tick);
 
-    public HashMap<Integer, Tuple<Integer, Integer>> getGUITween$quickTweenSlots();
+    public HashMap<Slot, Tuple<Integer, Integer>> getGUITween$quickTweenSlots();
 
-    public HashMap<Integer, Float> getGUITween$quickTicks();
+    public HashMap<Slot, Float> getGUITween$quickTicks();
 
     public ItemStack gUITween$getDraggingItem();
 

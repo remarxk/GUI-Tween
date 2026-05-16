@@ -90,29 +90,6 @@ public abstract class StorageScreenBaseMixin<S extends StorageContainerMenuBase<
         GUITweenUtility.pushAlpha(alpha);
     }
 
-//    @Inject(
-//            method = "render",
-//            at = @At(
-//                    value = "TAIL"
-//            )
-//    )
-//    public void renderAfter(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
-//        if (!(this instanceof AbstractContainerScreenMixinAccess access))
-//            return;
-//
-//        access.setGUITween$openTick(access.getGUITween$openTick() + GUITweenUtility.getDeltaTicks());
-//
-//        if (!access.getGUITween$inTween())
-//            return;
-//
-//        GUITweenUtility.popAlpha();
-//
-//        PoseStack poseStack = guiGraphics.pose();
-//        poseStack.popPose();
-//
-//        access.setGUITween$inTween(false);
-//    }
-
     @Nullable
     @Shadow
     public Slot findSlot(double mouseX, double mouseY) { return null; }
@@ -253,13 +230,13 @@ public abstract class StorageScreenBaseMixin<S extends StorageContainerMenuBase<
             }
         }
 
-        HashMap<Integer, Tuple<Integer, Integer>> gUITween$quickTweenSlots = access.getGUITween$quickTweenSlots();
-        HashMap<Integer, Float> gUITween$quickTicks = access.getGUITween$quickTicks();
+        HashMap<Slot, Tuple<Integer, Integer>> gUITween$quickTweenSlots = access.getGUITween$quickTweenSlots();
+        HashMap<Slot, Float> gUITween$quickTicks = access.getGUITween$quickTicks();
 
-        Tuple<Integer, Integer> tuple = gUITween$quickTweenSlots.get(pSlot.index);
-        if (tuple != null && menu.getSlot(pSlot.index) == pSlot) {
+        Tuple<Integer, Integer> tuple = gUITween$quickTweenSlots.get(pSlot);
+        if (tuple != null) {
             if (tuple.getA().equals(tuple.getB())) {
-                float quickTick = gUITween$quickTicks.getOrDefault(pSlot.index, 0f);
+                float quickTick = gUITween$quickTicks.getOrDefault(pSlot, 0f);
 
                 float progress = quickTick / 4f;
 
@@ -270,11 +247,11 @@ public abstract class StorageScreenBaseMixin<S extends StorageContainerMenuBase<
 
                     haveTween = true;
 
-                    gUITween$quickTicks.put(pSlot.index, quickTick + GUITweenUtility.getDeltaTicks());
+                    gUITween$quickTicks.put(pSlot, quickTick + GUITweenUtility.getDeltaTicks());
                 }
                 else {
-                    gUITween$quickTweenSlots.remove(pSlot.index);
-                    gUITween$quickTicks.remove(pSlot.index);
+                    gUITween$quickTweenSlots.remove(pSlot);
+                    gUITween$quickTicks.remove(pSlot);
                 }
             }
             else {
@@ -330,9 +307,9 @@ public abstract class StorageScreenBaseMixin<S extends StorageContainerMenuBase<
         access.setGUITween$isRenderQuick(true);
 
         var gUITween$quickTweenSlots = access.getGUITween$quickTweenSlots();
-        Tuple<Integer, Integer> tuple = gUITween$quickTweenSlots.get(slot.index);
+        Tuple<Integer, Integer> tuple = gUITween$quickTweenSlots.get(slot);
         if (tuple == null) {
-            gUITween$quickTweenSlots.put(slot.index, new Tuple<>(-1, 0));
+            gUITween$quickTweenSlots.put(slot, new Tuple<>(-1, 0));
         }
         else {
             tuple.setB(tuple.getB() + 1);
