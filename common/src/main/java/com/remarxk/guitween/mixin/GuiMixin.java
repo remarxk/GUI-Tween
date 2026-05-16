@@ -246,6 +246,14 @@ public class GuiMixin {
             return;
         }
 
+        if (Math.abs(gUITween$curSelectPos - x) < 1) {
+            gUITween$curSelectPos = x;
+            HotbarChangeListener.scrollSelected = -1;
+            HotbarChangeListener.scrollDir = 0;
+            guiGraphics.blitSprite(renderPipeline, location, x, y, width, height);
+            return;
+        }
+
         // 重置滚动状态
         if (HotbarChangeListener.scrollSelected >= 0 && HotbarChangeListener.scrollSelected != player.getInventory().getSelectedSlot()) {
             HotbarChangeListener.scrollSelected = -1;
@@ -284,10 +292,6 @@ public class GuiMixin {
             }
         } else {
             gUITween$curSelectPos += (target - gUITween$curSelectPos) * (1 - (float)Math.exp(-speed * delta));
-        }
-
-        if (Math.abs(gUITween$curSelectPos - x) < 1) {
-            gUITween$curSelectPos = x;
         }
 
         boolean needScissor = false;

@@ -127,38 +127,6 @@ public class BossHealthOverlayMixin {
 
         if (haveTween) {
             poseStack.popMatrix();
-
-            if (addTick != null) {
-                float nextTick = addTick + GUITweenUtility.getDeltaTicks();
-                if (nextTick < GUITweenConfig.getBossShowMaxDuration()) {
-                    gUITween$addTweenTicks.put(uuid, nextTick);
-                }
-                else {
-                    gUITween$addTweenTicks.remove(uuid);
-                }
-            }
-
-            if (removeTick != null) {
-                float nextTick = removeTick + GUITweenUtility.getDeltaTicks();
-                if (nextTick < GUITweenConfig.getBossHideMaxDuration()) {
-                    gUITween$removeTweenTicks.put(uuid, nextTick);
-                }
-                else {
-                    gUITween$removeTweenTicks.remove(uuid);
-
-                    gUITween$removeQueue.add(uuid);
-                }
-            }
-
-            if (shakeTick != null) {
-                float nextTick = shakeTick + GUITweenUtility.getDeltaTicks();
-                if (nextTick < GUITweenConfig.bossHurtDuration()) {
-                    gUITween$shakeTweenTicks.put(uuid, nextTick);
-                }
-                else {
-                    gUITween$shakeTweenTicks.remove(uuid);
-                }
-            }
         }
     }
 
@@ -190,6 +158,45 @@ public class BossHealthOverlayMixin {
             )
     )
     private void extractRenderStateAfter(GuiGraphicsExtractor graphics, CallbackInfo ci) {
+        for (LerpingBossEvent lerpingbossevent : this.events.values()) {
+            UUID uuid = lerpingbossevent.getId();
+
+            Float addTick = gUITween$addTweenTicks.get(uuid);
+            if (addTick != null) {
+                float nextTick = addTick + GUITweenUtility.getDeltaTicks();
+                if (nextTick < GUITweenConfig.getBossShowMaxDuration()) {
+                    gUITween$addTweenTicks.put(uuid, nextTick);
+                }
+                else {
+                    gUITween$addTweenTicks.remove(uuid);
+                }
+            }
+
+            Float removeTick = gUITween$removeTweenTicks.get(uuid);
+            if (removeTick != null) {
+                float nextTick = removeTick + GUITweenUtility.getDeltaTicks();
+                if (nextTick < GUITweenConfig.getBossHideMaxDuration()) {
+                    gUITween$removeTweenTicks.put(uuid, nextTick);
+                }
+                else {
+                    gUITween$removeTweenTicks.remove(uuid);
+
+                    gUITween$removeQueue.add(uuid);
+                }
+            }
+
+            Float shakeTick = gUITween$shakeTweenTicks.get(uuid);
+            if (shakeTick != null) {
+                float nextTick = shakeTick + GUITweenUtility.getDeltaTicks();
+                if (nextTick < GUITweenConfig.bossHurtDuration()) {
+                    gUITween$shakeTweenTicks.put(uuid, nextTick);
+                }
+                else {
+                    gUITween$shakeTweenTicks.remove(uuid);
+                }
+            }
+        }
+
         while (!gUITween$removeQueue.isEmpty()) {
             var uuid = gUITween$removeQueue.remove();
             events.remove(uuid);
@@ -205,6 +212,7 @@ public class BossHealthOverlayMixin {
     private void redirectUpdate(ClientboundBossEventPacket instance, ClientboundBossEventPacket.Handler handler, Operation<Void> original) {
         if (!GUITweenConfig.enable()) {
             original.call(instance, handler);
+            return;
         }
 
         instance.dispatch(new ClientboundBossEventPacket.Handler() {

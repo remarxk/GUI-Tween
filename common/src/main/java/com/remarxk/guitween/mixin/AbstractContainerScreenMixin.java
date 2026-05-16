@@ -73,10 +73,10 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
     private HashMap<Slot, Tween> gUITween$hoverSlotMap = new HashMap<>();
 
     @Unique
-    private HashMap<Integer, ItemStack> gUITween$OutputSlotDatas = new HashMap<>();
+    private HashMap<Slot, ItemStack> gUITween$OutputSlotDatas = new HashMap<>();
 
     @Unique
-    private HashMap<Integer, Tween> gUITween$outputSlotTween = new HashMap<>();
+    private HashMap<Slot, Tween> gUITween$outputSlotTween = new HashMap<>();
 
     @Unique
     private float gUITween$clickTime = 0;
@@ -206,12 +206,12 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
     }
 
     @Override
-    public HashMap<Integer, Tuple<Integer, Integer>> getGUITween$quickTweenSlots() {
+    public HashMap<Slot, Tuple<Integer, Integer>> getGUITween$quickTweenSlots() {
         return gUITween$quickTweenSlots;
     }
 
     @Override
-    public HashMap<Integer, Float> getGUITween$quickTicks() {
+    public HashMap<Slot, Float> getGUITween$quickTicks() {
         return gUITween$quickTicks;
     }
 
@@ -311,7 +311,7 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
         if (config != null) {
             for (int slotIndex : config.outputSlots()) {
                 Slot slot = menu.slots.get(slotIndex);
-                gUITween$OutputSlotDatas.put(slotIndex, slot.getItem().copy());
+                gUITween$OutputSlotDatas.put(slot, slot.getItem().copy());
             }
         }
 
@@ -401,10 +401,10 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
     }
 
     @Unique
-    private HashMap<Integer, Tuple<Integer, Integer>> gUITween$quickTweenSlots = new HashMap<>();
+    private HashMap<Slot, Tuple<Integer, Integer>> gUITween$quickTweenSlots = new HashMap<>();
 
     @Unique
-    private HashMap<Integer, Float> gUITween$quickTicks = new HashMap<>();
+    private HashMap<Slot, Float> gUITween$quickTicks = new HashMap<>();
 
     @Unique
     private boolean gUITween$isRenderQuick = false;
@@ -439,13 +439,13 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
         boolean isEmpty = !slot.hasItem();
 
         if (GUITweenConfig.isEnableOutput()) {
-            if (menu.getSlot(slot.index) == slot && gUITween$OutputSlotDatas.containsKey(slot.index)) {
+            if (gUITween$OutputSlotDatas.containsKey(slot)) {
                 ItemStack curItemStack = slot.getItem();
-                ItemStack lastItemStack = gUITween$OutputSlotDatas.get(slot.index);
+                ItemStack lastItemStack = gUITween$OutputSlotDatas.get(slot);
                 boolean lastIsEmpty = lastItemStack.isEmpty();
 
                 if (!ItemStack.matches(lastItemStack, slot.getItem())) {
-                    gUITween$OutputSlotDatas.put(slot.index, curItemStack);
+                    gUITween$OutputSlotDatas.put(slot, curItemStack);
 
                     boolean isSameItem = ItemStack.isSameItem(curItemStack, lastItemStack);
 
@@ -457,7 +457,7 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
                         tween.stopValue = 1;
                         tween.tick = 0;
                         tween.totalTick = GUITweenConfig.outputDuration();
-                        gUITween$outputSlotTween.put(slot.index, tween);
+                        gUITween$outputSlotTween.put(slot, tween);
                     }
                     else if (curItemStack.getCount() > lastItemStack.getCount()) {
                         Tween tween = TweenPool.getTween();
@@ -466,14 +466,14 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
                         tween.totalTick = GUITweenConfig.outputDuration();
                         tween.startValue = 0.3f;
                         tween.stopValue = 1;
-                        gUITween$outputSlotTween.put(slot.index, tween);
+                        gUITween$outputSlotTween.put(slot, tween);
                     }
                 }
 
-                if (gUITween$outputSlotTween.containsKey(slot.index)) {
-                    Tween tween = gUITween$outputSlotTween.get(slot.index);
+                if (gUITween$outputSlotTween.containsKey(slot)) {
+                    Tween tween = gUITween$outputSlotTween.get(slot);
                     if (tween.tick >= tween.totalTick) {
-                        tween = gUITween$outputSlotTween.remove(slot.index);
+                        tween = gUITween$outputSlotTween.remove(slot);
                         TweenPool.releaseTween(tween);
                     }
                     else {
@@ -519,10 +519,10 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
             }
         }
 
-        Tuple<Integer, Integer> tuple = gUITween$quickTweenSlots.get(slot.index);
+        Tuple<Integer, Integer> tuple = gUITween$quickTweenSlots.get(slot);
         if (tuple != null) {
             if (tuple.getA().equals(tuple.getB())) {
-                float quickTick = gUITween$quickTicks.getOrDefault(slot.index, 0f);
+                float quickTick = gUITween$quickTicks.getOrDefault(slot, 0f);
 
                 float progress = quickTick / 4f;
 
@@ -533,11 +533,11 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
 
                     haveTween = true;
 
-                    gUITween$quickTicks.put(slot.index, quickTick + GUITweenUtility.getDeltaTicks());
+                    gUITween$quickTicks.put(slot, quickTick + GUITweenUtility.getDeltaTicks());
                 }
                 else {
-                    gUITween$quickTweenSlots.remove(slot.index);
-                    gUITween$quickTicks.remove(slot.index);
+                    gUITween$quickTweenSlots.remove(slot);
+                    gUITween$quickTicks.remove(slot);
                 }
             }
             else {
@@ -555,8 +555,9 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
                 float strength = GUITweenConfig.sameItemShakeStrength();
                 float frequency = GUITweenConfig.sameItemShakeFrequency();
 
-                dx = TweenUtil.shake(0, gUITween$sameItemTick - delay, duration, strength, frequency, TweenUtil.DEFAULT_SEED + slot.index * 100L);
-                dy = TweenUtil.shake(1, gUITween$sameItemTick - delay, duration, strength, frequency, TweenUtil.DEFAULT_SEED + slot.index * 100L);
+                int hashCode = slot.hashCode();
+                dx = TweenUtil.shake(0, gUITween$sameItemTick - delay, duration, strength, frequency, TweenUtil.DEFAULT_SEED + hashCode * 100L);
+                dy = TweenUtil.shake(1, gUITween$sameItemTick - delay, duration, strength, frequency, TweenUtil.DEFAULT_SEED + hashCode * 100L);
 //                angle = (TweenUtil.punch(0.15f, 2, gUITween$sameItemTick / 8) - 1) * 100;
             }
         }
@@ -602,9 +603,9 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
         poseStack.scale(scale, scale);
         poseStack.translate(-centerX, -centerY);
 
-        Tuple<Integer, Integer> tuple = gUITween$quickTweenSlots.get(slot.index);
+        Tuple<Integer, Integer> tuple = gUITween$quickTweenSlots.get(slot);
         if (tuple == null) {
-            gUITween$quickTweenSlots.put(slot.index, new Tuple<>(-1, 0));
+            gUITween$quickTweenSlots.put(slot, new Tuple<>(-1, 0));
         }
         else {
             tuple.setB(tuple.getB() + 1);
