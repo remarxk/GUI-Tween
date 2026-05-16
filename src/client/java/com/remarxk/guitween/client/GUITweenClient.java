@@ -37,9 +37,10 @@ public class GUITweenClient implements ClientModInitializer {
     private void registerEvents() {
         ClientTickEvents.END_CLIENT_TICK.register(HotbarChangeListener::onPlayerTick);
 
-        ScreenEvents.BEFORE_INIT.register((client, screen, scaledWidth, scaledHeight) ->
-                ScreenEvents.afterRender(screen).register(ScreenRenderListener::postRenderScreen)
-        );
+        ScreenEvents.BEFORE_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
+            ScreenEvents.afterRender(screen).register(ScreenRenderListener::postRenderScreen);
+            ScreenEvents.afterTick(screen).register(ScreenRenderListener::postScreenTick);
+        });
 
         ImmersiveUICompat.commonSetup();
     }
