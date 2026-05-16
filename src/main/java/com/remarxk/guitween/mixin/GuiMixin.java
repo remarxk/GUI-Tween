@@ -311,6 +311,14 @@ public class GuiMixin {
             return;
         }
 
+        if (Math.abs(gUITween$curSelectPos - pX) < 1) {
+            gUITween$curSelectPos = pX;
+            HotbarChangeListener.scrollSelected = -1;
+            HotbarChangeListener.scrollDir = 0;
+            guiGraphics.blit(pAtlasLocation, pX, pY, pUOffset, pVOffset, pUWidth, pVHeight);
+            return;
+        }
+
         // 重置滚动状态
         if (HotbarChangeListener.scrollSelected >= 0 && HotbarChangeListener.scrollSelected != player.getInventory().selected) {
             HotbarChangeListener.scrollSelected = -1;
@@ -349,12 +357,6 @@ public class GuiMixin {
             }
         } else {
             gUITween$curSelectPos += (target - gUITween$curSelectPos) * (1 - (float)Math.exp(-speed * delta));
-        }
-
-        if (Math.abs(gUITween$curSelectPos - pX) < 1) {
-            gUITween$curSelectPos = pX;
-            HotbarChangeListener.scrollSelected = -1;
-            HotbarChangeListener.scrollDir = 0;
         }
 
         boolean needScissor = false;

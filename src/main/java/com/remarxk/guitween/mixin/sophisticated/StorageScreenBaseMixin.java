@@ -201,8 +201,8 @@ public abstract class StorageScreenBaseMixin<S extends StorageContainerMenuBase<
     @Inject(
             method = "renderSlot",
             at = @At(
-                    value = "HEAD"
-            )
+                    value = "INVOKE",
+                    target = "Lcom/mojang/blaze3d/vertex/PoseStack;pushPose()V")
     )
     private void renderSlotBefore(GuiGraphics pGuiGraphics, Slot pSlot, CallbackInfo ci) {
         if (!(this instanceof AbstractContainerScreenMixinAccess access))
@@ -255,13 +255,13 @@ public abstract class StorageScreenBaseMixin<S extends StorageContainerMenuBase<
             }
         }
 
-        HashMap<Integer, Tuple<Integer, Integer>> gUITween$quickTweenSlots = access.getGUITween$quickTweenSlots();
-        HashMap<Integer, Float> gUITween$quickTicks = access.getGUITween$quickTicks();
+        HashMap<Slot, Tuple<Integer, Integer>> gUITween$quickTweenSlots = access.getGUITween$quickTweenSlots();
+        HashMap<Slot, Float> gUITween$quickTicks = access.getGUITween$quickTicks();
 
-        Tuple<Integer, Integer> tuple = gUITween$quickTweenSlots.get(pSlot.index);
-        if (tuple != null && menu.getSlot(pSlot.index) == pSlot) {
+        Tuple<Integer, Integer> tuple = gUITween$quickTweenSlots.get(pSlot);
+        if (tuple != null) {
             if (tuple.getA().equals(tuple.getB())) {
-                float quickTick = gUITween$quickTicks.getOrDefault(pSlot.index, 0f);
+                float quickTick = gUITween$quickTicks.getOrDefault(pSlot, 0f);
 
                 float progress = quickTick / 4f;
 
@@ -272,11 +272,11 @@ public abstract class StorageScreenBaseMixin<S extends StorageContainerMenuBase<
 
                     haveTween = true;
 
-                    gUITween$quickTicks.put(pSlot.index, quickTick + GUITweenUtility.getDeltaTicks());
+                    gUITween$quickTicks.put(pSlot, quickTick + GUITweenUtility.getDeltaTicks());
                 }
                 else {
-                    gUITween$quickTweenSlots.remove(pSlot.index);
-                    gUITween$quickTicks.remove(pSlot.index);
+                    gUITween$quickTweenSlots.remove(pSlot);
+                    gUITween$quickTicks.remove(pSlot);
                 }
             }
             else {
@@ -345,9 +345,9 @@ public abstract class StorageScreenBaseMixin<S extends StorageContainerMenuBase<
         poseStack.translate(-centerX, -centerY, 0);
 
         var gUITween$quickTweenSlots = access.getGUITween$quickTweenSlots();
-        Tuple<Integer, Integer> tuple = gUITween$quickTweenSlots.get(slot.index);
+        Tuple<Integer, Integer> tuple = gUITween$quickTweenSlots.get(slot);
         if (tuple == null) {
-            gUITween$quickTweenSlots.put(slot.index, new Tuple<>(-1, 0));
+            gUITween$quickTweenSlots.put(slot, new Tuple<>(-1, 0));
         }
         else {
             tuple.setB(tuple.getB() + 1);
@@ -357,7 +357,9 @@ public abstract class StorageScreenBaseMixin<S extends StorageContainerMenuBase<
     @Inject(
             method = "renderSlot",
             at = @At(
-                    value = "TAIL"
+                    value = "INVOKE",
+                    target = "Lcom/mojang/blaze3d/vertex/PoseStack;popPose()V",
+                    shift = At.Shift.AFTER
             )
     )
     private void renderSlotAfter(GuiGraphics pGuiGraphics, Slot pSlot, CallbackInfo ci) {
