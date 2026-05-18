@@ -1,4 +1,4 @@
-name: Minecraft Mod AI Issue Bot (GLM 4.7 Flash)
+name: Minecraft Mod AI Issue Bot (Gemini 3.1 Flash Lite)
 
 on:
   issues:
@@ -16,7 +16,7 @@ jobs:
       - name: AI Analyze Issue and Reply
         uses: actions/github-script@v7
         env:
-          GLM_API_KEY: ${{ secrets.GLM_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         with:
           script: |
             const issue = context.payload.issue;
@@ -67,28 +67,30 @@ jobs:
             let responseText = "";
 
             try {
+              const model = "models/gemini-3.1-flash-lite";
+
               const response = await fetch(
-                "https://open.bigmodel.cn/api/paas/v4/chat/completions",
+                `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${process.env.GEMINI_API_KEY}`,
                 {
                   method: "POST",
                   headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${process.env.GLM_API_KEY}`
+                    "Content-Type": "application/json"
                   },
                   body: JSON.stringify({
-                    model: "glm-4.7-flash",
-                    messages: [
-                      {
-                        role: "system",
-                        content: "You are a helpful Minecraft mod support assistant."
-                      },
+                    contents: [
                       {
                         role: "user",
-                        content: prompt
+                        parts: [
+                          {
+                            text: prompt
+                          }
+                        ]
                       }
                     ],
-                    max_tokens: 2000,
-                    temperature: 0.7
+                    generationConfig: {
+                      temperature: 0.7,
+                      maxOutputTokens: 2000
+                    }
                   })
                 }
               );
@@ -96,7 +98,7 @@ jobs:
               const data = await response.json();
 
               responseText =
-                data?.choices?.[0]?.message?.content ||
+                data?.candidates?.[0]?.content?.parts?.[0]?.text ||
                 "Please provide more information about the issue.";
             } catch (err) {
               responseText =
