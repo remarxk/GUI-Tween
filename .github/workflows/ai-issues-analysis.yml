@@ -1,4 +1,4 @@
-name: Minecraft Mod AI Issue Bot (DeepSeek)
+name: Minecraft Mod AI Issue Bot (GLM + URL Parser)
 
 on:
   issues:
@@ -16,63 +16,108 @@ jobs:
       - name: AI Analyze Issue and Reply
         uses: actions/github-script@v7
         env:
-          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          GLM_API_KEY: ${{ secrets.GLM_API_KEY }}
         with:
           script: |
             const issue = context.payload.issue;
 
             const title = (issue.title || "").slice(0, 300);
-            const body = (issue.body || "").slice(0, 8000);
+            const body = (issue.body || "").slice(0, 20000);
 
-            const prompt =
-              "You are a Minecraft Mod developer assistant.\n\n" +
+            // ======================
+            // 1. extract URLs
+            // ======================
+            const urls = body.match(/https?:\/\/\S+/g) || [];
 
-              "LANGUAGE RULE:\n" +
-              "- Detect user's language.\n" +
-              "- Reply in same language only.\n\n" +
+            function convertUrl(url) {
+              if (url.includes("mclo.gs/")) {
+                const id = url.split("/").pop();
+                return `https://api.mclo.gs/1/raw/${id}`;
+              }
+              return url;
+            }
 
-              "ISSUE ANALYSIS RULES:\n\n" +
+            async function fetchUrl(url) {
+              try {
+                const res = await fetch(url);
+                if (!res.ok) return `[FETCH ERROR ${res.status}]`;
+                return await res.text();
+              } catch (e) {
+                return `[FETCH FAILED ${e.message}]`;
+              }
+            }
 
-              "If crash:\n" +
-              "- Check crash report / latest.log\n" +
-              "- If missing, request them\n\n" +
+            // ======================
+            // 2. fetch logs safely
+            // ======================
+            let logsArray = [];
 
-              "If logs exist:\n" +
-              "- Identify likely causes:\n" +
-              "  - missing dependency\n" +
-              "  - mod version mismatch\n" +
-              "  - mixin conflict\n" +
-              "  - config error\n" +
-              "  - class not found\n\n" +
+            for (const url of urls) {
+              const fixed = convertUrl(url);
+              const content = await fetchUrl(fixed);
 
-              "Always include:\n" +
-              "- This is only a suggestion and may not be accurate.\n\n" +
+              logsArray.push(
+                [
+                  "====================",
+                  "SOURCE: " + url,
+                  "FETCHED: " + fixed,
+                  "====================",
+                  content
+                ].join("\n")
+              );
+            }
 
-              "FINAL SENTENCE:\n" +
-              "- If resolved: If resolved, you may close this issue.\n" +
-              "- If not resolved: Please wait for maintainer response.\n\n" +
+            const fetchedLogs = logsArray.join("\n\n");
 
-              "ISSUE:\n\n" +
-              "Title:\n" + title + "\n\n" +
-              "Body:\n" + body;
+            // ======================
+            // 3. prompt (SAFE BUILD)
+            // ======================
+            const prompt = [
+              "You are a Minecraft Mod crash analysis expert.",
+              "",
+              "RULES:",
+              "- Only use provided logs",
+              "- Do NOT hallucinate missing mods",
+              "- If logs are incomplete, ask for full crash report",
+              "",
+              "TASK:",
+              "- Find root cause",
+              "- Identify mod conflicts",
+              "- Provide fix steps",
+              "",
+              "IMPORTANT:",
+              "- This is only a suggestion and may not be accurate.",
+              "",
+              "ISSUE TITLE:",
+              title,
+              "",
+              "ISSUE BODY:",
+              body,
+              "",
+              "CRASH LOGS:",
+              fetchedLogs
+            ].join("\n");
 
+            // ======================
+            // 4. call GLM
+            // ======================
             let responseText = "";
 
             try {
               const response = await fetch(
-                "https://api.deepseek.com/chat/completions",
+                "https://open.bigmodel.cn/api/paas/v4/chat/completions",
                 {
                   method: "POST",
                   headers: {
                     "Content-Type": "application/json",
-                    "Authorization": `Bearer ${process.env.DEEPSEEK_API_KEY}`
+                    "Authorization": `Bearer ${process.env.GLM_API_KEY}`
                   },
                   body: JSON.stringify({
-                    model: "deepseek-v4-flash",
+                    model: "glm-5.1",
                     messages: [
                       {
                         role: "system",
-                        content: "You are a helpful Minecraft mod support assistant."
+                        content: "You are a senior Minecraft mod debugging engineer."
                       },
                       {
                         role: "user",
@@ -89,12 +134,15 @@ jobs:
 
               responseText =
                 data?.choices?.[0]?.message?.content ||
-                "Please provide more information about the issue.";
+                "No analysis result.";
+
             } catch (err) {
-              responseText =
-                "AI request failed. Please check API key or network connection.";
+              responseText = "AI request failed: " + err.message;
             }
 
+            // ======================
+            // 5. reply
+            // ======================
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
