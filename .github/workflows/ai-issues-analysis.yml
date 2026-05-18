@@ -2,7 +2,9 @@ name: Minecraft Mod AI Issue Bot (GLM + URL Parser)
 
 on:
   issues:
-    types: [opened]
+    types: [opened, reopened]
+  issue_comment:
+    types: [created]
 
 jobs:
   ai-response:
@@ -21,9 +23,30 @@ jobs:
         with:
           script: |
             const issue = context.payload.issue;
+            const comment = context.payload.comment;
+
+            const isCommentEvent = !!comment;
 
             const title = (issue.title || "").slice(0, 300);
             const body = (issue.body || "").slice(0, 20000);
+
+            const commentBody = comment?.body || "";
+
+            // ======================
+            // 0. COMMAND TRIGGER
+            // ======================
+            const text = isCommentEvent
+              ? commentBody
+              : body;
+
+            const triggered =
+              text.includes("!analyze") ||
+              text.includes("/analyze");
+
+            if (!triggered) {
+              console.log("No command detected, skipping.");
+              return;
+            }
 
             // ======================
             // 1. extract URLs (FIXED REGEX)
@@ -71,7 +94,7 @@ jobs:
             const fetchedLogs = logsArray.join("\n\n");
 
             // ======================
-            // 3. prompt (UPDATED)
+            // 3. prompt (UNCHANGED)
             // ======================
             const prompt = [
               "You are a Minecraft Mod crash analysis expert.",
