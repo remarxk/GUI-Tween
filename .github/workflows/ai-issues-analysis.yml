@@ -25,13 +25,16 @@ jobs:
             const issue = context.payload.issue;
             const comment = context.payload.comment;
 
-            const isCommentEvent = !!comment;
             const isIssueEvent = context.eventName === "issues";
+            const isCommentEvent = context.eventName === "issue_comment";
 
             const title = (issue.title || "").slice(0, 300);
             const body = (issue.body || "").slice(0, 20000);
             const commentBody = comment?.body || "";
 
+            // ======================
+            // 0. TEXT SOURCE
+            // ======================
             const text = isCommentEvent
               ? commentBody
               : (title + "\n" + body);
@@ -51,12 +54,12 @@ jobs:
             }
 
             // ======================
-            // 2. BUG CLASSIFIER (SAFE STRING JOIN)
+            // 2. BUG CLASSIFIER
             // ======================
             async function classifyBug(title, body) {
               const prompt = [
                 "You are a strict classifier.",
-                "Return ONLY: BUG or NOT_BUG",
+                "Return ONLY BUG or NOT_BUG.",
                 "",
                 "BUG = crash, error, exception, mod conflict, game broken",
                 "NOT_BUG = feature request, question, discussion",
@@ -99,7 +102,7 @@ jobs:
             }
 
             // ======================
-            // 3. AUTO FILTER
+            // 3. AUTO FILTER (IMPORTANT FIX)
             // ======================
             if (isIssueEvent && !manualTrigger) {
               const result = await classifyBug(title, body);
@@ -107,13 +110,13 @@ jobs:
               console.log("Bug classification:", result);
 
               if (result !== "BUG") {
-                console.log("Skip: NOT a bug");
+                console.log("Skip: NOT a bug report");
                 return;
               }
             }
 
             // ======================
-            // 4. URL extraction
+            // 4. URL extraction (SAFE)
             // ======================
             const urls = body.match(/https?:\/\/[^\s<>"')]+/g) || [];
 
@@ -153,7 +156,7 @@ jobs:
             const fetchedLogs = logsArray.join("\n\n");
 
             // ======================
-            // 5. MAIN PROMPT (SAFE JOIN VERSION)
+            // 5. MAIN PROMPT
             // ======================
             const prompt = [
               "You are a Minecraft Mod crash analysis expert.",
