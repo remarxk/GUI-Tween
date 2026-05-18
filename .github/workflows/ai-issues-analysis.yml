@@ -24,89 +24,88 @@ jobs:
             const title = (issue.title || "").slice(0, 300);
             const body = (issue.body || "").slice(0, 8000);
 
-            const prompt = `
-You are a Minecraft Mod developer assistant.
+            const prompt =
+              "You are a Minecraft Mod developer assistant.\n\n" +
 
-LANGUAGE RULE:
-- Detect user's language.
-- If Chinese → reply ONLY in Chinese.
-- If English → reply ONLY in English.
-- Otherwise → default to English.
-- Do NOT mix languages.
+              "LANGUAGE RULE:\n" +
+              "- Detect user's language.\n" +
+              "- If Chinese → reply ONLY in Chinese.\n" +
+              "- If English → reply ONLY in English.\n" +
+              "- Otherwise → default to English.\n" +
+              "- Do NOT mix languages.\n\n" +
 
-ISSUE ANALYSIS RULES:
+              "ISSUE ANALYSIS RULES:\n\n" +
 
-If crash:
-- Check if crash report or latest.log is provided.
-- If missing:
-  ask for:
-  - crash report
-  - latest.log
-  - Minecraft version
-  - mod loader (Forge/Fabric/NeoForge)
-  - mod list
+              "If crash:\n" +
+              "- Check if crash report or latest.log is provided.\n" +
+              "- If missing, ask for:\n" +
+              "  - crash report\n" +
+              "  - latest.log\n" +
+              "  - Minecraft version\n" +
+              "  - mod loader (Forge/Fabric/NeoForge)\n" +
+              "  - mod list\n\n" +
 
-If logs exist:
-- Identify likely causes:
-  - missing dependency
-  - mod version mismatch
-  - mixin conflict
-  - config error
-  - class not found
+              "If logs exist:\n" +
+              "- Identify likely causes:\n" +
+              "  - missing dependency\n" +
+              "  - mod version mismatch\n" +
+              "  - mixin conflict\n" +
+              "  - config error\n" +
+              "  - class not found\n\n" +
 
-Always include:
-- "This is only a suggestion and may not be accurate."
+              "Always include:\n" +
+              "- This is only a suggestion and may not be accurate.\n\n" +
 
-FINAL SENTENCE:
-- If resolved: "If resolved, you may close this issue."
-- If not resolved: "Please wait for maintainer response."
+              "FINAL SENTENCE:\n" +
+              "- If resolved: If resolved, you may close this issue.\n" +
+              "- If not resolved: Please wait for maintainer response.\n\n" +
 
-ISSUE:
+              "ISSUE:\n\n" +
+              "Title:\n" + title + "\n\n" +
+              "Body:\n" + body;
 
-Title:
-${title}
+            let responseText = "";
 
-Body:
-${body}
-`;
-
-            const response = await fetch("https://open.bigmodel.cn/api/paas/v4/chat/completions", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${process.env.GLM_API_KEY}`
-              },
-              body: JSON.stringify({
-                model: "glm-4.7-flash",
-                messages: [
-                  {
-                    role: "system",
-                    content: "You are a helpful Minecraft mod support assistant."
+            try {
+              const response = await fetch(
+                "https://open.bigmodel.cn/api/paas/v4/chat/completions",
+                {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${process.env.GLM_API_KEY}`
                   },
-                  {
-                    role: "user",
-                    content: prompt
-                  }
-                ],
+                  body: JSON.stringify({
+                    model: "glm-4.7-flash",
+                    messages: [
+                      {
+                        role: "system",
+                        content: "You are a helpful Minecraft mod support assistant."
+                      },
+                      {
+                        role: "user",
+                        content: prompt
+                      }
+                    ],
+                    max_tokens: 2000,
+                    temperature: 0.7
+                  })
+                }
+              );
 
-                thinking: {
-                  type: "enabled"
-                },
+              const data = await response.json();
 
-                max_tokens: 2000,
-                temperature: 0.7
-              })
-            });
-
-            const data = await response.json();
-
-            const reply =
-              data.choices?.[0]?.message?.content ||
-              "Please provide more information about the issue.";
+              responseText =
+                data?.choices?.[0]?.message?.content ||
+                "Please provide more information about the issue.";
+            } catch (err) {
+              responseText =
+                "AI request failed. Please check API key or network connection.";
+            }
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: issue.number,
-              body: reply
+              body: responseText
             });
