@@ -14,9 +14,10 @@ jobs:
 
     steps:
       - name: AI Analyze Issue and Reply
-        uses: actions/github-script@latest
+        uses: actions/github-script@v7
         env:
           GLM_API_KEY: ${{ secrets.GLM_API_KEY }}
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
         with:
           script: |
             const issue = context.payload.issue;
