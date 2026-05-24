@@ -281,17 +281,38 @@ async function analyzeIssue(issue, apiKey, dryRun = false) {
     return { type: "bug", issueNumber, response };
   }
 
-  // Post comment via gh CLI
+  // Post comment via GitHub API directly (more reliable than gh CLI)
   console.error(`Posting comment on issue #${issueNumber}...`);
+  console.error(`  Response length: ${response.length} chars`);
+
+  const repo = process.env.GITHUB_REPOSITORY || "";
+  const token = process.env.GITHUB_TOKEN || "";
+  if (!repo || !token) {
+    console.error("[ERROR] GITHUB_REPOSITORY or GITHUB_TOKEN not set");
+    return { type: "error", message: "Missing GITHUB_REPOSITORY or GITHUB_TOKEN" };
+  }
+
+  const [owner, repoName] = repo.split("/");
+  const postData = JSON.stringify({ body: response });
+
   try {
-    execSync("gh issue comment " + issueNumber + " --body -", {
-      input: response,
-      stdio: ["pipe", "inherit", "inherit"],
-      env: { ...process.env },
-    });
+    execSync(
+      `gh api repos/${owner}/${repoName}/issues/${issueNumber}/comments --input - --method POST`,
+      { input: postData, env: { ...process.env } }
+    );
   } catch (e) {
-    console.error(`[ERROR] Failed to post comment: ${e.message}`);
-    return { type: "error", message: e.message };
+    console.error(`[ERROR] Failed to post comment via gh api: ${e.message}`);
+    // Fallback: try gh issue comment
+    try {
+      console.error("  Retrying with gh issue comment --body-file - ...");
+      execSync("gh issue comment " + issueNumber + " --body-file -", {
+        input: response,
+        env: { ...process.env },
+      });
+    } catch (e2) {
+      console.error(`[ERROR] Fallback also failed: ${e2.message}`);
+      return { type: "error", message: e2.message };
+    }
   }
 
   console.error(`[SUCCESS] Analysis comment posted on issue #${issueNumber}`);
