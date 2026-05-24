@@ -201,10 +201,10 @@ function callGbmApi(apiKey, messages) {
 }
 
 function ensureClosingLine(response) {
-  if (!response.includes("如果问题已经解决") || !response.includes("请关闭此issue")) {
-    response +=
-      "\n\n---\n*如果问题已经解决，请关闭此issue。如果没有解决，请等待作者回复。*";
-  }
+  // if (!response.includes("如果问题已经解决") || !response.includes("请关闭此issue")) {
+  //   response +=
+  //     "\n\n---\n*如果问题已经解决，请关闭此issue。如果没有解决，请等待作者回复。*";
+  // }
   return response;
 }
 
