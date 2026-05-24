@@ -1,0 +1,6 @@
+{
+  "title": "打开背包界面时游戏卡死",
+  "body": "MC版本: 1.20.1\nForge版本: 47.2.0\n模组版本: 2.1.0\n\n打开背包时游戏完全卡死，必须强制结束进程。\n\n完整日志：https://mclo.gs/bB4LUUl\n",
+  "number": 5,
+  "html_url": "https://github.com/example/repo/issues/5"
+}

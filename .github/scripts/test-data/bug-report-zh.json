@@ -1,0 +1,6 @@
+{
+  "title": "打开GUI时游戏崩溃",
+  "body": "游戏版本: 1.20.1\n模组版本: 2.1.0\n\n当我打开模组的GUI界面时，游戏直接崩溃了。以下是崩溃日志：\n\n```\njava.lang.NullPointerException: Cannot invoke \"net.minecraft.client.gui.GuiGraphics.pose()\" because the return value of \"net.minecraft.client.gui.GuiGraphics.pose()\" is null\n    at com.example.guitween.GuiTweenScreen.render(GuiTweenScreen.java:45)\n    at net.minecraft.client.gui.GuiGraphics.draw(GuiGraphics.java:112)\n```\n\n我安装了以下模组：\n- GUITween 2.1.0\n- Fabric API 0.90.0\n- Sodium 0.5.0\n\n复现步骤：\n1. 启动游戏\n2. 按下 G 键打开 GUI\n3. 游戏立即崩溃\n\n请问这是什么问题？",
+  "number": 1,
+  "html_url": "https://github.com/example/repo/issues/1"
+}

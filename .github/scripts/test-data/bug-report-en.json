@@ -1,0 +1,6 @@
+{
+  "title": "Crash when opening config screen",
+  "body": "Minecraft version: 1.21.1\nMod version: 2.1.0\n\nWhen I try to open the config screen via ModMenu, the game crashes immediately.\n\nCrash report:\n```\njava.lang.NullPointerException: Cannot invoke \"net.minecraft.client.gui.GuiGraphics.pose()\"\n    at com.example.guitween.config.GuiTweenConfigScreen.init(GuiTweenConfigScreen.java:32)\n    at net.minecraft.client.gui.screens.Screen.init(Screen.java:89)\n```\n\nMods installed:\n- GUITween 2.1.0\n- Fabric API 0.95.0\n- ModMenu 9.0.0\n\nSteps to reproduce:\n1. Launch game\n2. Go to ModMenu\n3. Click on GUITween config button\n4. Game crashes\n\nIs there a fix for this?",
+  "number": 2,
+  "html_url": "https://github.com/example/repo/issues/2"
+}

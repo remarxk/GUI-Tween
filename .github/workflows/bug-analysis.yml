@@ -1,0 +1,20 @@
+name: Bug Report Analysis
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Analyze issue with AI
+        env:
+          GLM_API_KEY: ${{ secrets.GLM_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node .github/scripts/bug_analyzer.js

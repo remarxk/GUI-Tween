@@ -1,0 +1,6 @@
+{
+  "title": "支持更多动画曲线类型",
+  "body": "希望能在下一个版本中添加对以下动画曲线的支持：\n\n1. Elastic 弹性曲线\n2. Bounce 弹跳曲线\n3. Back 回退曲线\n\n这些曲线可以让我制作出更生动的UI动画效果。目前已有的 easeInOut 已经很好用了，但如果有更多的曲线选择就更好了。\n\n感谢开发者的辛勤工作！",
+  "number": 3,
+  "html_url": "https://github.com/example/repo/issues/3"
+}
