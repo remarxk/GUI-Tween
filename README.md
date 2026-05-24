@@ -1,32 +1,64 @@
-# MultiLoader Template
+# GUI Tween
 
-This project provides a Gradle project template that can compile Minecraft mods for multiple modloaders using a common project for the sources. This project does not require any third party libraries or dependencies. If you have any questions or want to discuss the project, please join our [Discord](https://discord.myceliummod.network).
+<p align="center">
+  <img src="common/src/main/resources/assets/guitween/icon.png" alt="GUI Tween Icon" width="128" height="128">
+</p>
 
-## Getting Started
+为 Minecraft 添加流畅、可配置的 GUI 动画效果，覆盖容器界面、快捷栏、聊天、BOSS 血条和提示框等所有界面元素。
 
-### IntelliJ IDEA
-This guide will show how to import the MultiLoader Template into IntelliJ IDEA. The setup process is roughly equivalent to setting up the modloaders independently and should be very familiar to anyone who has worked with their MDKs.
+---
 
-1. Clone or download this repository to your computer.
-2. Configure the project by setting the properties in the `gradle.properties` file. You will also need to change the `rootProject.name`  property in `settings.gradle`, this should match the folder name of your project, or else IDEA may complain.
-3. Open the template's root folder as a new project in IDEA. This is the folder that contains this README.md file and the gradlew executable.
-4. If your default JVM/JDK is not Java 25 you will encounter an error when opening the project. This error is fixed by going to `File > Settings > Build, Execution, Deployment > Build Tools > Gradle > Gradle JVM` and changing the value to a valid Java 25 JVM. You will also need to set the Project SDK to Java 25. This can be done by going to `File > Project Structure > Project SDK`. Once both have been set open the Gradle tab in IDEA and click the refresh button to reload the project.
-5. Open your Run/Debug Configurations. Under the `Application` category there should now be options to run Fabric and NeoForge projects. Select one of the client options and try to run it.
-6. Assuming you were able to run the game in step 5 your workspace should now be set up.
+## 功能介绍
 
-### Eclipse
-While it is possible to use this template in Eclipse it is not recommended. During the development of this template multiple critical bugs and quirks related to Eclipse were found at nearly every level of the required build tools. While we continue to work with these tools to report and resolve issues support for projects like these are not there yet. For now Eclipse is considered unsupported by this project. The development cycle for build tools is notoriously slow so there are no ETAs available.
+### 窗口/容器界面动画
+- **打开动画** — 界面从可配置的偏移位置滑入，并带有渐变淡入效果
+- **关闭动画** — 关闭时反向滑出
+- **按界面排除** — 可为特定界面类禁用窗口动画
+- **JEI 面板动画** — JEI 左右面板随窗口独立开合
+- **调试窗口** — 显示界面类名，带复制按钮
 
-## Development Guide
-When using this template the majority of your mod should be developed in the `common` project. The `common` project is compiled against the vanilla game and is used to hold code that is shared between the different loader-specific versions of your mod. The `common` project has no knowledge or access to ModLoader specific code, apis, or concepts. Code that requires something from a specific loader must be done through the project that is specific to that loader, such as the `fabric` or `neoforge` projects.
+### 物品动画
+- **悬停动画** — 物品在鼠标悬停时放大
+- **提示框动画** — 提示框平滑淡入
+- **点击动画** — 点击物品时产生顿缩/放大效果
+- **输出动画** — 合成台、熔炉等输出格物品出现时带缩放或弹跳效果
+- **拖拽动画** — 拖拽物品时根据速度旋转，松开后带弹簧回摆
+- **同类物品抖动** — 拖拽物品与下方物品同类型时触发抖动
+- **快速合成动画** — 批量合成物品带缩放动画
 
-Loader specific projects such as the `fabric` and `neoforge` project are used to load the `common` project into the game. These projects also define code that is specific to that loader. Loader specific projects can access all the code in the `common` project. It is important to remember that the `common` project can not access code from loader specific projects.
+### 快捷栏动画
+- **手持物品缩放** — 当前选中格子物品放大（可选切换过渡动画）
+- **选中物品名称** — 切换格子时物品名称滑动淡入淡出
+- **攻击动画** — 攻击时手持物品摆动旋转
+- **使用动画** — 食用、格挡或使用物品时物品缩放脉动
+- **空手动画** — 空手使用/攻击时快捷栏抖动
+- **选择框动画** — 滚轮切换时选择框平滑滑动
+- **经验值动画** — 经验等级变化时数字缩放
+- **护甲动画** — 护甲值变化时图标放大（增加）或抖动（减少）
 
-## Removing Platforms and Loaders
-While this template has support for many modloaders, new loaders may appear in the future, and existing loaders may become less relevant.
+### 聊天动画
+- **聊天打开/关闭** — 聊天界面滑动淡入/淡出
+- **聊天消息** — 新消息从左侧滑入并淡入
 
-Removing loader specific projects is as easy as deleting the folder, and removing the `include("projectname")` line from the `settings.gradle` file.
-For example if you wanted to remove support for `forge` you would follow the following steps:
+### BOSS 血条动画
+- **BOSS 出现** — 血条水平拉伸并淡入
+- **BOSS 消失** — 血条收缩淡出
+- **BOSS 受伤** — 血条受击抖动
 
-1. Delete the subproject folder. For example, delete `MultiLoader-Template/forge`.
-2. Remove the project from `settings.gradle`. For example, remove `include("forge")`. 
+### 缓动系统
+所有动画支持 26 种缓动类型：
+`Linear`、`Quad`（In/Out/InOut）、`Cubic`、`Quart`、`Quint`、`Sine`、`Expo`、`Circ`、`Back`、`Elastic`、`Bounce`
+
+---
+
+## 数据包支持
+
+容器界面输出槽位通过 `assets/guitween/window_slots/` 下的 JSON 数据包文件定义。内置支持：工作台、熔炉、高炉、烟熏炉、锻造台、切石机、织布机、砂轮、制图台、铁砧、物品栏。
+
+---
+
+## 兼容性
+
+- **JEI / REI / EMI** — 面板动画支持，条件加载对应 Mixin
+- **ImmersiveUI** — 自动检测兼容
+- **Sodium** — 兼容（条件 Mixin 处理）
