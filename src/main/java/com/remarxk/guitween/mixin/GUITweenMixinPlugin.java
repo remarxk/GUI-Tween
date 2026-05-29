@@ -2,6 +2,7 @@ package com.remarxk.guitween.mixin;
 
 import com.corosus.watut.WatutMod;
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.obscuria.obscureapi.ObscureAPI;
 import dev.ftb.mods.ftblibrary.FTBLibrary;
 import fuzs.overflowingbars.OverflowingBars;
 import mezz.jei.api.constants.ModIds;
@@ -62,6 +63,14 @@ public class GUITweenMixinPlugin implements IMixinConfigPlugin {
 
         if (mixinClassName.contains("com.remarxk.guitween.mixin.ftblibrary")) {
             return modIsLoad(FTBLibrary.MOD_ID);
+        }
+
+        if (mixinClassName.contains("com.remarxk.guitween.mixin.obscuriaapi")) {
+            return modIsLoad(ObscureAPI.MODID);
+        }
+
+        if (mixinClassName.equals("com.remarxk.guitween.mixin.BossHealthOverlayMixin")) {
+            return !modIsLoad(ObscureAPI.MODID);
         }
 
         return true;

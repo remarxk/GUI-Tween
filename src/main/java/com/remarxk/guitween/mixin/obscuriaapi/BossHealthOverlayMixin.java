@@ -1,19 +1,24 @@
-package com.remarxk.guitween.mixin;
+package com.remarxk.guitween.mixin.obscuriaapi;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.mojang.blaze3d.platform.Window;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.obscuria.obscureapi.api.BossBarsRenderManager;
 import com.remarxk.guitween.GUITween;
 import com.remarxk.guitween.GUITweenUtility;
-import com.remarxk.guitween.config.GUITweenConfig;
 import com.remarxk.guitween.util.TweenUtil;
-import net.minecraft.client.gui.Font;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.BossHealthOverlay;
 import net.minecraft.client.gui.components.LerpingBossEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBossEventPacket;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.BossEvent;
+import net.minecraftforge.client.ForgeHooksClient;
+import net.minecraftforge.client.event.CustomizeGuiOverlayEvent;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -24,8 +29,89 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.*;
 
-@Mixin(BossHealthOverlay.class)
-public class BossHealthOverlayMixin {
+@Mixin(
+        value = BossHealthOverlay.class,
+        priority = -50
+)
+public abstract class BossHealthOverlayMixin {
+    @Shadow
+    @Final
+    private static ResourceLocation GUI_BARS_LOCATION;
+    @Shadow
+    @Final
+    Map<UUID, LerpingBossEvent> events;
+    @Shadow
+    @Final
+    private Minecraft minecraft;
+
+    @Inject(
+            method = {"render"},
+            at = {@At("HEAD")},
+            cancellable = true
+    )
+    private void render(GuiGraphics context, CallbackInfo info) {
+        info.cancel();
+        if (!this.events.isEmpty()) {
+            int width = this.minecraft.getWindow().getGuiScaledWidth();
+            int left = width / 2 - 91;
+            int top = 12;
+
+            for(LerpingBossEvent bossEvent : this.events.values()) {
+                Optional<BossBarsRenderManager.Style> style = BossBarsRenderManager.getStyle(bossEvent.getName());
+                if (style.isPresent()) {
+                    Component component = bossEvent.getName();
+                    if (((BossBarsRenderManager.Style)style.get()).shouldRenderBar()) {
+                        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+                        RenderSystem.setShaderTexture(0, GUI_BARS_LOCATION);
+                        gUITween$drawBarBefore(context, left, top, bossEvent);
+                        this.drawBar(context, left, top, bossEvent);
+                        gUITween$drawBarAfter(context, left, top, bossEvent);
+                    }
+
+                    ((BossBarsRenderManager.Style)style.get()).getFunction().render(this.minecraft, context, left, top, bossEvent, component);
+                    if (((BossBarsRenderManager.Style)style.get()).shouldRenderName()) {
+                        int x = width / 2 - this.minecraft.font.width(component) / 2;
+                        int y = top - 9;
+                        gUITween$drawStringBefore();
+                        context.drawString(this.minecraft.font, component, x, y, 16777215);
+                        gUITween$drawStringAfter();
+                    }
+
+                    top += ((BossBarsRenderManager.Style)style.get()).getIncrement(this.minecraft);
+                } else {
+                    Window var10001 = this.minecraft.getWindow();
+                    Objects.requireNonNull(this.minecraft.font);
+                    CustomizeGuiOverlayEvent.BossEventProgress event = ForgeHooksClient.onCustomizeBossEventProgress(context, var10001, bossEvent, left, top, 10 + 9);
+                    if (!event.isCanceled()) {
+                        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+                        RenderSystem.setShaderTexture(0, GUI_BARS_LOCATION);
+                        gUITween$drawBarBefore(context, left, top, bossEvent);
+                        this.drawBar(context, left, top, bossEvent);
+                        gUITween$drawBarAfter(context, left, top, bossEvent);
+                        Component component = bossEvent.getName();
+                        int x = width / 2 - this.minecraft.font.width(component) / 2;
+                        int y = top - 9;
+                        gUITween$drawStringBefore();
+                        context.drawString(this.minecraft.font, component, x, y, 16777215);
+                        gUITween$drawStringAfter();
+                    }
+
+                    top += event.getIncrement();
+                }
+
+                if (top >= this.minecraft.getWindow().getGuiScaledHeight() / 3) {
+                    break;
+                }
+            }
+
+            gUITween$renderAfter();
+        }
+
+    }
+
+    @Shadow
+    protected abstract void drawBar(GuiGraphics context, int left, int top, BossEvent bossEvent);
+
     @Unique
     private Float gUITween$alpha;
 
@@ -44,19 +130,12 @@ public class BossHealthOverlayMixin {
     @Unique
     private Queue<UUID> gUITween$removeQueue = new ArrayDeque<>();
 
-    @Shadow
-    @Final
-    private Map<UUID, LerpingBossEvent> events;
+    @Unique
+    private boolean gUITween$haveTween;
 
-    @WrapOperation(
-            method = "render",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/client/gui/components/BossHealthOverlay;drawBar(Lnet/minecraft/client/gui/GuiGraphics;IILnet/minecraft/world/BossEvent;)V"
-            )
-    )
-    private void wrapExtractBar(BossHealthOverlay instance, GuiGraphics graphics, int x, int y, BossEvent event, Operation<Void> original) {
-        boolean haveTween = false;
+    @Unique
+    private void gUITween$drawBarBefore(GuiGraphics graphics, int x, int y, BossEvent event) {
+        gUITween$haveTween = false;
         float dx = 0;
         float dy = 0;
         float scale = 1;
@@ -65,7 +144,7 @@ public class BossHealthOverlayMixin {
 
         Float addTick = gUITween$addTweenTicks.get(uuid);
         if (addTick != null && addTick < GUITween.CONFIG.getBossShowMaxDuration()) {
-            haveTween = true;
+            gUITween$haveTween = true;
 
             float progress = addTick / GUITween.CONFIG.bossShowDuration;
             scale = TweenUtil.tween(0, 1, progress, GUITween.CONFIG.bossShowEase.get());
@@ -76,7 +155,7 @@ public class BossHealthOverlayMixin {
 
         Float removeTick = gUITween$removeTweenTicks.get(uuid);
         if (removeTick != null && removeTick < GUITween.CONFIG.getBossHideMaxDuration()) {
-            haveTween = true;
+            gUITween$haveTween = true;
 
             float progress = removeTick / GUITween.CONFIG.bossHideDuration;
             scale = TweenUtil.tween(1, 0, progress, GUITween.CONFIG.bossHideEase.get());
@@ -95,7 +174,7 @@ public class BossHealthOverlayMixin {
                 }
 
                 if (shakeTick != null && shakeTick < GUITween.CONFIG.bossHurtDuration) {
-                    haveTween = true;
+                    gUITween$haveTween = true;
 
                     float shakeMul = Math.max((event.getProgress() - lastHp) / 0.003f, 1);
                     float duration = GUITween.CONFIG.bossHurtDuration;
@@ -110,7 +189,7 @@ public class BossHealthOverlayMixin {
 
         PoseStack poseStack = graphics.pose();
 
-        if (haveTween) {
+        if (gUITween$haveTween) {
             poseStack.pushPose();
 
             poseStack.translate(dx, dy, 0);
@@ -122,43 +201,34 @@ public class BossHealthOverlayMixin {
             poseStack.scale(scale, 1, 0);
             poseStack.translate(-centerX, -centerY, 0);
         }
+    }
 
-        original.call(instance, graphics, x, y, event);
-
-        if (haveTween) {
+    @Unique
+    private void gUITween$drawBarAfter(GuiGraphics graphics, int x, int y, BossEvent event) {
+        if (gUITween$haveTween) {
+            PoseStack poseStack = graphics.pose();
             poseStack.popPose();
         }
     }
 
-    @WrapOperation(
-            method = "render",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/client/gui/GuiGraphics;drawString(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;III)I"
-            )
-    )
-    private int wrapText(GuiGraphics instance, Font font, Component text, int x, int y, int color, Operation<Integer> original) {
+    @Unique
+    private void gUITween$drawStringBefore() {
         if (gUITween$alpha != null) {
             GUITweenUtility.pushFontAlpha(gUITween$alpha);
         }
+    }
 
-        int value = original.call(instance, font, text, x, y, color);
-
+    @Unique
+    private void gUITween$drawStringAfter() {
         if (gUITween$alpha != null) {
             GUITweenUtility.popFontAlpha();
 
             gUITween$alpha = null;
         }
-        return value;
     }
 
-    @Inject(
-            method = "render",
-            at = @At(
-                    value = "TAIL"
-            )
-    )
-    private void extractRenderStateAfter(GuiGraphics guiGraphics, CallbackInfo ci) {
+    @Unique
+    private void gUITween$renderAfter() {
         for (LerpingBossEvent lerpingbossevent : this.events.values()) {
             UUID uuid = lerpingbossevent.getId();
 

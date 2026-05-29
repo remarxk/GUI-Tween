@@ -1,16 +1,20 @@
 package com.remarxk.guitween.mixin;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.remarxk.guitween.GUITween;
 import com.remarxk.guitween.GUITweenUtility;
 import com.remarxk.guitween.config.GUITweenConfig;
+import com.remarxk.guitween.util.DebugUtil;
 import com.remarxk.guitween.util.Ease;
 import com.remarxk.guitween.util.TweenUtil;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -27,6 +31,9 @@ public abstract class ChatScreenMixin extends Screen {
 
     @Unique
     private boolean gUITween$inTween;
+
+    @Shadow
+    protected EditBox input;
 
     protected ChatScreenMixin(Component title) {
         super(title);
@@ -107,6 +114,7 @@ public abstract class ChatScreenMixin extends Screen {
             cancellable = true)
     private void onCloseBefore(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> cir) {
         if (guiTween$playCloseTween()) {
+            input.setValue("");
             cir.setReturnValue(true);
         }
     }

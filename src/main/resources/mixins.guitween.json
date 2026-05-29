@@ -24,6 +24,7 @@
     "ftblibrary.SidebarGroupGuiButtonMixin",
     "jei.BookmarkOverlayMixin",
     "jei.IngredientListOverlayMixin",
+    "obscuriaapi.BossHealthOverlayMixin",
     "overflowingbars.ArmorBarRendererMixin",
     "rei.BatchedEntryRendererManagerMixin",
     "rei.DefaultScreenOverlayRendererMixin",
