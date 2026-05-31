@@ -30,7 +30,7 @@ dependencies {
     implementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
     implementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
 
-    implementation "me.fzzyhmstrs:fzzy_config:0.7.6+26.1"
+    implementation "me.fzzyhmstrs:fzzy_config:${fzzy_config_version}"
 
     compileOnly "curse.maven:jei-238222:7861612"
     runtimeOnly "curse.maven:jei-238222:7861612"

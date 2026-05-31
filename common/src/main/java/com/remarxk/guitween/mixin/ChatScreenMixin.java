@@ -2,8 +2,10 @@ package com.remarxk.guitween.mixin;
 
 import com.remarxk.guitween.GUITweenUtility;
 import com.remarxk.guitween.config.GUITweenConfig;
+import com.remarxk.guitween.util.DebugUtil;
 import com.remarxk.guitween.util.TweenUtil;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
@@ -30,6 +32,9 @@ public abstract class ChatScreenMixin extends Screen {
 
     @Unique
     private boolean gUITween$inTween;
+
+    @Shadow
+    private EditBox input;
 
     protected ChatScreenMixin(Component title) {
         super(title);
@@ -154,6 +159,7 @@ public abstract class ChatScreenMixin extends Screen {
             cancellable = true)
     private void onCloseBefore(KeyEvent event, CallbackInfoReturnable<Boolean> cir) {
         if (guiTween$playCloseTween()) {
+            input.setValue("");
             cir.setReturnValue(true);
         }
     }

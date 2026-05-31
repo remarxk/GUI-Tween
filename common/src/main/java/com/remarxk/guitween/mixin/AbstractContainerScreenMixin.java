@@ -300,8 +300,6 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
         gUITween$inClosingTween = false;
         gUITween$needClose = false;
 
-        gUITween$openTick = 0;
-
         gUITween$screenName = getClass().getSimpleName();
         gUITween$isDisableScreenTween = GUITweenConfig.isDisableTweenWindow(gUITween$screenName) || GUITweenUtility.isCompatWindow(getClass());
         gUITween$OutputSlotDatas.clear();
@@ -780,6 +778,8 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
         gUITween$hoverSlotMap.clear();
 
         gUITween$tooltipShowTick = 0;
+
+        gUITween$openTick = 0;
 
         GUITweenUtility.deleteOpenScreen();
     }
