@@ -57,7 +57,7 @@ dependencies {
 
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-    modImplementation "me.fzzyhmstrs:fzzy_config:0.7.6+1.21"
+    modImplementation "me.fzzyhmstrs:fzzy_config:${project.fzzy_config_version}"
 
     modRuntimeOnly "curse.maven:modmenu-308702:7808443"
 
@@ -79,7 +79,7 @@ dependencies {
     modCompileOnly "curse.maven:immersive-ui-1021685:6886573"
 
     modCompileOnly "curse.maven:ftb-library-fabric-438495:7746958"
-    modRuntimeOnly "curse.maven:ftb-library-fabric-438495:7746958"
+//    modRuntimeOnly "curse.maven:ftb-library-fabric-438495:7746958"
 
     modCompileOnly "curse.maven:overflowing-bars-852662:5770622"
 }
@@ -93,7 +93,8 @@ processResources {
     filesMatching("fabric.mod.json") {
         expand "version": project.version,
                 "minecraft_version": project.minecraft_version,
-                "loader_version": project.loader_version
+                "loader_version": project.loader_version,
+                "fzzy_config_version": project.fzzy_config_version
     }
 }
 

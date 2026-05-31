@@ -285,8 +285,6 @@ public abstract class AbstractContainerScreenMixin <T extends ScreenHandler> ext
 
     @Inject(method = "init", at = @At("TAIL"))
     public void init(CallbackInfo ci) {
-        gUITween$openTick = 0;
-
         gUITween$screenName = RemapClassLoader.getSimpleClassName(getClass().getName());
         gUITween$isDisableScreenTween = GUITweenClient.CONFIG.isDisableTweenWindow(gUITween$screenName);
         gUITween$OutputSlotDatas.clear();
@@ -830,6 +828,8 @@ public abstract class AbstractContainerScreenMixin <T extends ScreenHandler> ext
         gUITween$hoverSlotMap.clear();
 
         gUITween$tooltipShowTick = 0;
+
+        gUITween$openTick = 0;
 
         GUITweenUtility.deleteOpenScreen();
     }

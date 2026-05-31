@@ -2,13 +2,16 @@ package com.remarxk.guitween.client.mixin;
 
 import com.remarxk.guitween.client.GUITweenClient;
 import com.remarxk.guitween.client.GUITweenUtility;
+import com.remarxk.guitween.client.util.DebugUtil;
 import com.remarxk.guitween.client.util.TweenUtil;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -26,6 +29,9 @@ public abstract class ChatScreenMixin extends Screen {
     @Unique
     private boolean gUITween$inTween;
 
+    @Shadow
+    protected TextFieldWidget chatField;
+
     protected ChatScreenMixin(Text title) {
         super(title);
     }
@@ -41,8 +47,7 @@ public abstract class ChatScreenMixin extends Screen {
             method = "render",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/client/gui/DrawContext;fill(IIIII)V",
-                    shift = At.Shift.AFTER
+                    target = "Lnet/minecraft/client/gui/DrawContext;fill(IIIII)V"
             ),
             remap = false
     )
@@ -68,7 +73,12 @@ public abstract class ChatScreenMixin extends Screen {
         guiGraphics.setShaderColor(1, 1, 1, alpha);
     }
 
-    @Inject(method = "render", at = @At(value = "RETURN"))
+    @Inject(
+            method = "render",
+            at = @At(
+                    value = "RETURN"
+            )
+    )
     public void renderAfter(DrawContext guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
         if (!gUITween$inTween)
             return;
@@ -108,6 +118,7 @@ public abstract class ChatScreenMixin extends Screen {
             cancellable = true)
     private void onCloseBefore(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> cir) {
         if (guiTween$playCloseTween()) {
+            chatField.setText("");
             cir.setReturnValue(true);
         }
     }
