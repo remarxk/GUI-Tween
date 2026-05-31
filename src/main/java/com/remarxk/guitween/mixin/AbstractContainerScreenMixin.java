@@ -280,8 +280,6 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
 
     @Inject(method = "init", at = @At("TAIL"))
     public void init(CallbackInfo ci) {
-        gUITween$openTick = 0;
-
         gUITween$screenName = getClass().getSimpleName();
         gUITween$isDisableScreenTween = GUITweenConfig.isDisableTweenWindow(gUITween$screenName);
         gUITween$OutputSlotDatas.clear();
@@ -810,6 +808,8 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
 
     @Inject(method = "onClose", at = @At("TAIL"))
     public void onClose(CallbackInfo ci) {
+        gUITween$openTick = 0;
+
         gUITween$lastHoverSlot = null;
         gUITween$inSlotTween = false;
 
