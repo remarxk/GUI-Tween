@@ -6,6 +6,7 @@ import com.remarxk.guitween.anim.UseTween;
 import com.remarxk.guitween.config.GUITweenConfig;
 import com.remarxk.guitween.anim.TweenPool;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -34,6 +35,9 @@ public class HotbarChangeListener {
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Post event) {
         Player player = event.getEntity();
+        if (!player.isLocalPlayer()) {
+            return;
+        }
         Level level = player.level();
 
         // 仅处理客户端玩家 + 主 Tick 阶段
