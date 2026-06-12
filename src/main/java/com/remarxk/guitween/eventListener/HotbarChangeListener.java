@@ -34,6 +34,10 @@ public class HotbarChangeListener {
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
         Player player = event.player;
+        if (!player.isLocalPlayer()) {
+            return;
+        }
+
         Level level = player.level();
 
         // 仅处理客户端玩家 + 主 Tick 阶段
