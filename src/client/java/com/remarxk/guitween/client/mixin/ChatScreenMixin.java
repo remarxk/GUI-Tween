@@ -97,7 +97,7 @@ public abstract class ChatScreenMixin extends Screen {
 
     @Unique
     private boolean guiTween$playCloseTween(){
-        if (!GUITweenClient.CONFIG.isEnableCloseChat())
+        if (!GUITweenClient.CONFIG.isEnableCloseChat() || !GUITweenClient.CONFIG.isEnableChat())
             return false;
 
         gUITween$inCloseTween = !gUITween$inCloseTween;
