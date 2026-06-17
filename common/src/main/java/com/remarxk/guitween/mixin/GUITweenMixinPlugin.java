@@ -1,7 +1,7 @@
 package com.remarxk.guitween.mixin;
 
 import com.remarxk.guitween.platform.Services;
-import mezz.jei.api.constants.ModIds;
+//import mezz.jei.api.constants.ModIds;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
@@ -30,9 +30,9 @@ public class GUITweenMixinPlugin implements IMixinConfigPlugin {
             return Services.PLATFORM.isModLoaded("emi");
         }
 
-        if (mixinClassName.contains("com.remarxk.guitween.mixin.jei")) {
-            return Services.PLATFORM.isModLoaded(ModIds.JEI_ID);
-        }
+//        if (mixinClassName.contains("com.remarxk.guitween.mixin.jei")) {
+//            return Services.PLATFORM.isModLoaded(ModIds.JEI_ID);
+//        }
 
         if (mixinClassName.contains("com.remarxk.guitween.mixin.sodium")) {
             return Services.PLATFORM.isModLoaded("sodium");

@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.state.gui.BlitRenderState;
 import net.minecraft.client.renderer.state.gui.GuiRenderState;
 import net.minecraft.client.renderer.state.gui.pip.PictureInPictureRenderState;
 import org.joml.Matrix3x2f;
+import org.joml.Matrix3x2fc;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -35,9 +36,9 @@ public class PictureInPictureRendererMixin<T extends PictureInPictureRenderState
             method = "blitTexture",
             at = @At(
                     value = "NEW",
-                    target = "(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/client/gui/render/TextureSetup;Lorg/joml/Matrix3x2f;IIIIFFFFILnet/minecraft/client/gui/navigation/ScreenRectangle;Lnet/minecraft/client/gui/navigation/ScreenRectangle;)Lnet/minecraft/client/renderer/state/gui/BlitRenderState;")
+                    target = "(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/client/gui/render/TextureSetup;Lorg/joml/Matrix3x2fc;IIIIFFFFILnet/minecraft/client/gui/navigation/ScreenRectangle;Lnet/minecraft/client/gui/navigation/ScreenRectangle;)Lnet/minecraft/client/renderer/state/gui/BlitRenderState;")
     )
-    private BlitRenderState newBlitRenderState(RenderPipeline pipeline, TextureSetup textureSetup, Matrix3x2f pose, int x0, int y0, int x1, int y1, float u0, float u1, float v0, float v1, int color, ScreenRectangle scissorArea, ScreenRectangle bounds) {
+    private BlitRenderState newBlitRenderState(RenderPipeline pipeline, TextureSetup textureSetup, Matrix3x2fc pose, int x0, int y0, int x1, int y1, float u0, float u1, float v0, float v1, int color, ScreenRectangle scissorArea, ScreenRectangle bounds) {
         Matrix3x2f matrix3x2f = GUITweenUtility.popPictureMatrix(gUITween$curRenderState);
         if (matrix3x2f != null) {
             Matrix3x2f newMatrix = new Matrix3x2f(matrix3x2f);

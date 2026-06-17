@@ -115,9 +115,6 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
     @Shadow
     private Slot lastClickSlot;
 
-    @Shadow
-    private ItemStack draggingItem;
-
     protected AbstractContainerScreenMixin(Component pTitle) {
         super(pTitle);
     }
@@ -237,7 +234,7 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
 
     @Override
     public ItemStack gUITween$getDraggingItem() {
-        return draggingItem;
+        return menu.getCarried();
     }
 
     @Override
@@ -378,7 +375,7 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
         }
 
         if (GUITweenConfig.isEnableSameItem()) {
-            ItemStack draggingItem = this.draggingItem.isEmpty() ? this.menu.getCarried() : this.draggingItem;
+            ItemStack draggingItem = menu.getCarried();
             if (!ItemStack.isSameItemSameComponents(draggingItem, gUITween$lastDraggingItem)) {
                 gUITween$lastDraggingItem = draggingItem;
                 gUITween$sameItemTick = 0;
@@ -418,7 +415,7 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/world/item/ItemStack;isEmpty()Z",
-                    ordinal = 5,
+                    ordinal = 2,
                     shift = At.Shift.BEFORE
             )
     )

@@ -68,7 +68,7 @@ public abstract class ChatComponentMixin {
     protected abstract int getWidth();
 
     @Shadow
-    public abstract double getScale();
+    protected abstract double getScale();
 
     @Shadow
     public abstract int getLinesPerPage();
@@ -132,7 +132,7 @@ public abstract class ChatComponentMixin {
             double chatLineSpacing = (Double)this.minecraft.options.chatLineSpacing().get();
             final int entryHeight = (int)((double)messageHeight * (chatLineSpacing + (double)1.0F));
             final int entryBottomToMessageY = (int)Math.round((double)8.0F * (chatLineSpacing + (double)1.0F) - (double)4.0F * chatLineSpacing);
-            long queueSize = this.minecraft.getChatListener().queueSize();
+            long queueSize = this.minecraft.gui.chatListener().queueSize();
             ChatTween.AlphaCalculator alphaCalculator = isForeground ? ChatTween.AlphaCalculator.FULLY_VISIBLE : ChatTween.AlphaCalculator.timeBased(ticks);
             graphics.updatePose((pose) -> {
                 pose.scale(scale, scale);

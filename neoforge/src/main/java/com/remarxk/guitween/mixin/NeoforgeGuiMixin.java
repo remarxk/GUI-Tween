@@ -1,177 +1,26 @@
 package com.remarxk.guitween.mixin;
 
-import com.remarxk.guitween.GUITweenUtility;
-import com.remarxk.guitween.config.GUITweenConfig;
-import com.remarxk.guitween.eventListener.HotbarChangeListener;
-import com.remarxk.guitween.util.TweenUtil;
-import net.minecraft.client.DeltaTracker;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.remarxk.guitween.event.PostScreenTickEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.HumanoidArm;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import org.joml.Matrix3x2fStack;
-import org.spongepowered.asm.mixin.Final;
+import net.minecraft.client.gui.screens.Screen;
+import net.neoforged.neoforge.common.NeoForge;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.*;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
+import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(Gui.class)
 public class NeoforgeGuiMixin {
-    @Shadow
-    @Final
-    private Minecraft minecraft;
-
-    @Unique
-    private int gUITween$lastLevel = -1;
-
-    @Unique
-    private boolean gUITween$inLevelTextTween;
-
-    @Unique
-    private float gUITween$levelTextTick;
-
-    @Unique
-    private boolean gUITween$inSelectedItemNameTween;
-
-    @Inject(
-            method = "extractSelectedItemName(Lnet/minecraft/client/gui/GuiGraphicsExtractor;I)V",
-            at = @At(
-                    value = "HEAD"
-            )
-    )
-    public void renderSelectedItemNameBefore(GuiGraphicsExtractor graphics, int yShift, CallbackInfo ci) {
-        if (!GUITweenConfig.isEnableSelectedItemName())
-            return;
-
-        // 如果动画结束，直接正常绘制
-        if (HotbarChangeListener.animTick > GUITweenConfig.getSelectedItemNameDuration()) {
-            return;
-        }
-
-        gUITween$inSelectedItemNameTween = true;
-
-        float progress = HotbarChangeListener.animTick / GUITweenConfig.selectedItemNameMoveDuration();
-        float dy = TweenUtil.tween(GUITweenConfig.selectedItemNameMoveY(), 0, progress, GUITweenConfig.selectedItemNameMoveEase());
-
-        Matrix3x2fStack poseStack = graphics.pose();
-        poseStack.pushMatrix();
-
-        poseStack.translate(0, dy);
-    }
-
-    @ModifyArg(
-            method = "extractSelectedItemName(Lnet/minecraft/client/gui/GuiGraphicsExtractor;I)V",
+    @WrapOperation(
+            method = "tick",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/util/ARGB;color(II)I"
-            ),
-            index = 0
-    )
-    private int modifySelectedItemNameAlpha(int alpha) {
-        if (gUITween$inSelectedItemNameTween) {
-            float progress = HotbarChangeListener.animTick / GUITweenConfig.selectedItemNameAlphaDuration();
-            alpha = (int) TweenUtil.tween(GUITweenUtility.iFontMinAlpha, alpha, progress, GUITweenConfig.selectedItemNameAlphaEase());
-        }
-
-        return alpha;
-    }
-
-    @Inject(
-            method = "extractSelectedItemName(Lnet/minecraft/client/gui/GuiGraphicsExtractor;I)V",
-            at = @At(
-                    value = "RETURN"
+                    target = "Lnet/minecraft/client/gui/screens/Screen;tick()V"
             )
     )
-    public void renderSelectedItemNameAfter(GuiGraphicsExtractor graphics, int yShift, CallbackInfo ci) {
-        if (!gUITween$inSelectedItemNameTween) {
-            return;
-        }
-
-        gUITween$inSelectedItemNameTween = false;
-
-        // 推进动画时间
-        HotbarChangeListener.animTick += GUITweenUtility.getDeltaTicks();
-
-        Matrix3x2fStack poseStack = graphics.pose();
-        poseStack.popMatrix();
-    }
-
-    @Inject(
-            method = "extractExperienceLevel",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/client/gui/contextualbar/ContextualBarRenderer;extractExperienceLevel(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/gui/Font;I)V"
-            )
-    )
-    public void renderExperienceLevelBefore(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
-        if (!GUITweenConfig.isEnableExp())
-            return;
-
-        if (this.minecraft.player == null)
-            return;
-
-        int i = this.minecraft.player.experienceLevel;
-
-        if (gUITween$lastLevel == -1) {
-            gUITween$lastLevel = i;
-            gUITween$levelTextTick = GUITweenConfig.expDuration();
-            return;
-        }
-
-        if (gUITween$lastLevel != i) {
-            gUITween$lastLevel = i;
-            gUITween$levelTextTick = 0;
-        }
-
-        if (gUITween$levelTextTick >= GUITweenConfig.expDuration()) {
-            return;
-        }
-
-        gUITween$inLevelTextTween = true;
-
-        Component component = Component.translatable("gui.experience.level", i);
-        int j = (graphics.guiWidth() - minecraft.font.width(component)) / 2;
-        int k = graphics.guiHeight() - 24 - 9 - 2;
-
-        Gui gui = (Gui) ((Object) this);
-
-        Matrix3x2fStack poseStack = graphics.pose();
-        poseStack.pushMatrix();
-
-        // 缩放中心为文本中心
-        float cx = j + gui.getFont().width(component) / 2f;
-        float cy = k + gui.getFont().lineHeight / 2f;
-
-        float progress = gUITween$levelTextTick / GUITweenConfig.expDuration();
-        float scale = TweenUtil.tween(GUITweenConfig.expScale(), 1, progress, GUITweenConfig.expEase());
-
-        poseStack.translate(cx, cy);
-        poseStack.scale(scale, scale);
-        poseStack.translate(-cx, -cy);
-
-        gUITween$levelTextTick += GUITweenUtility.getDeltaTicks();
-    }
-
-    @Inject(
-            method = "extractExperienceLevel",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/client/gui/contextualbar/ContextualBarRenderer;extractExperienceLevel(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/gui/Font;I)V",
-                    shift = At.Shift.AFTER
-            )
-    )
-    public void renderExperienceLevelAfter(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
-        if (!gUITween$inLevelTextTween)
-            return;
-
-        gUITween$inLevelTextTween = false;
-        graphics.pose().popMatrix();
+    private void postScreenTick(Screen instance, Operation<Void> original) {
+        original.call(instance);
+        NeoForge.EVENT_BUS.post(new PostScreenTickEvent(instance));
     }
 }

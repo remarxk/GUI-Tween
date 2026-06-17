@@ -32,8 +32,8 @@ dependencies {
 
     implementation "me.fzzyhmstrs:fzzy_config:${fzzy_config_version}"
 
-    compileOnly "curse.maven:jei-238222:7861612"
-    runtimeOnly "curse.maven:jei-238222:7861612"
+//    compileOnly "curse.maven:jei-238222:7861612"
+//    runtimeOnly "curse.maven:jei-238222:7861612"
 }
 
 loom {

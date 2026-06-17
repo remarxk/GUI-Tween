@@ -185,12 +185,12 @@ public class DropdownScreen extends Screen {
 
                 int idx = filtered.get(i + scroll);
                 onSelect.accept(idx);
-                Minecraft.getInstance().setScreen(parent);
+                Minecraft.getInstance().gui.setScreen(parent);
                 return true;
             }
         }
 
-        Minecraft.getInstance().setScreen(parent);
+        Minecraft.getInstance().gui.setScreen(parent);
         return true;
     }
 

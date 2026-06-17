@@ -1,11 +1,6 @@
 package com.remarxk.guitween.mixin;
 
-import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.remarxk.guitween.GUITweenUtility;
-import com.remarxk.guitween.anim.AttackTween;
-import com.remarxk.guitween.anim.Tween;
-import com.remarxk.guitween.anim.TweenPool;
-import com.remarxk.guitween.anim.UseTween;
 import com.remarxk.guitween.config.GUITweenConfig;
 import com.remarxk.guitween.eventListener.HotbarChangeListener;
 import com.remarxk.guitween.util.TweenUtil;
@@ -13,11 +8,8 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.Hud;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.HumanoidArm;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import org.joml.Matrix3x2fStack;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -25,10 +17,9 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-@Mixin(Gui.class)
-public class FabricGuiMixin {
+@Mixin(Hud.class)
+public class NeoforgeHudMixin {
     @Shadow
     @Final
     private Minecraft minecraft;
@@ -46,12 +37,12 @@ public class FabricGuiMixin {
     private boolean gUITween$inSelectedItemNameTween;
 
     @Inject(
-            method = "extractSelectedItemName",
+            method = "extractSelectedItemName(Lnet/minecraft/client/gui/GuiGraphicsExtractor;I)V",
             at = @At(
                     value = "HEAD"
             )
     )
-    public void renderSelectedItemNameBefore(GuiGraphicsExtractor graphics, CallbackInfo ci) {
+    public void renderSelectedItemNameBefore(GuiGraphicsExtractor graphics, int yShift, CallbackInfo ci) {
         if (!GUITweenConfig.isEnableSelectedItemName())
             return;
 
@@ -72,7 +63,7 @@ public class FabricGuiMixin {
     }
 
     @ModifyArg(
-            method = "extractSelectedItemName",
+            method = "extractSelectedItemName(Lnet/minecraft/client/gui/GuiGraphicsExtractor;I)V",
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/util/ARGB;white(I)I"
@@ -89,12 +80,12 @@ public class FabricGuiMixin {
     }
 
     @Inject(
-            method = "extractSelectedItemName",
+            method = "extractSelectedItemName(Lnet/minecraft/client/gui/GuiGraphicsExtractor;I)V",
             at = @At(
                     value = "RETURN"
             )
     )
-    public void renderSelectedItemNameAfter(GuiGraphicsExtractor graphics, CallbackInfo ci) {
+    public void renderSelectedItemNameAfter(GuiGraphicsExtractor graphics, int yShift, CallbackInfo ci) {
         if (!gUITween$inSelectedItemNameTween) {
             return;
         }
@@ -109,10 +100,10 @@ public class FabricGuiMixin {
     }
 
     @Inject(
-            method = "extractHotbarAndDecorations",
+            method = "extractExperienceLevel",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/client/gui/contextualbar/ContextualBarRenderer;extractExperienceLevel(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/gui/Font;I)V"
+                    target = "Lnet/minecraft/client/gui/contextualbar/ContextualBar;extractExperienceLevel(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/gui/Font;I)V"
             )
     )
     public void renderExperienceLevelBefore(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
@@ -145,14 +136,12 @@ public class FabricGuiMixin {
         int j = (graphics.guiWidth() - minecraft.font.width(component)) / 2;
         int k = graphics.guiHeight() - 24 - 9 - 2;
 
-        Gui gui = (Gui) ((Object) this);
-
         Matrix3x2fStack poseStack = graphics.pose();
         poseStack.pushMatrix();
 
         // 缩放中心为文本中心
-        float cx = j + gui.getFont().width(component) / 2f;
-        float cy = k + gui.getFont().lineHeight / 2f;
+        float cx = j + minecraft.font.width(component) / 2f;
+        float cy = k + minecraft.font.lineHeight / 2f;
 
         float progress = gUITween$levelTextTick / GUITweenConfig.expDuration();
         float scale = TweenUtil.tween(GUITweenConfig.expScale(), 1, progress, GUITweenConfig.expEase());
@@ -165,10 +154,10 @@ public class FabricGuiMixin {
     }
 
     @Inject(
-            method = "extractHotbarAndDecorations",
+            method = "extractExperienceLevel",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/client/gui/contextualbar/ContextualBarRenderer;extractExperienceLevel(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/gui/Font;I)V",
+                    target = "Lnet/minecraft/client/gui/contextualbar/ContextualBar;extractExperienceLevel(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/gui/Font;I)V",
                     shift = At.Shift.AFTER
             )
     )

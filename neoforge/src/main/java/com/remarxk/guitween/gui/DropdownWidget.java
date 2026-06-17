@@ -28,8 +28,8 @@ public class DropdownWidget extends AbstractWidget {
             @Override
             public void onPress(Button button) {
                 Minecraft mc = Minecraft.getInstance();
-                mc.setScreen(new DropdownScreen(
-                        mc.screen,       // 当前 Screen 作为 parent
+                mc.gui.setScreen(new DropdownScreen(
+                        mc.gui.screen(),       // 当前 Screen 作为 parent
                         getX(), getY() + height, width,
                         options,
                         selectedIndex,

@@ -13,17 +13,14 @@
     "ChatScreenMixin",
     "GuiGraphicsMixin",
     "GuiItemRenderStateMixin",
-    "GuiMixin",
+    "HudMixin",
     "GuiRendererMixin",
     "GuiRenderStateMixin",
     "LocalPlayerMixin",
     "MinecraftMixin",
     "PictureInPictureRendererMixin",
     "ScreenMixin",
-    "ScrollWheelHandlerMixin",
-    "jei.BookmarkOverlayMixin",
-    "jei.GuiEventHandlerMixin",
-    "jei.IngredientListOverlayMixin"
+    "ScrollWheelHandlerMixin"
   ],
   "server": [],
   "injectors": {

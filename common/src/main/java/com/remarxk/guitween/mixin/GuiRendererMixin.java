@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.state.gui.BlitRenderState;
 import net.minecraft.client.renderer.state.gui.GuiItemRenderState;
 import org.joml.Matrix3x2f;
+import org.joml.Matrix3x2fc;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -36,10 +37,10 @@ public class GuiRendererMixin {
             method = "submitBlitFromItemAtlas",
             at = @At(
                     value = "NEW",
-                    target = "(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/client/gui/render/TextureSetup;Lorg/joml/Matrix3x2f;IIIIFFFFILnet/minecraft/client/gui/navigation/ScreenRectangle;Lnet/minecraft/client/gui/navigation/ScreenRectangle;)Lnet/minecraft/client/renderer/state/gui/BlitRenderState;"
+                    target = "(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/client/gui/render/TextureSetup;Lorg/joml/Matrix3x2fc;IIIIFFFFILnet/minecraft/client/gui/navigation/ScreenRectangle;Lnet/minecraft/client/gui/navigation/ScreenRectangle;)Lnet/minecraft/client/renderer/state/gui/BlitRenderState;"
             )
     )
-    private BlitRenderState redirectNewBlitRenderState(RenderPipeline pipeline, TextureSetup textureSetup, Matrix3x2f pose, int x0, int y0, int x1, int y1, float u0, float u1, float v0, float v1, int color, ScreenRectangle scissorArea, ScreenRectangle bounds) {
+    private BlitRenderState redirectNewBlitRenderState(RenderPipeline pipeline, TextureSetup textureSetup, Matrix3x2fc pose, int x0, int y0, int x1, int y1, float u0, float u1, float v0, float v1, int color, ScreenRectangle scissorArea, ScreenRectangle bounds) {
         if ((Object) gUITween$guiItemRenderState instanceof GuiItemRenderStateMixinAccess access) {
             // 1. 提取原始颜色分量（分离 Alpha 和 RGB）
             int originalAlpha = (color >> 24) & 0xFF; // 原版 Alpha
@@ -62,6 +63,6 @@ public class GuiRendererMixin {
             color = (customAlpha << 24) | (red << 16) | (green << 8) | blue;
         }
 
-        return new BlitRenderState(pipeline, textureSetup, pose, x0, y0, x1, y1, u0, u1, v0, v1, color, scissorArea);
+        return new BlitRenderState(pipeline, textureSetup, (Matrix3x2f) pose, x0, y0, x1, y1, u0, u1, v0, v1, color, scissorArea);
     }
 }
