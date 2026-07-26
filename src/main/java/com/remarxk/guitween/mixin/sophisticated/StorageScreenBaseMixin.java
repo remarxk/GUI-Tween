@@ -18,6 +18,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.p3pp3rf1y.sophisticatedcore.client.gui.StorageScreenBase;
@@ -382,6 +383,30 @@ public abstract class StorageScreenBaseMixin<S extends StorageContainerMenuBase<
             poseStack.translate(0, 0, 1000);
             pGuiGraphics.drawString(font, text, x + 1, y + 1, color, shadow);
             poseStack.popPose();
+        }
+    }
+
+    @Inject(
+            method = "slotClicked",
+            at = @At("HEAD"),
+            cancellable = true,
+            remap = false
+    )
+    private void validateSlotClicked(Slot slot, int slotIndex, int button, ClickType clickType, CallbackInfo ci) {
+        if (slotIndex >= 0 && slotIndex >= this.menu.slots.size()) {
+            ci.cancel();
+        }
+    }
+
+    @Inject(
+            method = "handleInventoryMouseClick",
+            at = @At("HEAD"),
+            cancellable = true,
+            remap = false
+    )
+    private void validateHandleInventoryMouseClick(int slotIndex, int button, ClickType clickType, CallbackInfo ci) {
+        if (slotIndex >= 0 && slotIndex >= this.menu.slots.size()) {
+            ci.cancel();
         }
     }
 }

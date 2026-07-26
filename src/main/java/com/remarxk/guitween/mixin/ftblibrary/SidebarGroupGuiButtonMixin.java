@@ -40,7 +40,7 @@ public class SidebarGroupGuiButtonMixin {
         }
     }
 
-    @Inject(
+    /*@Inject(
             method = "renderSidebarButtons",
             at = @At(
                     value = "INVOKE",
@@ -81,7 +81,7 @@ public class SidebarGroupGuiButtonMixin {
             instance.popPose();
             gUITween$inPush = false;
         }
-    }
+    }*/
 
     @Inject(
             method = "renderWidget",
