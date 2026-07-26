@@ -20,7 +20,12 @@
     "MinecraftMixin",
     "PictureInPictureRendererMixin",
     "ScreenMixin",
-    "ScrollWheelHandlerMixin"
+    "ScrollWheelHandlerMixin",
+    "jei.BookmarkOverlayMixin",
+    "jei.GuiEventHandlerMixin",
+    "jei.IngredientListOverlayMixin",
+    "rei.DefaultScreenOverlayRendererMixin",
+    "rei.ScreenOverlayImpMixin"
   ],
   "server": [],
   "injectors": {
