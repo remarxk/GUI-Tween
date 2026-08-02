@@ -3,6 +3,10 @@
 
   "guitween.config": "GUITween Configuration",
   "guitween.config.enable": "Enable Animations",
+  "guitween.config.style": "Animation Style",
+  "guitween.config.style.enum.default": "Default",
+  "guitween.config.style.enum.simple": "Simple",
+  "guitween.config.style.enum.complete": "Complete",
   "guitween.config.enableDebugWindow": "Enable Debug Window",
 
   "guitween.config.windowGroup": "Window Animations",
@@ -17,13 +21,11 @@
   "guitween.config.enableCloseWindow": "Enable Window Close Animation",
   "guitween.config.closeWindowSpeed": "Close Animation Speed",
 
-  "guitween.config.enableJeiLeft": "Enable JEI Left Panel Animation",
+  "guitween.config.enableJei": "Enable JEI Panel Animation",
   "guitween.config.jeiLeftMoveDuration": "JEI Left Move Duration",
   "guitween.config.jeiLeftMoveEase": "JEI Left Move Easing",
   "guitween.config.jeiLeftMoveX": "JEI Left Offset X",
   "guitween.config.jeiLeftMoveY": "JEI Left Offset Y",
-
-  "guitween.config.enableJeiRight": "Enable JEI Right Panel Animation",
   "guitween.config.jeiRightMoveDuration": "JEI Right Move Duration",
   "guitween.config.jeiRightMoveEase": "JEI Right Move Easing",
   "guitween.config.jeiRightMoveX": "JEI Right Offset X",
@@ -60,6 +62,20 @@
   "guitween.config.sameItemShakeWaitDuration": "Shake Interval",
 
   "guitween.config.enableQuick": "Enable Quick Craft Animation",
+
+  "guitween.config.enableMove": "Enable Move Animation",
+  "guitween.config.moveDuration": "Move Animation Duration",
+  "guitween.config.moveEase": "Move Animation Easing",
+
+  "guitween.config.enableFinish": "Enable Finish Animation",
+  "guitween.config.finishPunchStrength": "Finish Punch Strength",
+  "guitween.config.finishDuration": "Finish Animation Duration",
+
+  "guitween.config.enablePickup": "Enable Pickup Animation",
+  "guitween.config.pickupDuration": "Pickup Animation Duration",
+  "guitween.config.pickupEase": "Pickup Animation Easing",
+
+  "guitween.config.quickCraftDuration": "Quick Craft Animation Duration",
 
   "guitween.config.hotbarGroup": "Hotbar Animations",
   "guitween.config.enableHoldItem": "Enable Held Item Animation",

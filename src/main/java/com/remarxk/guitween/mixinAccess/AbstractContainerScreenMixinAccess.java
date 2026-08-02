@@ -18,10 +18,6 @@ public interface AbstractContainerScreenMixinAccess {
 
     public void setGUITween$inTween(boolean inScale);
 
-    public float getGUITween$openTick();
-
-    public void setGUITween$openTick(float openTick);
-
     public Slot getGUITween$lastHoverSlot();
 
     public void setGUITween$lastHoverSlot(Slot slot);
@@ -35,10 +31,6 @@ public interface AbstractContainerScreenMixinAccess {
     public float getGUITween$tooltipShowTick();
 
     public void setGUITween$tooltipShowTick(float tick);
-
-    public HashMap<Slot, Tuple<Integer, Integer>> getGUITween$quickTweenSlots();
-
-    public HashMap<Slot, Float> getGUITween$quickTicks();
 
     public ItemStack gUITween$getDraggingItem();
 

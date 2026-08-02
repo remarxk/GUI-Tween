@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.remarxk.guitween.GUITween;
 import com.remarxk.guitween.GUITweenUtility;
+import com.remarxk.guitween.event.PlayGuiSoundEvent;
 import com.remarxk.guitween.eventListener.HotbarChangeListener;
 import com.remarxk.guitween.anim.AttackTween;
 import com.remarxk.guitween.anim.Tween;
@@ -20,6 +21,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.common.NeoForge;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -49,10 +51,14 @@ public class GuiMixin {
 
         if (GUITweenConfig.isEnableHoldItem()) {
             Tween tween = HotbarChangeListener.hotbarAnimStateMap.getOrDefault(slot, null);
-            if (tween != null) {
+            if (tween != null && (!GUITweenConfig.isEnableSelectMove() || HotbarChangeListener.scrollDir == 0)) {
                 hasTween = true;
 
                 scale = TweenUtil.tween(tween.startValue, tween.stopValue, tween.tick, tween.totalTick, tween.ease);
+
+                if (!tween.rewind && tween.name.equals("zoomIn") && tween.tick == 0) {
+                    NeoForge.EVENT_BUS.post(new PlayGuiSoundEvent(PlayGuiSoundEvent.SoundType.SELECT_ITEM));
+                }
 
                 float deltaTicks = GUITweenUtility.getDeltaTicks();
                 if (!tween.rewind) {
@@ -157,7 +163,7 @@ public class GuiMixin {
         if (GUITweenConfig.isEnableHoldItem()) {
             int slot = seed - 1;
             Tween tween = HotbarChangeListener.hotbarAnimStateMap.getOrDefault(slot, null);
-            if (tween != null) {
+            if (tween != null && (!GUITweenConfig.isEnableSelectMove() || HotbarChangeListener.scrollDir == 0)) {
                 hasTween = true;
 
                 if (tween.rewind) {
@@ -178,6 +184,7 @@ public class GuiMixin {
                             HotbarChangeListener.hotbarAnimStateMap.remove(slot);
                         }
                         else {
+                            tween.name = "zoomOut";
                             tween.ease = GUITweenConfig.hotbar.holdZoomOutEase.get();
                             tween.tick = 0;
                             tween.totalTick = GUITweenConfig.hotbar.holdZoomOutDuration.get().floatValue();

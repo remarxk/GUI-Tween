@@ -117,10 +117,10 @@ dependencies {
 
 //    runtimeOnly "curse.maven:trade-refresh-821729:5533325"
 
-    compileOnly "curse.maven:sophisticated-core-618298:7757835"
-    runtimeOnly "curse.maven:sophisticated-core-618298:7757835"
-    runtimeOnly "curse.maven:sophisticated-backpacks-422301:7645643"
-    runtimeOnly "curse.maven:sophisticated-storage-619320:7744168"
+    compileOnly "curse.maven:sophisticated-core-618298:8304907"
+    runtimeOnly "curse.maven:sophisticated-core-618298:8304907"
+    runtimeOnly "curse.maven:sophisticated-backpacks-422301:8272377"
+    runtimeOnly "curse.maven:sophisticated-storage-619320:8304937"
 
 //    runtimeOnly "curse.maven:zeta-968868:7640154"
 //    runtimeOnly "curse.maven:quark-243121:7640331"
@@ -168,6 +168,10 @@ dependencies {
 //    runtimeOnly "curse.maven:ftb-teams-forge-404468:7369021"
 
     runtimeOnly "curse.maven:create-328085:7408951"
+
+    runtimeOnly "curse.maven:nemos-inventory-sorting-1148320:6487633"
+
+    runtimeOnly "curse.maven:toms-storage-378609:7917007"
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

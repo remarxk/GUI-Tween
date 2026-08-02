@@ -27,7 +27,7 @@ public class WindowTweenConfig {
 
     public final ModConfigSpec.DoubleValue closeWindowSpeed;
 
-    public final ModConfigSpec.BooleanValue enableJeiLeft;
+    public final ModConfigSpec.BooleanValue enableJei;
 
     public final ModConfigSpec.DoubleValue jeiLeftMoveDuration;
 
@@ -36,8 +36,6 @@ public class WindowTweenConfig {
     public final ModConfigSpec.DoubleValue jeiLeftMoveX;
 
     public final ModConfigSpec.DoubleValue jeiLeftMoveY;
-
-    public final ModConfigSpec.BooleanValue enableJeiRight;
 
     public final ModConfigSpec.DoubleValue jeiRightMoveDuration;
 
@@ -87,9 +85,9 @@ public class WindowTweenConfig {
                 .translation("guitween.config.windowGradientEase")
                 .defineEnum("windowGradientEase", Ease.IN_OUT_SINE);
 
-        enableJeiLeft = BUILDER
-                .translation("guitween.config.enableJeiLeft")
-                .define("enableJeiLeft", true);
+        enableJei = BUILDER
+                .translation("guitween.config.enableJei")
+                .define("enableJei", true);
 
         jeiLeftMoveDuration = BUILDER
                 .translation("guitween.config.jeiLeftMoveDuration")
@@ -106,10 +104,6 @@ public class WindowTweenConfig {
         jeiLeftMoveY = BUILDER
                 .translation("guitween.config.jeiLeftMoveY")
                 .defineInRange("jeiLeftMoveY", 0f, -10000, 10000);
-
-        enableJeiRight = BUILDER
-                .translation("guitween.config.enableJeiRight")
-                .define("enableJeiRight", true);
 
         jeiRightMoveDuration = BUILDER
                 .translation("guitween.config.jeiRightMoveDuration")

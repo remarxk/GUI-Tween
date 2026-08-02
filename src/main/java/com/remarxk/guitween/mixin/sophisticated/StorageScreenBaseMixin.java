@@ -3,6 +3,7 @@ package com.remarxk.guitween.mixin.sophisticated;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.remarxk.guitween.GUITween;
 import com.remarxk.guitween.GUITweenUtility;
+import com.remarxk.guitween.anim.ContainerItemTween;
 import com.remarxk.guitween.anim.Tween;
 import com.remarxk.guitween.anim.TweenPool;
 import com.remarxk.guitween.compat.CompatUtility;
@@ -18,6 +19,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.p3pp3rf1y.sophisticatedcore.client.gui.StorageScreenBase;
@@ -50,7 +52,8 @@ public abstract class StorageScreenBaseMixin<S extends StorageContainerMenuBase<
         if (!(this instanceof AbstractContainerScreenMixinAccess access))
             return;
 
-        GUITweenUtility.setOpenScreen(access.getGUITween$screenName(), access.getGUITween$openTick());
+        GUITweenUtility.setOpenScreen(access.getGUITween$screenName(), GUITweenUtility.openScreenTick);
+        GUITweenUtility.jeiOpenTick = Math.max(GUITweenUtility.jeiOpenTick, GUITweenUtility.openScreenTick);
 
         if (!GUITweenConfig.isEnableWindow())
             return;
@@ -67,8 +70,8 @@ public abstract class StorageScreenBaseMixin<S extends StorageContainerMenuBase<
         if (access.getGUITween$isDisableScreenTween())
             return;
 
-        float moveProgress = access.getGUITween$openTick() / GUITweenConfig.window.moveDuration.get().floatValue();
-        float gradientProgress = access.getGUITween$openTick() / GUITweenConfig.window.gradientDuration.get().floatValue();
+        float moveProgress = GUITweenUtility.openScreenTick / GUITweenConfig.window.moveDuration.get().floatValue();
+        float gradientProgress = GUITweenUtility.openScreenTick / GUITweenConfig.window.gradientDuration.get().floatValue();
 
         if (moveProgress >= 1 && gradientProgress >= 1)
             return;
@@ -121,9 +124,10 @@ public abstract class StorageScreenBaseMixin<S extends StorageContainerMenuBase<
                 }
             }
 
-            if (gUITween$lastHoverSlot == null || !gUITween$lastHoverSlot.hasItem()) {
-                if (GUITweenConfig.isEnableTooltip())
+            if (GUITweenConfig.isEnableTooltip()) {
+                if (gUITween$lastHoverSlot == null || !gUITween$lastHoverSlot.hasItem()) {
                     access.setGUITween$tooltipShowTick(0);
+                }
             }
 
             access.setGUITween$lastHoverSlot(hoveredSlot);
@@ -230,33 +234,20 @@ public abstract class StorageScreenBaseMixin<S extends StorageContainerMenuBase<
             }
         }
 
-        HashMap<Slot, Tuple<Integer, Integer>> gUITween$quickTweenSlots = access.getGUITween$quickTweenSlots();
-        HashMap<Slot, Float> gUITween$quickTicks = access.getGUITween$quickTicks();
+        ContainerItemTween containerItemTween = GUITweenUtility.getMoveItemTween();
 
-        Tuple<Integer, Integer> tuple = gUITween$quickTweenSlots.get(pSlot);
-        if (tuple != null) {
-            if (tuple.getA().equals(tuple.getB())) {
-                float quickTick = gUITween$quickTicks.getOrDefault(pSlot, 0f);
-
-                float progress = quickTick / 4f;
-
-                if (progress < 1) {
-                    float clickScale = GUITweenConfig.windowItem.clickItemScale.get().floatValue();
-
-                    scale = TweenUtil.tween(clickScale, 1f, progress, Ease.IN_OUT_SINE);
-
-                    haveTween = true;
-
-                    gUITween$quickTicks.put(pSlot, quickTick + GUITweenUtility.getDeltaTicks());
-                }
-                else {
-                    gUITween$quickTweenSlots.remove(pSlot);
-                    gUITween$quickTicks.remove(pSlot);
-                }
+        if (menu.getSlot(pSlot.index) == pSlot) {
+            Float quickScale = containerItemTween.getQuickCraftScale(pSlot);
+            if (quickScale != null) {
+                scale = quickScale;
+                haveTween = true;
             }
-            else {
-                tuple.setA(tuple.getB());
-            }
+        }
+
+        Float finishScale = containerItemTween.getFinishScale(pSlot);
+        if (finishScale != null) {
+            scale = finishScale;
+            haveTween = true;
         }
         
         if (!access.getGUITween$lastDraggingItem().isEmpty() && ItemStack.isSameItemSameComponents(access.getGUITween$lastDraggingItem(), pSlot.getItem())) {
@@ -305,15 +296,6 @@ public abstract class StorageScreenBaseMixin<S extends StorageContainerMenuBase<
             return;
 
         access.setGUITween$isRenderQuick(true);
-
-        var gUITween$quickTweenSlots = access.getGUITween$quickTweenSlots();
-        Tuple<Integer, Integer> tuple = gUITween$quickTweenSlots.get(slot);
-        if (tuple == null) {
-            gUITween$quickTweenSlots.put(slot, new Tuple<>(-1, 0));
-        }
-        else {
-            tuple.setB(tuple.getB() + 1);
-        }
     }
 
     @Inject(
@@ -382,6 +364,30 @@ public abstract class StorageScreenBaseMixin<S extends StorageContainerMenuBase<
             poseStack.translate(0, 0, 1000);
             pGuiGraphics.drawString(font, text, x + 1, y + 1, color, shadow);
             poseStack.popPose();
+        }
+    }
+
+    @Inject(
+            method = "slotClicked",
+            at = @At("HEAD"),
+            cancellable = true,
+            remap = false
+    )
+    private void validateSlotClicked(Slot slot, int slotIndex, int button, ClickType clickType, CallbackInfo ci) {
+        if (slotIndex >= 0 && slotIndex >= this.menu.slots.size()) {
+            ci.cancel();
+        }
+    }
+
+    @Inject(
+            method = "handleInventoryMouseClick",
+            at = @At("HEAD"),
+            cancellable = true,
+            remap = false
+    )
+    private void validateHandleInventoryMouseClick(int slotIndex, int button, ClickType clickType, CallbackInfo ci) {
+        if (slotIndex >= 0 && slotIndex >= this.menu.slots.size()) {
+            ci.cancel();
         }
     }
 }

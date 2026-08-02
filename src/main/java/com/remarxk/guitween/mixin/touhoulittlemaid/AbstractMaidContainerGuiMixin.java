@@ -3,6 +3,7 @@ package com.remarxk.guitween.mixin.touhoulittlemaid;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.AbstractMaidContainerGui;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button.TouhouImageButton;
 import com.github.tartaricacid.touhoulittlemaid.inventory.container.AbstractMaidContainer;
+import com.remarxk.guitween.GUITweenUtility;
 import com.remarxk.guitween.mixinAccess.AbstractContainerScreenMixinAccess;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -33,9 +34,7 @@ public abstract class AbstractMaidContainerGuiMixin<T extends AbstractMaidContai
             )
     )
     private void taskPageDownBefore(CallbackInfo ci) {
-        if ((Object)this instanceof AbstractContainerScreenMixinAccess access) {
-            gUITween$lastOpenTick = access.getGUITween$openTick();
-        }
+        gUITween$lastOpenTick = GUITweenUtility.openScreenTick;
     }
 
     @Inject(
@@ -47,9 +46,7 @@ public abstract class AbstractMaidContainerGuiMixin<T extends AbstractMaidContai
             )
     )
     private void taskPageDownAfter(CallbackInfo ci) {
-        if ((Object)this instanceof AbstractContainerScreenMixinAccess access) {
-            access.setGUITween$openTick(gUITween$lastOpenTick);
-        }
+        GUITweenUtility.openScreenTick = gUITween$lastOpenTick;
     }
 
     @Inject(
@@ -60,9 +57,7 @@ public abstract class AbstractMaidContainerGuiMixin<T extends AbstractMaidContai
             )
     )
     private void taskPageUpBefore(CallbackInfo ci) {
-        if ((Object)this instanceof AbstractContainerScreenMixinAccess access) {
-            gUITween$lastOpenTick = access.getGUITween$openTick();
-        }
+        gUITween$lastOpenTick = GUITweenUtility.openScreenTick;
     }
 
     @Inject(
@@ -74,9 +69,7 @@ public abstract class AbstractMaidContainerGuiMixin<T extends AbstractMaidContai
             )
     )
     private void taskPageUpAfter(CallbackInfo ci) {
-        if ((Object)this instanceof AbstractContainerScreenMixinAccess access) {
-            access.setGUITween$openTick(gUITween$lastOpenTick);
-        }
+        GUITweenUtility.openScreenTick = gUITween$lastOpenTick;
     }
 
     @Unique
@@ -85,9 +78,9 @@ public abstract class AbstractMaidContainerGuiMixin<T extends AbstractMaidContai
 
         if ((Object)this instanceof AbstractContainerScreenMixinAccess access) {
             newOnPress = button -> {
-                gUITween$lastOpenTick = access.getGUITween$openTick();
+                gUITween$lastOpenTick = GUITweenUtility.openScreenTick;
                 pOnPress.onPress(button);
-                access.setGUITween$openTick(gUITween$lastOpenTick);
+                GUITweenUtility.openScreenTick = gUITween$lastOpenTick;
             };
         }
 

@@ -2,21 +2,22 @@ package com.remarxk.guitween.mixin;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.remarxk.guitween.GUITween;
-import com.remarxk.guitween.anim.DragTween;
-import com.remarxk.guitween.anim.Tween;
+import com.remarxk.guitween.anim.*;
 import com.remarxk.guitween.compat.CompatUtility;
 import com.remarxk.guitween.dataPack.WindowSlotsConfig;
 import com.remarxk.guitween.dataPack.WindowSlotsLoader;
 import com.remarxk.guitween.GUITweenUtility;
 import com.remarxk.guitween.config.GUITweenConfig;
+import com.remarxk.guitween.event.PlayGuiSoundEvent;
 import com.remarxk.guitween.mixinAccess.AbstractContainerScreenMixinAccess;
-import com.remarxk.guitween.anim.TweenPool;
 import com.remarxk.guitween.util.Ease;
 import com.remarxk.guitween.util.Tuple;
 import com.remarxk.guitween.util.TweenUtil;
+import net.minecraft.client.gui.screens.inventory.tooltip.TooltipRenderUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -32,6 +33,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.common.NeoForge;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -92,9 +94,6 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
     private boolean gUiTween$inTween;
 
     @Unique
-    private float gUITween$openTick;
-
-    @Unique
     private boolean gUITween$inTooltip;
 
     @Unique
@@ -128,6 +127,9 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
     @Shadow
     protected int topPos;
 
+    @Shadow
+    protected abstract void renderFloatingItem(GuiGraphics guiGraphics, ItemStack stack, int x, int y, String text);
+
     @Override
     public String getGUITween$screenName() {
         return gUITween$screenName;
@@ -151,16 +153,6 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
     @Override
     public void setGUITween$inTween(boolean inTween) {
         gUiTween$inTween = inTween;
-    }
-
-    @Override
-    public float getGUITween$openTick() {
-        return gUITween$openTick;
-    }
-
-    @Override
-    public void setGUITween$openTick(float openTick) {
-        gUITween$openTick = openTick;
     }
 
     @Override
@@ -196,16 +188,6 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
     @Override
     public void setGUITween$tooltipShowTick(float tick) {
         gUITween$tooltipShowTick = tick;
-    }
-
-    @Override
-    public HashMap<Slot, Tuple<Integer, Integer>> getGUITween$quickTweenSlots() {
-        return gUITween$quickTweenSlots;
-    }
-
-    @Override
-    public HashMap<Slot, Float> getGUITween$quickTicks() {
-        return gUITween$quickTicks;
     }
 
     @Override
@@ -260,6 +242,12 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
         }
 
         gUITween$inClosingTween = !gUITween$inClosingTween;
+
+        if (gUITween$inClosingTween && !GUITweenConfig.isEnableWindow()) {
+            GUITweenUtility.openScreenTick = GUITweenConfig.getWindowTotalDuration();
+            GUITweenUtility.jeiOpenTick = GUITweenConfig.getJeiTotalDuration();
+        }
+
         return gUITween$inClosingTween;
     }
 
@@ -280,6 +268,8 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
 
     @Inject(method = "init", at = @At("TAIL"))
     public void init(CallbackInfo ci) {
+        GUITweenUtility.getMoveItemTween().clearTween();
+
         gUITween$screenName = getClass().getSimpleName();
         gUITween$isDisableScreenTween = GUITweenConfig.isDisableTweenWindow(gUITween$screenName);
         gUITween$OutputSlotDatas.clear();
@@ -333,9 +323,18 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
                     tween.rewind = true;
             }
 
-            if (gUITween$lastHoverSlot == null || !gUITween$lastHoverSlot.hasItem()) {
-                if (GUITweenConfig.isEnableTooltip())
+            if (GUITweenConfig.isEnableTooltip()) {
+                /*TooltipTween tooltipTween = GUITweenUtility.getTooltipTween();
+                if (hoveredSlot == null || !hoveredSlot.hasItem()) {
+                    if (!tooltipTween.isShrinking() && gUITween$lastHoverSlot != null) {
+                        tooltipTween.startShrink(pMouseX, pMouseY);
+                    }
+                } else {
+                    tooltipTween.reset(gUITween$lastHoverSlot == null || !gUITween$lastHoverSlot.hasItem());
+                }*/
+                if (gUITween$lastHoverSlot == null || !gUITween$lastHoverSlot.hasItem()) {
                     gUITween$tooltipShowTick = 0;
+                }
             }
 
             gUITween$lastHoverSlot = hoveredSlot;
@@ -371,6 +370,55 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
         }
     }
 
+    @WrapOperation(
+            method = "render",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/gui/screens/inventory/AbstractContainerScreen;renderFloatingItem(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/world/item/ItemStack;IILjava/lang/String;)V",
+                    ordinal = 0
+            )
+    )
+    private void setDraggingTween(AbstractContainerScreen<T> instance, GuiGraphics guiGraphics, ItemStack stack, int x, int y, String text, Operation<Void> original) {
+        GUITweenUtility.inDragging = true;
+        original.call(instance, guiGraphics, stack, x, y, text);
+        GUITweenUtility.inDragging = false;
+    }
+
+    @Inject(
+            method = "render",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lcom/mojang/blaze3d/vertex/PoseStack;popPose()V"
+            )
+    )
+    private void renderMoveItem(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
+        ContainerItemTween tween = GUITweenUtility.getMoveItemTween();
+        HashMap<Integer, HashMap<Integer, ContainerItemTween.Single>> toMap = tween.getToMap();
+        toMap.forEach((to, fromList) -> {
+            int targetX, targetY;
+            if (to != -1) {
+                Slot toSlot = menu.getSlot(to);
+                targetX = toSlot.x;
+                targetY = toSlot.y;
+            }
+            else {
+                int i2 = this.draggingItem.isEmpty() ? 8 : 16;
+                targetX = mouseX - leftPos - 8;
+                targetY = mouseY - topPos - i2;
+            }
+
+            for (ContainerItemTween.Single single : fromList.values()) {
+                Slot fromSlot = menu.getSlot(single.from);
+                Tuple<Integer, Integer> pos = tween.getMoveTweenValue(fromSlot.x, fromSlot.y, targetX, targetY, single, to, menu);
+                if (pos != null) {
+                    renderFloatingItem(guiGraphics, single.itemStack, pos.getA(), pos.getB(), null);
+                }
+            }
+        });
+
+        tween.removeUnuseFakeItem(menu);
+    }
+
     @Inject(
             method = "renderBackground",
             at = @At(
@@ -391,16 +439,17 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
             CompatUtility.endOpenTween();
         }
 
-        GUITweenUtility.setOpenScreen(gUITween$screenName, gUITween$openTick);
+        GUITweenUtility.setOpenScreen(gUITween$screenName, GUITweenUtility.openScreenTick);
+        GUITweenUtility.jeiOpenTick = Math.max(GUITweenUtility.jeiOpenTick, GUITweenUtility.openScreenTick);
 
-        if (!GUITweenConfig.isEnableWindow())
+        if (!GUITweenConfig.isEnableWindow() && !gUITween$inClosingTween)
             return;
 
         if (gUITween$isDisableScreenTween)
             return;
 
-        float moveProgress = gUITween$openTick / GUITweenConfig.window.moveDuration.get().floatValue();
-        float gradientProgress = gUITween$openTick / GUITweenConfig.window.gradientDuration.get().floatValue();
+        float moveProgress = GUITweenUtility.openScreenTick / GUITweenConfig.window.moveDuration.get().floatValue();
+        float gradientProgress = GUITweenUtility.openScreenTick / GUITweenConfig.window.gradientDuration.get().floatValue();
 
         if (moveProgress >= 1 && gradientProgress >= 1)
             return;
@@ -431,12 +480,6 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
     }
 
     @Unique
-    private HashMap<Slot, Tuple<Integer, Integer>> gUITween$quickTweenSlots = new HashMap<>();
-
-    @Unique
-    private HashMap<Slot, Float> gUITween$quickTicks = new HashMap<>();
-
-    @Unique
     private boolean gUITween$isRenderQuick = false;
 
     @Unique
@@ -444,6 +487,24 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
 
     @Unique
     private float gUITween$sameItemTick = 0;
+
+    @WrapOperation(
+            method = "renderSlot",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/world/inventory/Slot;getItem()Lnet/minecraft/world/item/ItemStack;",
+                    ordinal = 0
+            )
+    )
+    public ItemStack renderItemFake(Slot instance, Operation<ItemStack> original, @Local(argsOnly = true) Slot slot) {
+        ContainerItemTween containerItemTween = GUITweenUtility.getMoveItemTween();
+        ItemStack itemStack = containerItemTween.getFakeItem(instance);
+        if (itemStack != null) {
+            return itemStack;
+        }
+
+        return original.call(instance);
+    }
 
     @Inject(
             method = "renderSlot",
@@ -486,6 +547,8 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
                         tween.tick = 0;
                         tween.totalTick = GUITweenConfig.windowItem.outputDuration.get().floatValue();
                         gUITween$outputSlotTween.put(pSlot, tween);
+
+                        NeoForge.EVENT_BUS.post(new PlayGuiSoundEvent(PlayGuiSoundEvent.SoundType.OUTPUT_CREATE));
                     }
                     else if (curItemStack.getCount() > lastItemStack.getCount()) {
                         Tween tween = TweenPool.getTween();
@@ -495,6 +558,8 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
                         tween.startValue = 0.3f;
                         tween.stopValue = 1;
                         gUITween$outputSlotTween.put(pSlot, tween);
+
+                        NeoForge.EVENT_BUS.post(new PlayGuiSoundEvent(PlayGuiSoundEvent.SoundType.OUTPUT_ADD));
                     }
                 }
 
@@ -553,30 +618,26 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
             }
         }
 
-        Tuple<Integer, Integer> tuple = gUITween$quickTweenSlots.get(pSlot);
-        if (tuple != null) {
-            if (tuple.getA().equals(tuple.getB())) {
-                float quickTick = gUITween$quickTicks.getOrDefault(pSlot, 0f);
+        ContainerItemTween containerItemTween = GUITweenUtility.getMoveItemTween();
 
-                float progress = quickTick / 4f;
-
-                if (progress < 1) {
-                    float clickScale = GUITweenConfig.windowItem.clickItemScale.get().floatValue();
-
-                    scale = TweenUtil.tween(clickScale, 1f, progress, Ease.IN_OUT_SINE);
-
-                    haveTween = true;
-
-                    gUITween$quickTicks.put(pSlot, quickTick + GUITweenUtility.getDeltaTicks());
-                }
-                else {
-                    gUITween$quickTweenSlots.remove(pSlot);
-                    gUITween$quickTicks.remove(pSlot);
-                }
+        if (menu.getSlot(pSlot.index) == pSlot) {
+            Float quickScale = containerItemTween.getQuickCraftScale(pSlot);
+            if (quickScale != null) {
+                scale = quickScale;
+                haveTween = true;
             }
-            else {
-                tuple.setA(tuple.getB());
+
+            Float pickUpScale = containerItemTween.getPickupScale(pSlot);
+            if (pickUpScale != null) {
+                scale = pickUpScale;
+                haveTween = true;
             }
+        }
+
+        Float finishScale = containerItemTween.getFinishScale(pSlot);
+        if (finishScale != null) {
+            scale = finishScale;
+            haveTween = true;
         }
 
         if (!gUITween$lastDraggingItem.isEmpty() && ItemStack.isSameItemSameComponents(gUITween$lastDraggingItem, pSlot.getItem())) {
@@ -636,14 +697,6 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
         poseStack.translate(centerX, centerY , 0);
         poseStack.scale(scale, scale, 1);
         poseStack.translate(-centerX, -centerY, 0);
-
-        Tuple<Integer, Integer> tuple = gUITween$quickTweenSlots.get(slot);
-        if (tuple == null) {
-            gUITween$quickTweenSlots.put(slot, new Tuple<>(-1, 0));
-        }
-        else {
-            tuple.setB(tuple.getB() + 1);
-        }
     }
 
     @Inject(
@@ -695,6 +748,13 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
 
                 DragTween dragTween = GUITweenUtility.getDragTween();
                 dragTween.stop();
+
+                NeoForge.EVENT_BUS.post(new PlayGuiSoundEvent(PlayGuiSoundEvent.SoundType.PUNCH_CLICK));
+            }
+        }
+        else {
+            if (lastClickSlot != null) {
+                NeoForge.EVENT_BUS.post(new PlayGuiSoundEvent(PlayGuiSoundEvent.SoundType.NORMAL_CLICK));
             }
         }
     }
@@ -725,7 +785,7 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
             hasChange = true;
         }
 
-        if (GUITweenConfig.isEnableDragItem()) {
+        if (GUITweenConfig.isEnableDragItem() && GUITweenUtility.inDragging) {
             DragTween dragTween = GUITweenUtility.getDragTween();
             dragTween.setPos(x, y);
 
@@ -781,6 +841,9 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
         GUITweenUtility.pushFontAlpha(alpha);
 
         gUITween$tooltipShowTick += GUITweenUtility.getDeltaTicks();
+
+        /*TooltipTween tooltipTween = GUITweenUtility.getTooltipTween();
+        tooltipTween.inTween = true;*/
     }
 
     @Inject(method = "renderTooltip", at = @At(value = "TAIL"))
@@ -791,7 +854,38 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
         gUITween$inTooltip = false;
         GUITweenUtility.popFontAlpha();
         guiGraphics.setColor(1, 1, 1, 1);
+
+        /*TooltipTween tooltipTween = GUITweenUtility.getTooltipTween();
+        if (tooltipTween.inTween) {
+            tooltipTween.inTween = false;
+            tooltipTween.updateTick();
+        }*/
     }
+
+    /*@Inject(method = "render", at = @At("TAIL"))
+    public void renderAfter(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
+        TooltipTween tooltipTween = GUITweenUtility.getTooltipTween();
+        if (tooltipTween.isShrinking()) {
+            tooltipTween.updateShrinkPosition(mouseX, mouseY);
+            tooltipTween.updateTick();
+
+            int x = tooltipTween.getX();
+            int y = tooltipTween.getY();
+            int w = tooltipTween.getWidth();
+            int h = tooltipTween.getHeight();
+
+            if (w > 0 && h > 0) {
+                TooltipRenderUtil.renderTooltipBackground(guiGraphics, x, y, w, h,
+                        tooltipTween.lastZ, tooltipTween.lastBgColor,
+                        tooltipTween.lastBorderTop, tooltipTween.lastBorderBottom,
+                        tooltipTween.lastBorderCenter);
+            }
+
+            if (tooltipTween.isShrinkComplete()) {
+                tooltipTween.reset(true);
+            }
+        }
+    }*/
 
     @WrapOperation(
             method = "keyPressed",
@@ -808,8 +902,6 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
 
     @Inject(method = "onClose", at = @At("TAIL"))
     public void onClose(CallbackInfo ci) {
-        gUITween$openTick = 0;
-
         gUITween$lastHoverSlot = null;
         gUITween$inSlotTween = false;
 

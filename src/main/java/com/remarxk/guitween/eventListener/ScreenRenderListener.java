@@ -111,10 +111,12 @@ public class ScreenRenderListener {
         access.setGUITween$inTween(false);
 
         float sign = access.gUITween$inCloseTween() ? -GUITweenConfig.window.closeWindowSpeed.get().floatValue() : 1;
-        float openTick = Mth.clamp(access.getGUITween$openTick() + sign * GUITweenUtility.getDeltaTicks(),0, GUITweenConfig.getWindowTotalDuration());
-        access.setGUITween$openTick(openTick);
+        float openTick = Mth.clamp(GUITweenUtility.openScreenTick + sign * GUITweenUtility.getDeltaTicks(),0, GUITweenConfig.getWindowTotalDuration());
+        GUITweenUtility.openScreenTick = openTick;
 
-        if (sign < 0 && openTick <= 0) {
+        GUITweenUtility.jeiOpenTick = Mth.clamp(GUITweenUtility.jeiOpenTick + sign * GUITweenUtility.getDeltaTicks(), 0, GUITweenConfig.getJeiTotalDuration());
+
+        if (sign < 0 && openTick <= 0 && GUITweenUtility.jeiOpenTick <= 0) {
             access.gUITween$setNeedClose(true);
         }
     }

@@ -11,10 +11,14 @@
     "ChatComponentMixin",
     "ChatScreenMixin",
     "FontMixin",
+    "GuiGraphicMixin",
     "GuiMixin",
+    "InventoryMixin",
     "ItemRendererMixin",
+    "KeyboardHandlerMixin",
     "LocalPlayerMixin",
     "MinecraftMixin",
+    "MultiPlayerGameModeMixin",
     "ScreenMixin",
     "emi.EmiClientForgeMixin",
     "emi.EmiScreenManagerMixin",
@@ -28,16 +32,13 @@
     "rei.ScreenOverlayImpMixin",
     "sodium.SodiumBakedModelEncoderMixin",
     "sophisticated.StorageScreenBaseMixin",
-    "touhoulittlemaid.AbstractMaidContainerGuiMixin"
+    "touhoulittlemaid.AbstractMaidContainerGuiMixin",
+    "watut.RenderHelperMixin"
   ],
   "injectors": {
     "defaultRequire": 0
   },
   "overwrites": {
     "requireAnnotations": false
-  },
-  "mixins": [
-    "InventoryMixin",
-    "watut.RenderHelperMixin"
-  ]
+  }
 }

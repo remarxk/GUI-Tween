@@ -1,11 +1,8 @@
 package com.remarxk.guitween.mixin.rei;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.remarxk.guitween.GUITween;
-import com.remarxk.guitween.GUITweenUtility;
+import com.remarxk.guitween.compat.CompatUtility;
 import com.remarxk.guitween.compat.ReiCompat;
-import com.remarxk.guitween.config.GUITweenConfig;
-import com.remarxk.guitween.util.TweenUtil;
 import me.shedaniel.rei.api.client.gui.widgets.Widget;
 import me.shedaniel.rei.impl.client.gui.ScreenOverlayImpl;
 import me.shedaniel.rei.impl.client.gui.widget.entrylist.EntryListWidget;
@@ -25,59 +22,39 @@ public class ScreenOverlayImpMixin {
             )
     )
     public void renderWidgets(Widget widget, GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
-        if (GUITweenUtility.openScreenName != null) {
-            if (GUITweenConfig.isEnableJeiLeft() && widget instanceof FavoritesListWidget favoritesListWidget) {
-                float totalTick = Math.max(GUITweenConfig.window.jeiLeftMoveDuration.get().floatValue(), 1);
-                float progress = GUITweenUtility.openScreenTick / totalTick;
+        if (widget instanceof FavoritesListWidget) {
+            CompatUtility.JeiTween jeiTween = CompatUtility.getJeiLeftTween();
+            if (jeiTween.inTween) {
+                PoseStack poseStack = guiGraphics.pose();
+                ReiCompat.inTween = true;
+                ReiCompat.dx = jeiTween.dx;
+                ReiCompat.dy = jeiTween.dy;
 
-                if (progress < 1){
-                    PoseStack poseStack = guiGraphics.pose();
+                poseStack.pushPose();
+                poseStack.translate(jeiTween.dx, jeiTween.dy, 0);
+                widget.render(guiGraphics, mouseX, mouseY, delta);
+                poseStack.popPose();
 
-                    float dx = TweenUtil.tween(GUITweenConfig.window.jeiLeftMoveX.get().floatValue(), 0, progress, GUITweenConfig.window.jeiLeftMoveEase.get());
-                    float dy = TweenUtil.tween(GUITweenConfig.window.jeiLeftMoveY.get().floatValue(), 0, progress, GUITweenConfig.window.jeiLeftMoveEase.get());
-
-                    ReiCompat.inTween = true;
-                    ReiCompat.dx = dx;
-                    ReiCompat.dy = dy;
-
-                    poseStack.pushPose();
-                    poseStack.translate(dx, dy, 0);
-
-                    widget.render(guiGraphics, mouseX, mouseY, delta);
-
-                    poseStack.popPose();
-
-                    ReiCompat.inTween = false;
-
-                    return;
-                }
+                ReiCompat.inTween = false;
+                return;
             }
+        }
 
-            if (GUITweenConfig.isEnableJeiRight() && widget instanceof EntryListWidget entryListWidget) {
-                float totalTick = Math.max(GUITweenConfig.window.jeiRightMoveDuration.get().floatValue(), 1);
-                float progress = GUITweenUtility.openScreenTick / totalTick;
+        if (widget instanceof EntryListWidget) {
+            CompatUtility.JeiTween jeiTween = CompatUtility.getJeiRightTween();
+            if (jeiTween.inTween) {
+                PoseStack poseStack = guiGraphics.pose();
+                ReiCompat.inTween = true;
+                ReiCompat.dx = jeiTween.dx;
+                ReiCompat.dy = jeiTween.dy;
 
-                if (progress < 1){
-                    PoseStack poseStack = guiGraphics.pose();
+                poseStack.pushPose();
+                poseStack.translate(jeiTween.dx, jeiTween.dy, 0);
+                widget.render(guiGraphics, mouseX, mouseY, delta);
+                poseStack.popPose();
 
-                    float dx = TweenUtil.tween(GUITweenConfig.window.jeiRightMoveX.get().floatValue(), 0, progress, GUITweenConfig.window.jeiRightMoveEase.get());
-                    float dy = TweenUtil.tween(GUITweenConfig.window.jeiRightMoveY.get().floatValue(), 0, progress, GUITweenConfig.window.jeiRightMoveEase.get());
-
-                    ReiCompat.inTween = true;
-                    ReiCompat.dx = dx;
-                    ReiCompat.dy = dy;
-
-                    poseStack.pushPose();
-                    poseStack.translate(dx, dy, 0);
-
-                    widget.render(guiGraphics, mouseX, mouseY, delta);
-
-                    poseStack.popPose();
-
-                    ReiCompat.inTween = false;
-
-                    return;
-                }
+                ReiCompat.inTween = false;
+                return;
             }
         }
 

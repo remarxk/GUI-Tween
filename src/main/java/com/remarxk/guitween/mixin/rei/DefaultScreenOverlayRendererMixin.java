@@ -44,7 +44,7 @@ public class DefaultScreenOverlayRendererMixin {
             }
 
             if (access.getGUITween$inTween()) {
-                float openTick = access.getGUITween$openTick();
+                float openTick = GUITweenUtility.openScreenTick;
                 float moveProgress = openTick / GUITweenConfig.window.moveDuration.get().floatValue();
                 float gradientProgress = openTick / GUITweenConfig.window.gradientDuration.get().floatValue();
 

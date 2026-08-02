@@ -1,14 +1,9 @@
 package com.remarxk.guitween;
 
-import com.remarxk.guitween.anim.AttackTween;
-import com.remarxk.guitween.anim.DragTween;
-import com.remarxk.guitween.anim.UseTween;
-import com.remarxk.guitween.util.DebugUtil;
+import com.remarxk.guitween.anim.*;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.inventory.MerchantScreen;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Stack;
 
@@ -24,13 +19,19 @@ public class GUITweenUtility {
 
     public static String openScreenName;
     public static float openScreenTick;
+    public static float jeiOpenTick;
+
+    public static boolean inDragging;
 
     private static final Stack<Float> itemAlphaStack = new Stack<>();
     private static final Stack<Float> fontAlphaStack = new Stack<>();
 
+    private final static TooltipTween tooltipTween =  new TooltipTween();
+
     private final static AttackTween attackTween = new AttackTween();
     private final static UseTween usingTween = new UseTween();
     private final static DragTween dragTween = new DragTween();
+    private final static ContainerItemTween CONTAINER_ITEM_TWEEN = new ContainerItemTween();
 
     public static float getDeltaTicks() {
         return Minecraft.getInstance().getTimer().getGameTimeDeltaTicks();
@@ -57,6 +58,7 @@ public class GUITweenUtility {
     public static void deleteOpenScreen() {
         openScreenName = null;
         openScreenTick = 0;
+        jeiOpenTick = 0;
     }
 
     public static void pushAlpha(float alpha) {
@@ -101,6 +103,10 @@ public class GUITweenUtility {
         return !fontAlphaStack.isEmpty();
     }
 
+    public static TooltipTween getTooltipTween() {
+        return tooltipTween;
+    }
+
     public static AttackTween getAttackTween() {
         return attackTween;
     }
@@ -112,4 +118,6 @@ public class GUITweenUtility {
     public static DragTween getDragTween() {
         return dragTween;
     }
+
+    public static ContainerItemTween getMoveItemTween() {return CONTAINER_ITEM_TWEEN;}
 }

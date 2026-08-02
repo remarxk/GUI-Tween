@@ -5,6 +5,7 @@ import com.remarxk.guitween.anim.Tween;
 import com.remarxk.guitween.anim.UseTween;
 import com.remarxk.guitween.config.GUITweenConfig;
 import com.remarxk.guitween.anim.TweenPool;
+import com.remarxk.guitween.event.PlayGuiSoundEvent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -12,6 +13,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 import java.util.HashMap;
@@ -79,9 +81,8 @@ public class HotbarChangeListener {
                     }
                 }
 
-                if (GUITweenConfig.isEnableHoldItem()) {
-                    animTick = lastSelected >= 0 ? 0 : GUITweenConfig.getHoldItemTotalDuration();
-                }
+                animTick = lastSelected >= 0 ? 0 : Math.max(GUITweenConfig.getSelectedItemNameDuration(), GUITweenConfig.getHoldItemTotalDuration());
+
                 lastSelected = index;
 
                 lackTick = GUITweenConfig.hotbar.lackDuration.get().floatValue();
@@ -91,6 +92,7 @@ public class HotbarChangeListener {
                     Tween tween = hotbarAnimStateMap.getOrDefault(index, null);
                     if (tween == null) {
                         tween = TweenPool.getTween();
+                        tween.name = "zoomIn";
                         tween.tick = 0;
                         tween.totalTick = GUITweenConfig.hotbar.holdZoomInDuration.get().floatValue();
                         tween.ease = GUITweenConfig.hotbar.holdZoomInEase.get();
@@ -117,8 +119,10 @@ public class HotbarChangeListener {
                 boolean curHasItem = selectedItem.getCount() > 0;
                 if (curHasItem != hasItem) {
                     hasItem = curHasItem;
-                    if (!hasItem)
+                    if (!hasItem) {
                         lackTick = 0;
+                        NeoForge.EVENT_BUS.post(new PlayGuiSoundEvent(PlayGuiSoundEvent.SoundType.LACK_ITEM));
+                    }
                 }
             }
         }
