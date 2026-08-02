@@ -132,7 +132,7 @@ dependencies {
 //    runtimeOnly "curse.maven:cloth-config-348521:5729127"
 
     compileOnly "curse.maven:architectury-api-419699:5786327"
-//    runtimeOnly "curse.maven:architectury-api-419699:5786327"
+    runtimeOnly "curse.maven:architectury-api-419699:5786327"
     compileOnly "curse.maven:roughly-enough-items-310111:6199140"
 //    runtimeOnly "curse.maven:roughly-enough-items-310111:6199140"
 
@@ -160,8 +160,8 @@ dependencies {
     compileOnly "curse.maven:touhou-little-maid-355044:7510722"
 //    runtimeOnly "curse.maven:touhou-little-maid-355044:7510722"
 
-    compileOnly "curse.maven:ftb-library-forge-404465:7746959"
-//    runtimeOnly "curse.maven:ftb-library-forge-404465:7746959"
+    compileOnly "curse.maven:ftb-library-forge-404465:8438216"
+    runtimeOnly "curse.maven:ftb-library-forge-404465:8438216"
 
 //    runtimeOnly "curse.maven:ftb-jei-extras-1103259:6695679"
 //    runtimeOnly "curse.maven:ftb-quests-forge-289412:7775452"
