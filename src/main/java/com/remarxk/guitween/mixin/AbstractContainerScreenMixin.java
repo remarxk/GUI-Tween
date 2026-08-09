@@ -216,6 +216,11 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
     }
 
     @Override
+    public void gUITween$renderFloatingItem(GuiGraphics guiGraphics, ItemStack stack, int x, int y, String text) {
+        renderFloatingItem(guiGraphics, stack, x, y, text);
+    }
+
+    @Override
     public ItemStack getGUITween$lastDraggingItem() {
         return gUITween$lastDraggingItem;
     }

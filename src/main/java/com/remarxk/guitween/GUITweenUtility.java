@@ -26,8 +26,6 @@ public class GUITweenUtility {
     private static final Stack<Float> itemAlphaStack = new Stack<>();
     private static final Stack<Float> fontAlphaStack = new Stack<>();
 
-    private final static TooltipTween tooltipTween =  new TooltipTween();
-
     private final static AttackTween attackTween = new AttackTween();
     private final static UseTween usingTween = new UseTween();
     private final static DragTween dragTween = new DragTween();
@@ -101,10 +99,6 @@ public class GUITweenUtility {
 
     public static boolean hasFontAlpha() {
         return !fontAlphaStack.isEmpty();
-    }
-
-    public static TooltipTween getTooltipTween() {
-        return tooltipTween;
     }
 
     public static AttackTween getAttackTween() {

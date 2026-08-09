@@ -1,5 +1,8 @@
 package com.remarxk.guitween.mixin.sophisticated;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.remarxk.guitween.GUITween;
 import com.remarxk.guitween.GUITweenUtility;
@@ -12,6 +15,7 @@ import com.remarxk.guitween.mixinAccess.AbstractContainerScreenMixinAccess;
 import com.remarxk.guitween.util.Ease;
 import com.remarxk.guitween.util.Tuple;
 import com.remarxk.guitween.util.TweenUtil;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -27,6 +31,7 @@ import net.p3pp3rf1y.sophisticatedcore.client.gui.controls.InventoryScrollPanel;
 import net.p3pp3rf1y.sophisticatedcore.common.gui.StorageContainerMenuBase;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -34,6 +39,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
+import java.util.List;
 
 @Mixin(value = StorageScreenBase.class)
 public abstract class StorageScreenBaseMixin<S extends StorageContainerMenuBase<?>> extends AbstractContainerScreen<S> implements InventoryScrollPanel.IInventoryScreen {
@@ -164,6 +170,45 @@ public abstract class StorageScreenBaseMixin<S extends StorageContainerMenuBase<
         }
     }
 
+    @Inject(
+            method = "renderSuper",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lcom/mojang/blaze3d/vertex/PoseStack;popPose()V",
+                    ordinal = 1
+            )
+    )
+    private void renderMoveItem(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
+        if (!(this instanceof AbstractContainerScreenMixinAccess access))
+            return;
+
+        ContainerItemTween tween = GUITweenUtility.getMoveItemTween();
+        HashMap<Integer, HashMap<Integer, ContainerItemTween.Single>> toMap = tween.getToMap();
+        toMap.forEach((to, fromList) -> {
+            int targetX, targetY;
+            if (to != -1) {
+                Slot toSlot = menu.getSlot(to);
+                targetX = toSlot.x;
+                targetY = toSlot.y;
+            }
+            else {
+                int i2 = access.gUITween$getDraggingItem().isEmpty() ? 8 : 16;
+                targetX = mouseX - leftPos - 8;
+                targetY = mouseY - topPos - i2;
+            }
+
+            for (ContainerItemTween.Single single : fromList.values()) {
+                Slot fromSlot = menu.getSlot(single.from);
+                Tuple<Integer, Integer> pos = tween.getMoveTweenValue(fromSlot.x, fromSlot.y, targetX, targetY, single, to, menu);
+                if (pos != null) {
+                    access.gUITween$renderFloatingItem(guiGraphics, single.itemStack, pos.getA(), pos.getB(), null);
+                }
+            }
+        });
+
+        tween.removeUnuseFakeItem(menu);
+    }
+
     @Redirect(
             method = "renderSuper",
             at = @At(
@@ -200,16 +245,9 @@ public abstract class StorageScreenBaseMixin<S extends StorageContainerMenuBase<
 
         boolean isEmpty = !pSlot.hasItem();
 
-        Slot gUITween$lastHoverSlot = access.getGUITween$lastHoverSlot();
         HashMap<Slot, Tween> gUITween$hoverSlotMap = access.getGUITween$hoverSlotMap();
 
         if (GUITweenConfig.isEnableHoverItem()) {
-            boolean isHoverSlot = gUITween$lastHoverSlot == pSlot;
-
-            if (isHoverSlot) {
-                AbstractContainerScreen.renderSlotHighlight(pGuiGraphics, pSlot.x, pSlot.y, 0, getSlotColor(pSlot.index));
-            }
-
             Tween tween = gUITween$hoverSlotMap.getOrDefault(pSlot, null);
             if (tween != null) {
                 if (isEmpty) {
@@ -240,6 +278,12 @@ public abstract class StorageScreenBaseMixin<S extends StorageContainerMenuBase<
             Float quickScale = containerItemTween.getQuickCraftScale(pSlot);
             if (quickScale != null) {
                 scale = quickScale;
+                haveTween = true;
+            }
+
+            Float pickUpScale = containerItemTween.getPickupScale(pSlot);
+            if (pickUpScale != null) {
+                scale = pickUpScale;
                 haveTween = true;
             }
         }
@@ -279,6 +323,24 @@ public abstract class StorageScreenBaseMixin<S extends StorageContainerMenuBase<
 
             poseStack.translate(dx, dy, 50);
         }
+    }
+
+    @WrapOperation(
+            method = "renderSlot",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/world/inventory/Slot;getItem()Lnet/minecraft/world/item/ItemStack;",
+                    ordinal = 0
+            )
+    )
+    public ItemStack renderItemFake(Slot instance, Operation<ItemStack> original, @Local(argsOnly = true) Slot slot) {
+        ContainerItemTween containerItemTween = GUITweenUtility.getMoveItemTween();
+        ItemStack itemStack = containerItemTween.getFakeItem(instance);
+        if (itemStack != null) {
+            return itemStack;
+        }
+
+        return original.call(instance);
     }
 
     @Inject(
@@ -348,6 +410,10 @@ public abstract class StorageScreenBaseMixin<S extends StorageContainerMenuBase<
             pGuiGraphics.pose().popPose();
         }
 
+        if (GUITweenConfig.isEnableHoverItem() && access.getGUITween$lastHoverSlot() == pSlot) {
+            AbstractContainerScreen.renderSlotHighlight(pGuiGraphics, pSlot.x, pSlot.y, 0, getSlotColor(pSlot.index));
+        }
+
         if (GUITweenConfig.enableDebugWindow.get()) {
             Font font = Minecraft.getInstance().font;
 
@@ -368,26 +434,112 @@ public abstract class StorageScreenBaseMixin<S extends StorageContainerMenuBase<
     }
 
     @Inject(
-            method = "slotClicked",
-            at = @At("HEAD"),
-            cancellable = true,
-            remap = false
+            method = "handleInventoryMouseClick",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/multiplayer/ClientPacketListener;send(Lnet/minecraft/network/protocol/Packet;)V"
+            )
     )
-    private void validateSlotClicked(Slot slot, int slotIndex, int button, ClickType clickType, CallbackInfo ci) {
-        if (slotIndex >= 0 && slotIndex >= this.menu.slots.size()) {
-            ci.cancel();
+    private void handleInventoryMouseClickBefore(int slotNumber, int mouseButton, ClickType type, CallbackInfo ci,
+                                                 @Local(index = 5) List<ItemStack> inventoryItems,
+                                                 @Local(index = 6) List<ItemStack> upgradeItems,
+                                                 @Local(index = 7) Int2ObjectMap<ItemStack> changedSlotIndexes) {
+        ContainerItemTween tween = GUITweenUtility.getMoveItemTween();
+
+        switch (type) {
+            case QUICK_MOVE -> {
+                changedSlotIndexes.forEach((slot, itemStack) -> {
+                    if (slot != slotNumber) {
+                        ItemStack beforeStack = gUITween$getBeforeStack(inventoryItems, upgradeItems, slot);
+
+                        ItemStack moveItem = itemStack.copy();
+                        moveItem.setCount(itemStack.getCount() - gUITween$getItemStackCount(beforeStack));
+                        tween.addMoveTween(slotNumber, slot, moveItem);
+
+                        ItemStack fakeItem = beforeStack;
+                        if (fakeItem == null || fakeItem.isEmpty()) {
+                            fakeItem = itemStack.copy();
+                            fakeItem.setCount(0);
+                        }
+                        tween.addFakeItem(menu.getSlot(slot), fakeItem);
+                    }
+                });
+            }
+            case SWAP -> {
+                int to = -1;
+                for (Int2ObjectMap.Entry<ItemStack> entry : changedSlotIndexes.int2ObjectEntrySet()) {
+                    if (entry.getIntKey() != slotNumber) {
+                        to = entry.getIntKey();
+                        break;
+                    }
+                }
+
+                if (to == -1) {
+                    return;
+                }
+
+                Slot slot1 = menu.getSlot(slotNumber);
+                Slot slot2 = menu.getSlot(to);
+
+                if (!tween.swapMoveTween(slot1, slot2)) {
+                    tween.removeTween(slotNumber, to);
+                    tween.removeFakeItem(slot2);
+                    tween.removeTween(to, slotNumber);
+                    tween.removeFakeItem(slot1);
+
+                    ItemStack itemStack1 = gUITween$getBeforeStack(inventoryItems, upgradeItems, slotNumber);
+                    if (itemStack1 != null && !itemStack1.isEmpty()) {
+                        tween.addMoveTween(slotNumber, to, itemStack1.copy());
+                        tween.addFakeItem(menu.getSlot(to), ItemStack.EMPTY);
+                    }
+
+                    ItemStack itemStack2 = gUITween$getBeforeStack(inventoryItems, upgradeItems, to);
+                    if (itemStack2 != null && !itemStack2.isEmpty()) {
+                        tween.addMoveTween(to, slotNumber, itemStack2.copy());
+                        tween.addFakeItem(menu.getSlot(slotNumber), ItemStack.EMPTY);
+                    }
+                }
+            }
+            case PICKUP_ALL -> {
+                changedSlotIndexes.forEach((slot, itemStack) -> {
+                    ItemStack beforeStack = gUITween$getBeforeStack(inventoryItems, upgradeItems, slot);
+                    ItemStack moveItem = beforeStack.copy();
+                    moveItem.setCount(gUITween$getItemStackCount(beforeStack) - itemStack.getCount());
+
+                    tween.addMoveTween(slot, -1, moveItem);
+                });
+            }
+            case QUICK_CRAFT -> {
+                changedSlotIndexes.forEach((slot, itemStack) -> {
+                    tween.addQuickCraftTween(menu.getSlot(slot));
+                });
+            }
+            case PICKUP -> {
+                changedSlotIndexes.forEach((slot, itemStack) -> {
+                    if (!itemStack.isEmpty()) {
+                        tween.addPickupTween(menu.getSlot(slot));
+                    }
+                });
+            }
         }
     }
 
-    @Inject(
-            method = "handleInventoryMouseClick",
-            at = @At("HEAD"),
-            cancellable = true,
-            remap = false
-    )
-    private void validateHandleInventoryMouseClick(int slotIndex, int button, ClickType clickType, CallbackInfo ci) {
-        if (slotIndex >= 0 && slotIndex >= this.menu.slots.size()) {
-            ci.cancel();
+    @Unique
+    private ItemStack gUITween$getBeforeStack(List<ItemStack> inventoryItems, List<ItemStack> upgradeItems, int slot) {
+        if (slot >= 0 && slot < inventoryItems.size()) {
+            return inventoryItems.get(slot);
         }
+
+        int upgradeIndex = slot - this.menu.getInventorySlotsSize();
+        if (upgradeIndex >= 0 && upgradeIndex < upgradeItems.size()) {
+            return upgradeItems.get(upgradeIndex);
+        }
+
+        return ItemStack.EMPTY;
+    }
+
+    @Unique
+    private int gUITween$getItemStackCount(ItemStack itemStack) {
+        return (itemStack == null || itemStack.isEmpty()) ? 0 : itemStack.getCount();
     }
 }

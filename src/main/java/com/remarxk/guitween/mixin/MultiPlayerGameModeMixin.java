@@ -35,6 +35,8 @@ public class MultiPlayerGameModeMixin {
 
         ContainerItemTween tween = GUITweenUtility.getMoveItemTween();
 
+        GUITween.LOGGER.info("背包交互:{}", slotId);
+
         switch (clickType) {
             case QUICK_MOVE -> {
                 int2objectmap.forEach((slot, itemStack) -> {
