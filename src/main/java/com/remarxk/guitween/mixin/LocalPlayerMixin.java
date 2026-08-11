@@ -2,10 +2,12 @@ package com.remarxk.guitween.mixin;
 
 import com.mojang.authlib.GameProfile;
 import com.remarxk.guitween.GUITween;
+import com.remarxk.guitween.event.PlayGuiSoundEvent;
 import com.remarxk.guitween.eventListener.HotbarChangeListener;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraftforge.common.MinecraftForge;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -25,8 +27,10 @@ public class LocalPlayerMixin extends AbstractClientPlayer {
     )
     public void onDropAfter(boolean fullStack, CallbackInfoReturnable<Boolean> cir) {
         if (!cir.getReturnValue()) {
-            if (GUITween.CONFIG.isEnableExp())
+            if (GUITween.CONFIG.isEnableExp()) {
                 HotbarChangeListener.lackTick = 0;
+                MinecraftForge.EVENT_BUS.post(new PlayGuiSoundEvent(PlayGuiSoundEvent.SoundType.LACK_ITEM));
+            }
         }
     }
 }

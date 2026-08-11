@@ -38,9 +38,9 @@ public class InvMoveCompat {
         }
 
         String gUITween$screenName = access.getGUITween$screenName();
-        float gUITween$openTick = access.getGUITween$openTick();
 
-        GUITweenUtility.setOpenScreen(gUITween$screenName, gUITween$openTick);
+        GUITweenUtility.setOpenScreen(gUITween$screenName, GUITweenUtility.openScreenTick);
+        GUITweenUtility.jeiOpenTick = Math.max(GUITweenUtility.jeiOpenTick, GUITweenUtility.openScreenTick);
 
         if (!GUITween.CONFIG.isEnableWindow())
             return;
@@ -48,8 +48,8 @@ public class InvMoveCompat {
         if (access.getGUITween$isDisableScreenTween())
             return;
 
-        float moveProgress = gUITween$openTick / GUITween.CONFIG.windowMoveDuration;
-        float gradientProgress = gUITween$openTick / GUITween.CONFIG.windowGradientDuration;
+        float moveProgress = GUITweenUtility.openScreenTick / GUITween.CONFIG.windowMoveDuration;
+        float gradientProgress = GUITweenUtility.openScreenTick / GUITween.CONFIG.windowGradientDuration;
 
         if (moveProgress >= 1 && gradientProgress >= 1)
             return;

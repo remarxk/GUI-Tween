@@ -2,7 +2,7 @@ package com.remarxk.guitween.mixin.touhoulittlemaid;
 
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.AbstractMaidContainerGui;
 import com.github.tartaricacid.touhoulittlemaid.inventory.container.AbstractMaidContainer;
-import com.remarxk.guitween.mixinAccess.AbstractContainerScreenMixinAccess;
+import com.remarxk.guitween.GUITweenUtility;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -33,9 +33,7 @@ public abstract class AbstractMaidContainerGuiMixin<T extends AbstractMaidContai
             )
     )
     private void taskPageDownBefore(CallbackInfo ci) {
-        if ((Object)this instanceof AbstractContainerScreenMixinAccess access) {
-            gUITween$lastOpenTick = access.getGUITween$openTick();
-        }
+        gUITween$lastOpenTick = GUITweenUtility.openScreenTick;
     }
 
     @Inject(
@@ -47,9 +45,7 @@ public abstract class AbstractMaidContainerGuiMixin<T extends AbstractMaidContai
             )
     )
     private void taskPageDownAfter(CallbackInfo ci) {
-        if ((Object)this instanceof AbstractContainerScreenMixinAccess access) {
-            access.setGUITween$openTick(gUITween$lastOpenTick);
-        }
+        GUITweenUtility.openScreenTick = gUITween$lastOpenTick;
     }
 
     @Inject(
@@ -60,9 +56,7 @@ public abstract class AbstractMaidContainerGuiMixin<T extends AbstractMaidContai
             )
     )
     private void taskPageUpBefore(CallbackInfo ci) {
-        if ((Object)this instanceof AbstractContainerScreenMixinAccess access) {
-            gUITween$lastOpenTick = access.getGUITween$openTick();
-        }
+        gUITween$lastOpenTick = GUITweenUtility.openScreenTick;
     }
 
     @Inject(
@@ -74,22 +68,18 @@ public abstract class AbstractMaidContainerGuiMixin<T extends AbstractMaidContai
             )
     )
     private void taskPageUpAfter(CallbackInfo ci) {
-        if ((Object)this instanceof AbstractContainerScreenMixinAccess access) {
-            access.setGUITween$openTick(gUITween$lastOpenTick);
-        }
+        GUITweenUtility.openScreenTick = gUITween$lastOpenTick;
     }
 
     @Unique
     private ImageButton gUITween$warpNewTouhouImageButton(int pX, int pY, int pWidth, int pHeight, int pXTexStart, int pYTexStart, int pYDiffTex, ResourceLocation pResourceLocation, Button.OnPress pOnPress) {
         Button.OnPress newOnPress = pOnPress;
 
-        if ((Object)this instanceof AbstractContainerScreenMixinAccess access) {
-            newOnPress = button -> {
-                gUITween$lastOpenTick = access.getGUITween$openTick();
-                pOnPress.onPress(button);
-                access.setGUITween$openTick(gUITween$lastOpenTick);
-            };
-        }
+        newOnPress = button -> {
+            gUITween$lastOpenTick = GUITweenUtility.openScreenTick;
+            pOnPress.onPress(button);
+            GUITweenUtility.openScreenTick = gUITween$lastOpenTick;
+        };
 
         return new ImageButton(pX, pY, pWidth, pHeight, pXTexStart, pYTexStart, pYDiffTex, pResourceLocation, newOnPress);
     }

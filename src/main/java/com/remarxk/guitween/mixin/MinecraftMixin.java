@@ -5,11 +5,13 @@ import com.remarxk.guitween.event.PostScreenTickEvent;
 import com.remarxk.guitween.eventListener.HotbarChangeListener;
 import com.remarxk.guitween.anim.AttackTween;
 import com.remarxk.guitween.anim.UseTween;
+import com.remarxk.guitween.mixinAccess.AbstractContainerScreenMixinAccess;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraftforge.common.MinecraftForge;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -18,6 +20,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MinecraftMixin {
     @Shadow
     public Screen screen;
+
+    @Unique
+    private Screen gUITween$screen;
 
     @Inject(
             method = "tick",
@@ -29,6 +34,26 @@ public class MinecraftMixin {
     )
     private void postScreenTick(CallbackInfo ci) {
         MinecraftForge.EVENT_BUS.post(new PostScreenTickEvent(screen));
+
+        if (screen instanceof AbstractContainerScreenMixinAccess access) {
+            if (access.gUITween$inCloseTween()) {
+                gUITween$screen = screen;
+                screen = null;
+            }
+        }
+    }
+
+    @Inject(
+            method = "tick",
+            at = @At(
+                    value = "RETURN"
+            )
+    )
+    private void restoreClosingScreen(CallbackInfo ci) {
+        if (gUITween$screen != null) {
+            screen = gUITween$screen;
+            gUITween$screen = null;
+        }
     }
 
     @Inject(

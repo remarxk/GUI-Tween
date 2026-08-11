@@ -30,11 +30,11 @@ public class CompatUtility {
         if (GUITweenUtility.openScreenName == null)
             return jeiTween;
 
-        if (!GUITween.CONFIG.isEnableJeiLeft())
+        if (!GUITween.CONFIG.isEnableJei())
             return jeiTween;
 
         float totalTick = Math.max(GUITween.CONFIG.jeiLeftMoveDuration, 1);
-        float progress = GUITweenUtility.openScreenTick / totalTick;
+        float progress = GUITweenUtility.jeiOpenTick / totalTick;
 
         if (progress > 1){
             return jeiTween;
@@ -57,11 +57,11 @@ public class CompatUtility {
         if (GUITweenUtility.openScreenName == null)
             return jeiTween;
 
-        if (!GUITween.CONFIG.isEnableJeiRight())
+        if (!GUITween.CONFIG.isEnableJei())
             return jeiTween;
 
         float totalTick = Math.max(GUITween.CONFIG.jeiRightMoveDuration, 1);
-        float progress = GUITweenUtility.openScreenTick / totalTick;
+        float progress = GUITweenUtility.jeiOpenTick / totalTick;
 
         if (progress > 1){
             return jeiTween;

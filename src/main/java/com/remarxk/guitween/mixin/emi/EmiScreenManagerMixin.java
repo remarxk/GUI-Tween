@@ -22,10 +22,10 @@ public class EmiScreenManagerMixin {
     )
     private static void renderSidebarPanel(EmiScreenManager.SidebarPanel instance, EmiDrawContext context, int mouseX, int mouseY, float delta) {
         if (GUITweenUtility.openScreenName != null) {
-            if (GUITween.CONFIG.isEnableJeiLeft()) {
+            if (GUITween.CONFIG.isEnableJei()) {
                 if (instance.side == SidebarSide.LEFT) {
                     float totalTick = Math.max(GUITween.CONFIG.jeiLeftMoveDuration, 1);
-                    float progress = GUITweenUtility.openScreenTick / totalTick;
+                    float progress = GUITweenUtility.jeiOpenTick / totalTick;
 
                     if (progress < 1){
                         EmiCompat.inTween = true;
@@ -48,7 +48,7 @@ public class EmiScreenManagerMixin {
                 }
                 else if (instance.side == SidebarSide.RIGHT) {
                     float totalTick = Math.max(GUITween.CONFIG.jeiRightMoveDuration, 1);
-                    float progress = GUITweenUtility.openScreenTick / totalTick;
+                    float progress = GUITweenUtility.jeiOpenTick / totalTick;
 
                     if (progress < 1){
                         EmiCompat.inTween = true;

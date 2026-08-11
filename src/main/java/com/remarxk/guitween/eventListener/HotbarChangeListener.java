@@ -5,10 +5,12 @@ import com.remarxk.guitween.GUITweenUtility;
 import com.remarxk.guitween.anim.Tween;
 import com.remarxk.guitween.anim.TweenPool;
 import com.remarxk.guitween.anim.UseTween;
+import com.remarxk.guitween.event.PlayGuiSoundEvent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -80,7 +82,7 @@ public class HotbarChangeListener {
                 }
 
                 if (GUITween.CONFIG.isEnableHoldItem()) {
-                    animTick = lastSelected >= 0 ? 0 : GUITween.CONFIG.getHoldItemTotalDuration();
+                    animTick = lastSelected >= 0 ? 0 : Math.max(GUITween.CONFIG.getSelectedItemNameDuration(), GUITween.CONFIG.getHoldItemTotalDuration());
                 }
                 lastSelected = index;
 
@@ -91,6 +93,7 @@ public class HotbarChangeListener {
                     Tween tween = hotbarAnimStateMap.getOrDefault(index, null);
                     if (tween == null) {
                         tween = TweenPool.getTween();
+                        tween.name = "zoomIn";
                         tween.tick = 0;
                         tween.totalTick = GUITween.CONFIG.holdZoomInDuration;
                         tween.ease = GUITween.CONFIG.holdZoomInEase.get();
@@ -117,8 +120,10 @@ public class HotbarChangeListener {
                 boolean curHasItem = selectedItem.getCount() > 0;
                 if (curHasItem != hasItem) {
                     hasItem = curHasItem;
-                    if (!hasItem)
+                    if (!hasItem) {
                         lackTick = 0;
+                        MinecraftForge.EVENT_BUS.post(new PlayGuiSoundEvent(PlayGuiSoundEvent.SoundType.LACK_ITEM));
+                    }
                 }
             }
         }

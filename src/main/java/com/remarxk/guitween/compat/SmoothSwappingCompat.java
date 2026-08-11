@@ -7,12 +7,12 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
 @Mod.EventBusSubscriber(modid = GUITween.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
-public class ImmersiveUICompat {
+public class SmoothSwappingCompat {
     public static boolean isLoaded = false;
 
     @SubscribeEvent
     public static void commonSetup(final FMLCommonSetupEvent event) {
-        if (ModList.get().isLoaded("immersiveui")) {
+        if (ModList.get().isLoaded("smoothswapping")) {
             isLoaded = true;
         }
     }

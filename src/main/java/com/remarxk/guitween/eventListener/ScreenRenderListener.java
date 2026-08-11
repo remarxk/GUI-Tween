@@ -14,13 +14,10 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.util.Mth;
-import net.minecraftforge.client.event.ContainerScreenEvent;
 import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-
-import java.util.HashSet;
 
 @Mod.EventBusSubscriber
 public class ScreenRenderListener {
@@ -52,18 +49,18 @@ public class ScreenRenderListener {
             return;
 
         String gUITween$screenName = access.getGUITween$screenName();
-        float gUITween$openTick = access.getGUITween$openTick();
 
-        GUITweenUtility.setOpenScreen(gUITween$screenName, gUITween$openTick);
+        GUITweenUtility.setOpenScreen(gUITween$screenName, GUITweenUtility.openScreenTick);
+        GUITweenUtility.jeiOpenTick = Math.max(GUITweenUtility.jeiOpenTick, GUITweenUtility.openScreenTick);
 
-        if (!GUITween.CONFIG.isEnableWindow())
+        if (!GUITween.CONFIG.isEnableWindow() && !access.gUITween$inCloseTween())
             return;
 
         if (access.getGUITween$isDisableScreenTween())
             return;
 
-        float moveProgress = gUITween$openTick / GUITween.CONFIG.windowMoveDuration;
-        float gradientProgress = gUITween$openTick / GUITween.CONFIG.windowGradientDuration;
+        float moveProgress = GUITweenUtility.openScreenTick / GUITween.CONFIG.windowMoveDuration;
+        float gradientProgress = GUITweenUtility.openScreenTick / GUITween.CONFIG.windowGradientDuration;
 
         if (moveProgress >= 1 && gradientProgress >= 1)
             return;
@@ -135,10 +132,12 @@ public class ScreenRenderListener {
         access.setGUITween$inTween(false);
 
         float sign = access.gUITween$inCloseTween() ? -GUITween.CONFIG.closeWindowSpeed : 1;
-        float openTick = Mth.clamp(access.getGUITween$openTick() + sign * GUITweenUtility.getDeltaTicks(),0, GUITween.CONFIG.getWindowTotalDuration());
-        access.setGUITween$openTick(openTick);
+        float openTick = Mth.clamp(GUITweenUtility.openScreenTick + sign * GUITweenUtility.getDeltaTicks(),0, GUITween.CONFIG.getWindowTotalDuration());
+        GUITweenUtility.openScreenTick = openTick;
 
-        if (sign < 0 && openTick <= 0) {
+        GUITweenUtility.jeiOpenTick = Mth.clamp(GUITweenUtility.jeiOpenTick + sign * GUITweenUtility.getDeltaTicks(), 0, GUITween.CONFIG.getJeiTotalDuration());
+
+        if (sign < 0 && openTick <= 0 && GUITweenUtility.jeiOpenTick <= 0) {
             access.gUITween$setNeedClose(true);
         }
     }

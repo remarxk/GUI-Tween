@@ -53,8 +53,9 @@ public abstract class ChatScreenMixin extends Screen {
             )
     )
     public void renderBefore(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
-        if (!GUITween.CONFIG.isEnableChat())
+        if (!GUITween.CONFIG.isEnableChat() && !gUITween$inCloseTween) {
             return;
+        }
 
         if (gUITween$openTick > GUITween.CONFIG.getChatOpenMaxDuration())
             return;
@@ -93,8 +94,12 @@ public abstract class ChatScreenMixin extends Screen {
 
     @Unique
     private boolean guiTween$playCloseTween(){
-        if (!GUITween.CONFIG.isEnableCloseChat() || !GUITween.CONFIG.isEnableChat())
+        if (!GUITween.CONFIG.isEnableCloseChat())
             return false;
+
+        if (!GUITween.CONFIG.isEnableChat()) {
+            gUITween$openTick = GUITween.CONFIG.getChatOpenMaxDuration();
+        }
 
         gUITween$inCloseTween = !gUITween$inCloseTween;
 

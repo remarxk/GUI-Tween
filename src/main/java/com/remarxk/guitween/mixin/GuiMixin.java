@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.remarxk.guitween.GUITween;
 import com.remarxk.guitween.GUITweenUtility;
+import com.remarxk.guitween.event.PlayGuiSoundEvent;
 import com.remarxk.guitween.eventListener.HotbarChangeListener;
 import com.remarxk.guitween.anim.AttackTween;
 import com.remarxk.guitween.anim.Tween;
@@ -18,6 +19,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.common.MinecraftForge;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -59,34 +61,41 @@ public class GuiMixin {
             return;
         }
 
-        float centerX = pX + 8;
-        float centerY = pY + 8;
+        if (!GUITween.CONFIG.isEnableSelectMove() || HotbarChangeListener.scrollDir == 0) {
+            float centerX = pX + 8;
+            float centerY = pY + 8;
 
-        float scale = TweenUtil.tween(tween.startValue, tween.stopValue, tween.tick, tween.totalTick, tween.ease);
+            float scale = TweenUtil.tween(tween.startValue, tween.stopValue, tween.tick, tween.totalTick, tween.ease);
 
-        float deltaTicks = GUITweenUtility.getDeltaTicks();
-        if (!tween.rewind) {
-            tween.tick += deltaTicks;
-            if (tween.tick >= tween.totalTick) {
-                if (tween.stopValue > 1) {
-                    tween.ease = GUITween.CONFIG.holdZoomOutEase.get();
-                    tween.tick = 0;
-                    tween.totalTick = GUITween.CONFIG.holdZoomOutDuration;
-                    tween.startValue = tween.stopValue;
-                    tween.stopValue = 1;
-                    tween.rewind = false;
+            if (!tween.rewind && tween.name.equals("zoomIn") && tween.tick == 0) {
+                MinecraftForge.EVENT_BUS.post(new PlayGuiSoundEvent(PlayGuiSoundEvent.SoundType.SELECT_ITEM));
+            }
+
+            float deltaTicks = GUITweenUtility.getDeltaTicks();
+            if (!tween.rewind) {
+                tween.tick += deltaTicks;
+                if (tween.tick >= tween.totalTick) {
+                    if (tween.stopValue > 1) {
+                        tween.name = "zoomOut";
+                        tween.ease = GUITween.CONFIG.holdZoomOutEase.get();
+                        tween.tick = 0;
+                        tween.totalTick = GUITween.CONFIG.holdZoomOutDuration;
+                        tween.startValue = tween.stopValue;
+                        tween.stopValue = 1;
+                        tween.rewind = false;
+                    }
                 }
             }
-        }
-        else {
-            tween.tick -= deltaTicks;
-        }
+            else {
+                tween.tick -= deltaTicks;
+            }
 
-        PoseStack poseStack = pGuiGraphics.pose();
-        poseStack.pushPose();
-        poseStack.translate(centerX, centerY, 0);
-        poseStack.scale(scale, scale, 1.0F);
-        poseStack.translate(-centerX, -centerY, 0);
+            PoseStack poseStack = pGuiGraphics.pose();
+            poseStack.pushPose();
+            poseStack.translate(centerX, centerY, 0);
+            poseStack.scale(scale, scale, 1.0F);
+            poseStack.translate(-centerX, -centerY, 0);
+        }
     }
 
     @Unique
@@ -173,8 +182,10 @@ public class GuiMixin {
         if (tween == null)
             return;
 
-        PoseStack poseStack = pGuiGraphics.pose();
-        poseStack.popPose();
+        if (!GUITween.CONFIG.isEnableSelectMove() || HotbarChangeListener.scrollDir == 0) {
+            PoseStack poseStack = pGuiGraphics.pose();
+            poseStack.popPose();
+        }
 
         if (tween.rewind) {
             if (tween.startValue <= 1 && tween.tick <= 0) {
