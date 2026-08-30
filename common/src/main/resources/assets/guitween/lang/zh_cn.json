@@ -3,6 +3,10 @@
 
   "guitween.config": "GUITween配置",
   "guitween.config.enable": "启用动画",
+  "guitween.config.style": "动画风格",
+  "guitween.config.style.enum.default": "默认",
+  "guitween.config.style.enum.simple": "简洁",
+  "guitween.config.style.enum.complete": "完整",
   "guitween.config.enableDebugWindow": "启用调试窗口",
 
   "guitween.config.windowGroup": "窗口动画",
@@ -17,13 +21,12 @@
   "guitween.config.enableCloseWindow": "启用关闭窗口动画",
   "guitween.config.closeWindowSpeed": "关闭窗口速度",
 
-  "guitween.config.enableJeiLeft": "启用JEI左侧动画",
+  "guitween.config.enableJei": "启用JEI面板动画",
   "guitween.config.jeiLeftMoveDuration": "JEI左侧移动时长",
   "guitween.config.jeiLeftMoveEase": "JEI左侧移动曲线",
   "guitween.config.jeiLeftMoveX": "JEI左侧移动X",
   "guitween.config.jeiLeftMoveY": "JEI左侧移动Y",
 
-  "guitween.config.enableJeiRight": "启用JEI右侧动画",
   "guitween.config.jeiRightMoveDuration": "JEI右侧移动时长",
   "guitween.config.jeiRightMoveEase": "JEI右侧移动曲线",
   "guitween.config.jeiRightMoveX": "JEI右侧移动X",
@@ -60,6 +63,20 @@
   "guitween.config.sameItemShakeWaitDuration": "抖动间隔",
 
   "guitween.config.enableQuick": "启用快速放置动画",
+
+  "guitween.config.enableMove": "启用移动动画",
+  "guitween.config.moveDuration": "移动动画时长",
+  "guitween.config.moveEase": "移动动画曲线",
+
+  "guitween.config.enableFinish": "启用完成动画",
+  "guitween.config.finishPunchStrength": "完成弹跳强度",
+  "guitween.config.finishDuration": "完成动画时长",
+
+  "guitween.config.enablePickup": "启用放置动画",
+  "guitween.config.pickupDuration": "放置动画时长",
+  "guitween.config.pickupEase": "放置动画曲线",
+
+  "guitween.config.quickCraftDuration": "快速放置动画时长",
 
   "guitween.config.hotbarGroup": "物品栏动画",
   "guitween.config.enableHoldItem": "启用选中物品动画",

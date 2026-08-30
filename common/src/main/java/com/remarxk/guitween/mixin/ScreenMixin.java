@@ -45,18 +45,17 @@ public abstract class ScreenMixin extends AbstractContainerEventHandler implemen
             CompatUtility.endOpenTween();
         }
 
-        GUITweenUtility.setOpenScreen(access.getGUITween$screenName(), access.getGUITween$openTick());
+        GUITweenUtility.setOpenScreen(access.getGUITween$screenName(), GUITweenUtility.openScreenTick);
+        GUITweenUtility.jeiOpenTick = Math.max(GUITweenUtility.jeiOpenTick, GUITweenUtility.openScreenTick);
 
-        if (!GUITweenConfig.isEnableWindow())
+        if (!GUITweenConfig.isEnableWindow() && !access.gUITween$inCloseTween())
             return;
 
         if (access.getGUITween$isDisableScreenTween())
             return;
 
-        float gUITween$openTick = access.getGUITween$openTick();
-
-        float moveProgress = gUITween$openTick / GUITweenConfig.windowMoveDuration();
-        float gradientProgress = gUITween$openTick / GUITweenConfig.windowGradientDuration();
+        float moveProgress = GUITweenUtility.openScreenTick / GUITweenConfig.windowMoveDuration();
+        float gradientProgress = GUITweenUtility.openScreenTick / GUITweenConfig.windowGradientDuration();
 
         if (moveProgress >= 1 && gradientProgress >= 1)
             return;

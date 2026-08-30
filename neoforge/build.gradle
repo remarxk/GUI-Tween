@@ -52,16 +52,16 @@ repositories {
 }
 
 dependencies {
-    compileOnly "curse.maven:jei-238222:8283788"
-//    runtimeOnly "curse.maven:jei-238222:8283788"
+    compileOnly "curse.maven:jei-238222:8767596"
+    runtimeOnly "curse.maven:jei-238222:8767596"
 
     compileOnly "curse.maven:roughly-enough-items-310111:8271756"
-    runtimeOnly "curse.maven:roughly-enough-items-310111:8271756"
+//    runtimeOnly "curse.maven:roughly-enough-items-310111:8271756"
 
     compileOnly "curse.maven:architectury-api-419699:8268578"
-    runtimeOnly "curse.maven:architectury-api-419699:8268578"
+//    runtimeOnly "curse.maven:architectury-api-419699:8268578"
 
-    runtimeOnly "curse.maven:cloth-config-348521:8269700"
+//    runtimeOnly "curse.maven:cloth-config-348521:8269700"
 }
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }

@@ -1,5 +1,7 @@
 package com.remarxk.guitween.config;
 
+import com.remarxk.guitween.anim.GUITweenStyle;
+import com.remarxk.guitween.compat.SmoothSwappingCompat;
 import com.remarxk.guitween.util.Ease;
 import java.util.List;
 
@@ -22,23 +24,42 @@ public final class GUITweenConfig {
         return DELEGATE;
     }
 
+    private static GUITweenStyle lastAppliedStyle;
+
+    public static void checkStyleUpdate() {
+        GUITweenStyle currentStyle = style();
+
+        if (lastAppliedStyle == null) {
+            lastAppliedStyle = currentStyle;
+            return;
+        }
+
+        if (currentStyle != lastAppliedStyle) {
+            lastAppliedStyle = currentStyle;
+            applyStylePreset(currentStyle);
+        }
+    }
+
+    public static void applyStylePreset(GUITweenStyle newStyle) {
+        cfg().applyStylePreset(newStyle);
+    }
+
     // ===== root =====
     public static boolean enable() { return cfg().enable(); }
     public static boolean enableDebugWindow() { return cfg().enableDebugWindow(); }
     public static boolean isEnableDebugWindow() {
         return cfg().isEnableDebugWindow();
     }
+    public static GUITweenStyle style() { return cfg().style(); }
 
     // ===== window =====
     public static boolean enableWindow() { return cfg().enableWindow(); }
     public static boolean enableCloseWindow() { return cfg().enableCloseWindow(); }
-    public static boolean enableJeiLeft() { return cfg().enableJeiLeft(); }
-    public static boolean enableJeiRight() { return cfg().enableJeiRight(); }
+    public static boolean enableJei() { return cfg().enableJei(); }
 
     public static boolean isEnableWindow() { return cfg().isEnableWindow(); }
     public static boolean isEnableCloseWindow() { return cfg().isEnableCloseWindow(); }
-    public static boolean isEnableJeiLeft() { return cfg().isEnableJeiLeft(); }
-    public static boolean isEnableJeiRight() { return cfg().isEnableJeiRight(); }
+    public static boolean isEnableJei() { return cfg().isEnableJei(); }
 
     public static float windowMoveDuration() { return cfg().windowMoveDuration(); }
     public static Ease windowMoveEase() { return cfg().windowMoveEase(); }
@@ -58,6 +79,7 @@ public final class GUITweenConfig {
     public static List<String> disableNames() { return cfg().disableNames(); }
     public static boolean isDisableTweenWindow(String name) { return cfg().isDisableTweenWindow(name); }
     public static float getWindowTotalDuration() { return cfg().getWindowTotalDuration(); }
+    public static float getJeiTotalDuration() { return cfg().getJeiTotalDuration(); }
 
     // ===== screen item =====
     public static boolean enableHover() { return cfg().enableHover(); }
@@ -67,6 +89,9 @@ public final class GUITweenConfig {
     public static boolean enableDrag() { return cfg().enableDrag(); }
     public static boolean enableSameItem() { return cfg().enableSameItem(); }
     public static boolean enableQuick() { return cfg().enableQuick(); }
+    public static boolean enableMove() { return cfg().enableMove(); }
+    public static boolean enableFinish() { return cfg().enableFinish(); }
+    public static boolean enablePickup() { return cfg().enablePickup(); }
 
     public static boolean isEnableHoverItem() { return cfg().isEnableHoverItem(); }
     public static boolean isEnableTooltip() { return cfg().isEnableTooltip(); }
@@ -75,6 +100,9 @@ public final class GUITweenConfig {
     public static boolean isEnableDragItem() { return cfg().isEnableDragItem(); }
     public static boolean isEnableSameItem() { return cfg().isEnableSameItem(); }
     public static boolean isEnableQuickCraft() { return cfg().isEnableQuickCraft(); }
+    public static boolean isEnableMoveItem() { return cfg().isEnableMoveItem() && !SmoothSwappingCompat.isLoaded; }
+    public static boolean isEnableFinishItem() { return cfg().isEnableFinishItem(); }
+    public static boolean isEnablePickupItem() { return cfg().isEnablePickupItem(); }
 
     public static float hoverDuration() { return cfg().hoverDuration(); }
     public static Ease hoverEase() { return cfg().hoverEase(); }
@@ -99,6 +127,14 @@ public final class GUITweenConfig {
     public static float sameItemShakeFrequency() { return cfg().sameItemShakeFrequency(); }
     public static float sameItemShakeWaitDuration() { return cfg().sameItemShakeWaitDuration(); }
     public static float getSameItemTotalDuration() { return cfg().getSameItemTotalDuration(); }
+
+    public static float moveDuration() { return cfg().moveDuration(); }
+    public static Ease moveEase() { return cfg().moveEase(); }
+    public static float finishPunchStrength() { return cfg().finishPunchStrength(); }
+    public static float finishDuration() { return cfg().finishDuration(); }
+    public static float pickupDuration() { return cfg().pickupDuration(); }
+    public static Ease pickupEase() { return cfg().pickupEase(); }
+    public static float quickCraftDuration() { return cfg().quickCraftDuration(); }
 
     // ===== hotbar =====
     public static boolean enableHoldItem() { return cfg().enableHoldItem(); }

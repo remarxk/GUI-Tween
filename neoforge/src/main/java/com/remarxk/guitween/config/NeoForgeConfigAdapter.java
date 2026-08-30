@@ -1,5 +1,6 @@
 package com.remarxk.guitween.config;
 
+import com.remarxk.guitween.anim.GUITweenStyle;
 import com.remarxk.guitween.util.Ease;
 
 import java.util.ArrayList;
@@ -14,10 +15,19 @@ public class NeoForgeConfigAdapter implements IGUITweenConfig {
         return NeoforgeGUITweenConfig.isEnableDebugWindow();
     }
 
+    @Override
+    public GUITweenStyle style() {
+        return NeoforgeGUITweenConfig.style.get();
+    }
+
+    @Override
+    public void applyStylePreset(GUITweenStyle newStyle) {
+        NeoforgeGUITweenConfig.applyStylePreset(newStyle);
+    }
+
     @Override public boolean enableWindow() { return NeoforgeGUITweenConfig.window.enable.get(); }
     @Override public boolean enableCloseWindow() { return NeoforgeGUITweenConfig.window.enableCloseWindow.get(); }
-    @Override public boolean enableJeiLeft() { return NeoforgeGUITweenConfig.window.enableJeiLeft.get(); }
-    @Override public boolean enableJeiRight() { return NeoforgeGUITweenConfig.window.enableJeiRight.get(); }
+    @Override public boolean enableJei() { return NeoforgeGUITweenConfig.window.enableJei.get(); }
 
     @Override public float windowMoveDuration() { return NeoforgeGUITweenConfig.window.moveDuration.get().floatValue(); }
 
@@ -156,6 +166,29 @@ public class NeoForgeConfigAdapter implements IGUITweenConfig {
 
     @Override public boolean enableSameItem() { return NeoforgeGUITweenConfig.windowItem.enableSameItem.get(); }
     @Override public boolean enableQuick() { return NeoforgeGUITweenConfig.windowItem.enableQuick.get(); }
+    @Override public boolean enableMove() { return NeoforgeGUITweenConfig.windowItem.enableMove.get(); }
+    @Override public boolean enableFinish() { return NeoforgeGUITweenConfig.windowItem.enableFinish.get(); }
+    @Override public boolean enablePickup() { return NeoforgeGUITweenConfig.windowItem.enablePickup.get(); }
+
+    @Override public float moveDuration() { return NeoforgeGUITweenConfig.windowItem.moveDuration.get().floatValue(); }
+
+    @Override
+    public Ease moveEase() {
+        return NeoforgeGUITweenConfig.windowItem.moveEase.get();
+    }
+
+    @Override public float finishPunchStrength() { return NeoforgeGUITweenConfig.windowItem.finishPunchStrength.get().floatValue(); }
+
+    @Override public float finishDuration() { return NeoforgeGUITweenConfig.windowItem.finishDuration.get().floatValue(); }
+
+    @Override public float pickupDuration() { return NeoforgeGUITweenConfig.windowItem.pickupDuration.get().floatValue(); }
+
+    @Override
+    public Ease pickupEase() {
+        return NeoforgeGUITweenConfig.windowItem.pickupEase.get();
+    }
+
+    @Override public float quickCraftDuration() { return NeoforgeGUITweenConfig.windowItem.quickCraftDuration.get().floatValue(); }
 
     @Override public float sameItemDelay() { return NeoforgeGUITweenConfig.windowItem.sameItemDelay.get().floatValue(); }
 

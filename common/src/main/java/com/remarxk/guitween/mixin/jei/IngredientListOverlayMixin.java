@@ -17,30 +17,31 @@ public class IngredientListOverlayMixin {
     private boolean gUITween$inTween;
 
     @Inject(
-            method = "drawScreen",
+            method = "drawForeground",
             at = @At(
                     value = "HEAD"
-            )
+            ),
+            require = 0
     )
-    public void drawScreenBefore(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
+    public void drawForegroundBefore(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
         CompatUtility.JeiTween jeiTween = CompatUtility.getJeiRightTween();
         if (jeiTween.inTween) {
             gUITween$inTween = true;
 
             Matrix3x2fStack poseStack = guiGraphics.pose();
             poseStack.pushMatrix();
-
             poseStack.translate(jeiTween.dx, jeiTween.dy);
         }
     }
 
     @Inject(
-            method = "drawScreen",
+            method = "drawForeground",
             at = @At(
                     value = "TAIL"
-            )
+            ),
+            require = 0
     )
-    public void drawScreenAfter(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
+    public void drawForegroundAfter(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
         if (!gUITween$inTween) {
             return;
         }

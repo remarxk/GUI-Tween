@@ -24,18 +24,18 @@ public class ScreenRenderListener {
         }
 
         String gUITween$screenName = access.getGUITween$screenName();
-        float gUITween$openTick = access.getGUITween$openTick();
 
-        GUITweenUtility.setOpenScreen(gUITween$screenName, gUITween$openTick);
+        GUITweenUtility.setOpenScreen(gUITween$screenName, GUITweenUtility.openScreenTick);
+        GUITweenUtility.jeiOpenTick = Math.max(GUITweenUtility.jeiOpenTick, GUITweenUtility.openScreenTick);
 
-        if (!GUITweenConfig.isEnableWindow())
+        if (!GUITweenConfig.isEnableWindow() && !access.gUITween$inCloseTween())
             return;
 
         if (access.getGUITween$isDisableScreenTween())
             return;
 
-        float moveProgress = gUITween$openTick / GUITweenConfig.windowMoveDuration();
-        float gradientProgress = gUITween$openTick / GUITweenConfig.windowGradientDuration();
+        float moveProgress = GUITweenUtility.openScreenTick / GUITweenConfig.windowMoveDuration();
+        float gradientProgress = GUITweenUtility.openScreenTick / GUITweenConfig.windowGradientDuration();
 
         if (moveProgress >= 1 && gradientProgress >= 1)
             return;
@@ -97,10 +97,12 @@ public class ScreenRenderListener {
         access.setGUITween$inTween(false);
 
         float sign = access.gUITween$inCloseTween() ? -GUITweenConfig.closeWindowSpeed() : 1;
-        float openTick = Mth.clamp(access.getGUITween$openTick() + sign * GUITweenUtility.getDeltaTicks(),0, GUITweenConfig.getWindowTotalDuration());
-        access.setGUITween$openTick(openTick);
+        float openTick = Mth.clamp(GUITweenUtility.openScreenTick + sign * GUITweenUtility.getDeltaTicks(),0, GUITweenConfig.getWindowTotalDuration());
+        GUITweenUtility.openScreenTick = openTick;
 
-        if (sign < 0 && openTick <= 0) {
+        GUITweenUtility.jeiOpenTick = Mth.clamp(GUITweenUtility.jeiOpenTick + sign * GUITweenUtility.getDeltaTicks(), 0, GUITweenConfig.getJeiTotalDuration());
+
+        if (sign < 0 && openTick <= 0 && GUITweenUtility.jeiOpenTick <= 0) {
             access.gUITween$setNeedClose(true);
         }
     }

@@ -17,12 +17,13 @@ public class BookmarkOverlayMixin {
     private boolean gUITween$inTween;
 
     @Inject(
-            method = "drawScreen",
+            method = "drawForeground",
             at = @At(
                     value = "HEAD"
-            )
+            ),
+            require = 0
     )
-    public void drawScreenBefore(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
+    public void drawForegroundBefore(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
         CompatUtility.JeiTween jeiTween = CompatUtility.getJeiLeftTween();
         if (jeiTween.inTween) {
             gUITween$inTween = true;
@@ -34,12 +35,13 @@ public class BookmarkOverlayMixin {
     }
 
     @Inject(
-            method = "drawScreen",
+            method = "drawForeground",
             at = @At(
                     value = "TAIL"
-            )
+            ),
+            require = 0
     )
-    public void drawScreenAfter(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
+    public void drawForegroundAfter(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
         if (!gUITween$inTween) {
             return;
         }

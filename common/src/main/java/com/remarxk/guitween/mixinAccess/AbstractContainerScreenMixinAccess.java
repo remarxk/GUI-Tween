@@ -1,7 +1,7 @@
 package com.remarxk.guitween.mixinAccess;
 
 import com.remarxk.guitween.anim.Tween;
-import com.remarxk.guitween.util.Tuple;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
@@ -18,10 +18,6 @@ public interface AbstractContainerScreenMixinAccess {
 
     public void setGUITween$inTween(boolean inScale);
 
-    public float getGUITween$openTick();
-
-    public void setGUITween$openTick(float openTick);
-
     public Slot getGUITween$lastHoverSlot();
 
     public void setGUITween$lastHoverSlot(Slot slot);
@@ -36,11 +32,9 @@ public interface AbstractContainerScreenMixinAccess {
 
     public void setGUITween$tooltipShowTick(float tick);
 
-    public HashMap<Slot, Tuple<Integer, Integer>> getGUITween$quickTweenSlots();
-
-    public HashMap<Slot, Float> getGUITween$quickTicks();
-
     public ItemStack gUITween$getDraggingItem();
+
+    public void gUITween$renderFloatingItem(GuiGraphicsExtractor guiGraphics, ItemStack stack, int x, int y, String text);
 
     public ItemStack getGUITween$lastDraggingItem();
 

@@ -2,6 +2,7 @@ package com.remarxk.guitween.config;
 
 import com.remarxk.guitween.Constants;
 import com.remarxk.guitween.GUITween;
+import com.remarxk.guitween.anim.GUITweenStyle;
 import com.remarxk.guitween.util.Ease;
 import me.fzzyhmstrs.fzzy_config.annotations.Translation;
 import me.fzzyhmstrs.fzzy_config.config.Config;
@@ -11,6 +12,7 @@ import me.fzzyhmstrs.fzzy_config.validation.misc.ValidatedChoice.WidgetType;
 import me.fzzyhmstrs.fzzy_config.validation.misc.ValidatedEnum;
 import net.minecraft.resources.Identifier;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 
@@ -18,7 +20,13 @@ import java.util.List;
 public class FabricGUITweenConfig extends Config {
     public final static List<Ease> EASE_LIST = Arrays.stream(Ease.values()).toList();
 
+    public final static List<GUITweenStyle> STYLE_LIST = Arrays.stream(GUITweenStyle.values()).toList();
+
+    private static final FabricGUITweenConfig DEFAULTS = new FabricGUITweenConfig();
+
     public boolean enable = true;
+
+    public ValidatedChoice<GUITweenStyle> style = new ValidatedChoice<>(GUITweenStyle.DEFAULT, STYLE_LIST, new ValidatedEnum(GUITweenStyle.class), WidgetType.SCROLLABLE);
 
     public boolean enableDebugWindow = false;
 
@@ -43,7 +51,7 @@ public class FabricGUITweenConfig extends Config {
 
     public float closeWindowSpeed = 1.5f;
 
-    public boolean enableJeiLeft = true;
+    public boolean enableJei = true;
 
     public float jeiLeftMoveDuration = 6f;
 
@@ -52,8 +60,6 @@ public class FabricGUITweenConfig extends Config {
     public float jeiLeftMoveX = -50f;
 
     public float jeiLeftMoveY = 0f;
-
-    public boolean enableJeiRight = true;
 
     public float jeiRightMoveDuration = 6f;
 
@@ -111,8 +117,28 @@ public class FabricGUITweenConfig extends Config {
 
     public float sameItemShakeWaitDuration = 20f;
 
-    @ConfigGroup.Pop
     public boolean enableQuick = true;
+
+    public boolean enableMove = true;
+
+    public float moveDuration = 6;
+
+    public ValidatedChoice<Ease> moveEase = new ValidatedChoice<>(Ease.IN_OUT_SINE, EASE_LIST, new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
+
+    public boolean enableFinish = true;
+
+    public float finishPunchStrength = 0.2f;
+
+    public float finishDuration = 6;
+
+    public boolean enablePickup = true;
+
+    public float pickupDuration = 4;
+
+    public ValidatedChoice<Ease> pickupEase = new ValidatedChoice<>(Ease.IN_OUT_SINE, EASE_LIST, new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
+
+    @ConfigGroup.Pop
+    public float quickCraftDuration = 4;
 
     public ConfigGroup hotbarGroup = new ConfigGroup("hotbar tween");
     public boolean enableHoldItem = true;
@@ -236,9 +262,11 @@ public class FabricGUITweenConfig extends Config {
     }
 
     public float getWindowTotalDuration() {
-        float windowMaxDuration = Math.max(windowMoveDuration, windowGradientDuration);
-        float jeiMaxDuration = Math.max(jeiLeftMoveDuration, jeiRightMoveDuration);
-        return Math.max(windowMaxDuration, jeiMaxDuration);
+        return Math.max(windowMoveDuration, windowGradientDuration);
+    }
+
+    public float getJeiTotalDuration() {
+        return Math.max(jeiLeftMoveDuration, jeiRightMoveDuration);
     }
 
     public float getHoldItemTotalDuration() {
@@ -277,12 +305,8 @@ public class FabricGUITweenConfig extends Config {
         return isEnable() && enableCloseWindow;
     }
 
-    public boolean isEnableJeiLeft() {
-        return isEnable() && enableJeiLeft;
-    }
-
-    public boolean isEnableJeiRight() {
-        return isEnable() && enableJeiRight;
+    public boolean isEnableJei() {
+        return isEnable() && enableJei;
     }
 
     public boolean isEnableDebugWindow() {
@@ -315,6 +339,18 @@ public class FabricGUITweenConfig extends Config {
 
     public boolean isEnableQuickCraft() {
         return isEnable() && enableQuick;
+    }
+
+    public boolean isEnableMoveItem() {
+        return isEnable() && enableMove;
+    }
+
+    public boolean isEnableFinishItem() {
+        return isEnable() && enableFinish;
+    }
+
+    public boolean isEnablePickupItem() {
+        return isEnable() && enablePickup;
     }
 
     public boolean isEnableHoldItem() {
@@ -359,5 +395,72 @@ public class FabricGUITweenConfig extends Config {
 
     public boolean isEnableChatComp() {
         return isEnable() && enableChatComp;
+    }
+
+    public void applyStylePreset(GUITweenStyle newStyle) {
+        resetToDefaults();
+        enableDebugWindow = false;
+
+        switch (newStyle) {
+            case SIMPLE -> {
+                applySimpleStyle();
+            }
+            case COMPLETE -> {
+                applyCompleteStyle();
+            }
+        }
+
+        save();
+    }
+
+    private void applySimpleStyle() {
+        windowMoveEase.accept(Ease.OUT_QUART);
+        jeiLeftMoveEase.accept(Ease.OUT_QUART);
+        jeiRightMoveEase.accept(Ease.OUT_QUART);
+
+        enableSameItem = false;
+        enableClickItem = false;
+        enableFinish = false;
+        enableDrag = false;
+    }
+
+    private void applyCompleteStyle() {
+        enableCloseWindow = true;
+    }
+
+    private static GUITweenStyle lastAppliedStyle;
+
+    @Override
+    public void onUpdateClient() {
+        GUITweenStyle currentStyle = style.get();
+
+        if (lastAppliedStyle == null) {
+            lastAppliedStyle = currentStyle;
+            return;
+        }
+
+        if (currentStyle != lastAppliedStyle) {
+            lastAppliedStyle = currentStyle;
+            applyStylePreset(currentStyle);
+        }
+    }
+
+    private void resetToDefaults() {
+        for (Field field : FabricGUITweenConfig.class.getDeclaredFields()) {
+            try {
+                if (java.lang.reflect.Modifier.isStatic(field.getModifiers()))
+                    continue;
+                if (field.getName().equals("style"))
+                    continue;
+                field.setAccessible(true);
+                Object value = field.get(this);
+                if (value instanceof me.fzzyhmstrs.fzzy_config.validation.ValidatedField<?> validated) {
+                    validated.restore();
+                } else {
+                    field.set(this, field.get(DEFAULTS));
+                }
+            } catch (IllegalAccessException ignored) {
+            }
+        }
     }
 }

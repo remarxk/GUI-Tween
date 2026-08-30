@@ -7,6 +7,7 @@ import com.remarxk.guitween.anim.Tween;
 import com.remarxk.guitween.anim.TweenPool;
 import com.remarxk.guitween.anim.UseTween;
 import com.remarxk.guitween.config.GUITweenConfig;
+import com.remarxk.guitween.event.PlayGuiSoundEvent;
 import com.remarxk.guitween.eventListener.HotbarChangeListener;
 import com.remarxk.guitween.util.TweenUtil;
 import net.minecraft.client.DeltaTracker;
@@ -43,8 +44,12 @@ public class HudMixin {
 
         if (GUITweenConfig.isEnableHoldItem()) {
             Tween tween = HotbarChangeListener.hotbarAnimStateMap.getOrDefault(slot, null);
-            if (tween != null) {
+            if (tween != null && (!GUITweenConfig.isEnableSelectMove() || HotbarChangeListener.scrollDir == 0)) {
                 hasTween = true;
+
+                if (!tween.rewind && tween.name.equals("zoomIn") && tween.tick == 0) {
+                    PlayGuiSoundEvent.post(new PlayGuiSoundEvent(PlayGuiSoundEvent.SoundType.SELECT_ITEM));
+                }
 
                 scale = TweenUtil.tween(tween.startValue, tween.stopValue, tween.tick, tween.totalTick, tween.ease);
 
@@ -151,7 +156,7 @@ public class HudMixin {
         if (GUITweenConfig.isEnableHoldItem()) {
             int slot = seed - 1;
             Tween tween = HotbarChangeListener.hotbarAnimStateMap.getOrDefault(slot, null);
-            if (tween != null) {
+            if (tween != null && (!GUITweenConfig.isEnableSelectMove() || HotbarChangeListener.scrollDir == 0)) {
                 hasTween = true;
 
                 if (tween.rewind) {
@@ -172,6 +177,7 @@ public class HudMixin {
                             HotbarChangeListener.hotbarAnimStateMap.remove(slot);
                         }
                         else {
+                            tween.name = "zoomOut";
                             tween.ease = GUITweenConfig.holdZoomOutEase();
                             tween.tick = 0;
                             tween.totalTick = GUITweenConfig.holdZoomOutDuration();
