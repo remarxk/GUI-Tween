@@ -1,9 +1,9 @@
 package com.remarxk.guitween.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import com.remarxk.guitween.GUITween;
 import com.remarxk.guitween.GUITweenUtility;
 import com.remarxk.guitween.anim.ContainerItemTween;
+import com.remarxk.guitween.config.GUITweenConfig;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.world.entity.player.Player;
@@ -31,11 +31,13 @@ public class MultiPlayerGameModeMixin {
             )
     )
     private void handleInventoryMouseClickBefore(int containerId, int slotId, int mouseButton, ClickType clickType, Player player, CallbackInfo ci, @Local List<ItemStack> list, @Local Int2ObjectMap<ItemStack> int2objectmap) {
+        if (!GUITweenConfig.isEnableMoveItem()) {
+            return;
+        }
+
         AbstractContainerMenu menu = player.containerMenu;
 
         ContainerItemTween tween = GUITweenUtility.getMoveItemTween();
-
-        GUITween.LOGGER.info("背包交互:{}", slotId);
 
         switch (clickType) {
             case QUICK_MOVE -> {

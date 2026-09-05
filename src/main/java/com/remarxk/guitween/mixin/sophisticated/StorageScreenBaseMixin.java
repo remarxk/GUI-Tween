@@ -444,6 +444,10 @@ public abstract class StorageScreenBaseMixin<S extends StorageContainerMenuBase<
                                                  @Local(index = 5) List<ItemStack> inventoryItems,
                                                  @Local(index = 6) List<ItemStack> upgradeItems,
                                                  @Local(index = 7) Int2ObjectMap<ItemStack> changedSlotIndexes) {
+        if (!GUITweenConfig.isEnableMoveItem()) {
+            return;
+        }
+
         ContainerItemTween tween = GUITweenUtility.getMoveItemTween();
 
         switch (type) {

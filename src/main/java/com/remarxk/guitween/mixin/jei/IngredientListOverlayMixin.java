@@ -2,6 +2,7 @@ package com.remarxk.guitween.mixin.jei;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.remarxk.guitween.compat.CompatUtility;
+import com.remarxk.guitween.util.DebugUtil;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -17,12 +18,12 @@ public class IngredientListOverlayMixin {
     private boolean gUITween$inTween;
 
     @Inject(
-            method = "drawScreen",
+            method = "drawForeground",
             at = @At(
                     value = "HEAD"
             )
     )
-    public void drawScreenBefore(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
+    public void drawForegroundBefore(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
         CompatUtility.JeiTween jeiTween = CompatUtility.getJeiRightTween();
         if (!jeiTween.inTween)
             return;
@@ -35,12 +36,47 @@ public class IngredientListOverlayMixin {
     }
 
     @Inject(
-            method = "drawScreen",
+            method = "drawForeground",
             at = @At(
                     value = "TAIL"
             )
     )
-    public void drawScreenAfter(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
+    public void drawForegroundAfter(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
+        if (!gUITween$inTween) {
+            return;
+        }
+
+        gUITween$inTween = false;
+
+        PoseStack poseStack = guiGraphics.pose();
+        poseStack.popPose();
+    }
+
+    @Inject(
+            method = "drawOnForeground",
+            at = @At(
+                    value = "HEAD"
+            )
+    )
+    public void drawOnForegroundBefore(GuiGraphics guiGraphics, int mouseX, int mouseY, CallbackInfo ci) {
+        CompatUtility.JeiTween jeiTween = CompatUtility.getJeiRightTween();
+        if (!jeiTween.inTween)
+            return;
+
+        gUITween$inTween = true;
+
+        PoseStack poseStack = guiGraphics.pose();
+        poseStack.pushPose();
+        poseStack.translate(jeiTween.dx, jeiTween.dy, 0);
+    }
+
+    @Inject(
+            method = "drawOnForeground",
+            at = @At(
+                    value = "TAIL"
+            )
+    )
+    public void drawOnForegroundAfter(GuiGraphics guiGraphics, int mouseX, int mouseY, CallbackInfo ci) {
         if (!gUITween$inTween) {
             return;
         }

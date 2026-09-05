@@ -2,6 +2,7 @@ package com.remarxk.guitween.config;
 
 import com.remarxk.guitween.util.Ease;
 import com.remarxk.guitween.anim.GUITweenStyle;
+import com.remarxk.guitween.compat.SmoothSwappingCompat;
 import com.electronwill.nightconfig.core.Config;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
@@ -90,7 +91,15 @@ public class GUITweenConfig {
     }
 
     public static float getJeiTotalDuration() {
-        return Math.max(window.jeiLeftMoveDuration.get().floatValue(), window.jeiRightMoveDuration.get().floatValue());
+        return window.jeiMoveDuration.get().floatValue();
+    }
+
+    public static float getCloseWindowTotalDuration() {
+        return Math.max(window.closeMoveDuration.get().floatValue(), window.closeGradientDuration.get().floatValue());
+    }
+
+    public static float getCloseJeiTotalDuration() {
+        return window.closeJeiMoveDuration.get().floatValue();
     }
 
     public static float getHoldItemTotalDuration() {
@@ -151,8 +160,9 @@ public class GUITweenConfig {
 
     private static void applySimpleStyle() {
         window.moveEase.set(Ease.OUT_QUART);
-        window.jeiLeftMoveEase.set(Ease.OUT_QUART);
-        window.jeiRightMoveEase.set(Ease.OUT_QUART);
+        window.closeMoveEase.set(Ease.OUT_QUART);
+        window.jeiMoveEase.set(Ease.OUT_QUART);
+        window.closeJeiMoveEase.set(Ease.OUT_QUART);
 
         windowItem.enableSameItem.set(false);
         windowItem.enableClickItem.set(false);
@@ -228,7 +238,7 @@ public class GUITweenConfig {
     }
 
     public static boolean isEnableMoveItem() {
-        return isEnable() && windowItem.enableMove.get();
+        return isEnable() && windowItem.enableMove.get() && !SmoothSwappingCompat.isLoaded;
     }
 
     public static boolean isEnableFinishItem() {

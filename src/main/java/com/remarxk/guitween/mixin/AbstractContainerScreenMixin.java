@@ -18,6 +18,7 @@ import com.remarxk.guitween.util.Ease;
 import com.remarxk.guitween.util.Tuple;
 import com.remarxk.guitween.util.TweenUtil;
 import net.minecraft.client.gui.screens.inventory.tooltip.TooltipRenderUtil;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -248,9 +249,10 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
 
         gUITween$inClosingTween = !gUITween$inClosingTween;
 
-        if (gUITween$inClosingTween && !GUITweenConfig.isEnableWindow()) {
-            GUITweenUtility.openScreenTick = GUITweenConfig.getWindowTotalDuration();
-            GUITweenUtility.jeiOpenTick = GUITweenConfig.getJeiTotalDuration();
+        if (gUITween$inClosingTween) {
+            // 关闭动画从“居中/完全可见”状态开始，走完全独立的关闭计时与偏移参数
+            GUITweenUtility.startCloseWindowTween();
+            KeyMapping.setAll();
         }
 
         return gUITween$inClosingTween;
@@ -447,23 +449,48 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
         GUITweenUtility.setOpenScreen(gUITween$screenName, GUITweenUtility.openScreenTick);
         GUITweenUtility.jeiOpenTick = Math.max(GUITweenUtility.jeiOpenTick, GUITweenUtility.openScreenTick);
 
-        if (!GUITweenConfig.isEnableWindow() && !gUITween$inClosingTween)
+        boolean closing = gUITween$inClosingTween;
+        GUITweenUtility.isWindowClosing = closing;
+        if (!GUITweenConfig.isEnableWindow() && !closing)
             return;
 
         if (gUITween$isDisableScreenTween)
             return;
 
-        float moveProgress = GUITweenUtility.openScreenTick / GUITweenConfig.window.moveDuration.get().floatValue();
-        float gradientProgress = GUITweenUtility.openScreenTick / GUITweenConfig.window.gradientDuration.get().floatValue();
+        float dx;
+        float dy;
+        float alpha;
+        float moveProgress;
+        float gradientProgress;
 
-        if (moveProgress >= 1 && gradientProgress >= 1)
-            return;
+        if (closing) {
+            // 独立的关闭动画：从居中位置向 closeMoveX/Y 移动，渐变 alpha 从 1 到 0
+            float total = GUITweenConfig.getCloseWindowTotalDuration();
+            float elapsed = Math.max(0, total - GUITweenUtility.closeScreenTick);
+            moveProgress = GUITweenConfig.window.closeMoveDuration.get().floatValue() <= 0
+                    ? 1
+                    : Math.min(1, elapsed / GUITweenConfig.window.closeMoveDuration.get().floatValue());
+            gradientProgress = GUITweenConfig.window.closeGradientDuration.get().floatValue() <= 0
+                    ? 1
+                    : Math.min(1, elapsed / GUITweenConfig.window.closeGradientDuration.get().floatValue());
+
+            dx = TweenUtil.tween(0, GUITweenConfig.window.closeMoveX.get().floatValue(), moveProgress, GUITweenConfig.window.closeMoveEase.get());
+            dy = TweenUtil.tween(0, GUITweenConfig.window.closeMoveY.get().floatValue(), moveProgress, GUITweenConfig.window.closeMoveEase.get());
+            alpha = TweenUtil.tween(1, 0, gradientProgress, GUITweenConfig.window.closeGradientEase.get());
+        }
+        else {
+            moveProgress = GUITweenUtility.openScreenTick / GUITweenConfig.window.moveDuration.get().floatValue();
+            gradientProgress = GUITweenUtility.openScreenTick / GUITweenConfig.window.gradientDuration.get().floatValue();
+
+            if (moveProgress >= 1 && gradientProgress >= 1)
+                return;
+
+            dx = TweenUtil.tween(GUITweenConfig.window.moveX.get().floatValue(), 0, moveProgress, GUITweenConfig.window.moveEase.get());
+            dy = TweenUtil.tween(GUITweenConfig.window.moveY.get().floatValue(), 0, moveProgress, GUITweenConfig.window.moveEase.get());
+            alpha = TweenUtil.tween(GUITweenUtility.fFontMinAlpha, 1, gradientProgress, GUITweenConfig.window.gradientEase.get());
+        }
 
         gUiTween$inTween = true;
-
-        float dx = TweenUtil.tween(GUITweenConfig.window.moveX.get().floatValue(), 0, moveProgress, GUITweenConfig.window.moveEase.get());
-        float dy = TweenUtil.tween(GUITweenConfig.window.moveY.get().floatValue(), 0, moveProgress, GUITweenConfig.window.moveEase.get());
-        float alpha = TweenUtil.tween(GUITweenUtility.fFontMinAlpha, 1, gradientProgress, GUITweenConfig.window.gradientEase.get());
 
         CompatUtility.startOpenTween(dx, dy, alpha);
 

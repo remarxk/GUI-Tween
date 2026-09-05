@@ -106,8 +106,8 @@ dependencies {
     // compileOnly "mezz.jei:jei-${mc_version}-forge-api:${jei_version}"
     // runtimeOnly "mezz.jei:jei-${mc_version}-forge:${jei_version}"
 
-    compileOnly "curse.maven:jei-238222:7270455"
-    runtimeOnly "curse.maven:jei-238222:7270455"
+    compileOnly "curse.maven:jei-238222:8759217"
+    runtimeOnly "curse.maven:jei-238222:8759217"
 
     compileOnly "curse.maven:jade-324717:7428884"
     runtimeOnly "curse.maven:jade-324717:7428884"
@@ -148,8 +148,6 @@ dependencies {
 
     compileOnly "curse.maven:invmove-581854:7418949"
 //    runtimeOnly "curse.maven:invmove-581854:7418949"
-
-    compileOnly "curse.maven:immersive-ui-1021685:6886575"
 
     compileOnly "curse.maven:coroutil-237749:5622966"
 //    runtimeOnly "curse.maven:coroutil-237749:5622966"

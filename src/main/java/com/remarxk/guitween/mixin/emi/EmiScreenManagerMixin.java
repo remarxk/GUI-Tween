@@ -24,8 +24,37 @@ public class EmiScreenManagerMixin {
     private static void renderSidebarPanel(EmiScreenManager.SidebarPanel instance, EmiDrawContext context, int mouseX, int mouseY, float delta) {
         if (GUITweenUtility.openScreenName != null) {
             if (GUITweenConfig.isEnableJei()) {
-                if (instance.side == SidebarSide.LEFT) {
-                    float totalTick = Math.max(GUITweenConfig.window.jeiLeftMoveDuration.get().floatValue(), 1);
+                boolean closing = GUITweenUtility.isWindowClosing;
+                boolean leftSide = instance.side == SidebarSide.LEFT;
+
+                if (closing) {
+                    float duration = GUITweenConfig.window.closeJeiMoveDuration.get().floatValue();
+                    float total = GUITweenConfig.getCloseJeiTotalDuration();
+                    float elapsed = Math.max(0, total - GUITweenUtility.closeJeiTick);
+                    float progress = duration <= 0 ? 1 : Math.min(1, elapsed / duration);
+
+                    EmiCompat.inTween = true;
+
+                    context.push();
+
+                    // X 自动镜像：配置按左侧方向填写，右侧自动取反
+                    float dx = TweenUtil.tween(0, leftSide
+                            ? GUITweenConfig.window.closeJeiMoveX.get().floatValue()
+                            : -GUITweenConfig.window.closeJeiMoveX.get().floatValue(), progress, GUITweenConfig.window.closeJeiMoveEase.get());
+                    float dY = TweenUtil.tween(0, GUITweenConfig.window.closeJeiMoveY.get().floatValue(), progress, GUITweenConfig.window.closeJeiMoveEase.get());
+
+                    context.matrices().translate(dx, dY, 0);
+
+                    instance.render(context, mouseX, mouseY, delta);
+
+                    context.pop();
+
+                    EmiCompat.inTween = false;
+
+                    return;
+                }
+                else if (leftSide) {
+                    float totalTick = Math.max(GUITweenConfig.window.jeiMoveDuration.get().floatValue(), 1);
                     float progress = GUITweenUtility.jeiOpenTick / totalTick;
 
                     if (progress < 1){
@@ -33,8 +62,8 @@ public class EmiScreenManagerMixin {
 
                         context.push();
 
-                        float dx = TweenUtil.tween(GUITweenConfig.window.jeiLeftMoveX.get().floatValue(), 0, progress, GUITweenConfig.window.jeiLeftMoveEase.get());
-                        float dY = TweenUtil.tween(GUITweenConfig.window.jeiLeftMoveY.get().floatValue(), 0, progress, GUITweenConfig.window.jeiLeftMoveEase.get());
+                        float dx = TweenUtil.tween(GUITweenConfig.window.jeiMoveX.get().floatValue(), 0, progress, GUITweenConfig.window.jeiMoveEase.get());
+                        float dY = TweenUtil.tween(GUITweenConfig.window.jeiMoveY.get().floatValue(), 0, progress, GUITweenConfig.window.jeiMoveEase.get());
 
                         context.matrices().translate(dx, dY , 0);
 
@@ -47,8 +76,8 @@ public class EmiScreenManagerMixin {
                         return;
                     }
                 }
-                else if (instance.side == SidebarSide.RIGHT) {
-                    float totalTick = Math.max(GUITweenConfig.window.jeiRightMoveDuration.get().floatValue(), 1);
+                else {
+                    float totalTick = Math.max(GUITweenConfig.window.jeiMoveDuration.get().floatValue(), 1);
                     float progress = GUITweenUtility.jeiOpenTick / totalTick;
 
                     if (progress < 1){
@@ -56,8 +85,9 @@ public class EmiScreenManagerMixin {
 
                         context.push();
 
-                        float dx = TweenUtil.tween(GUITweenConfig.window.jeiRightMoveX.get().floatValue(), 0, progress, GUITweenConfig.window.jeiRightMoveEase.get());
-                        float dY = TweenUtil.tween(GUITweenConfig.window.jeiRightMoveY.get().floatValue(), 0, progress, GUITweenConfig.window.jeiRightMoveEase.get());
+                        // X 自动镜像：配置按左侧方向填写，右侧自动取反
+                        float dx = TweenUtil.tween(-GUITweenConfig.window.jeiMoveX.get().floatValue(), 0, progress, GUITweenConfig.window.jeiMoveEase.get());
+                        float dY = TweenUtil.tween(GUITweenConfig.window.jeiMoveY.get().floatValue(), 0, progress, GUITweenConfig.window.jeiMoveEase.get());
 
                         context.matrices().translate(dx, dY , 0);
 

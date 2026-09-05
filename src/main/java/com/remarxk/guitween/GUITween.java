@@ -1,6 +1,7 @@
 package com.remarxk.guitween;
 
 import com.remarxk.guitween.config.GUITweenConfigFilter;
+import com.remarxk.guitween.compat.SmoothSwappingCompat;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -22,6 +23,8 @@ public class GUITween
 
     public GUITween(IEventBus modEventBus, ModContainer modContainer)
     {
+        modEventBus.register(SmoothSwappingCompat.class);
+
         modContainer.registerConfig(ModConfig.Type.CLIENT, GUITweenConfig.SPEC);
         modContainer.registerExtensionPoint(IConfigScreenFactory.class, (mod, parent) -> {
             return new ConfigurationScreen(mod, parent, new GUITweenConfigFilter());

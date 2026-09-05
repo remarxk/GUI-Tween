@@ -1,6 +1,5 @@
 package com.remarxk.guitween.compat;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.remarxk.guitween.GUITweenUtility;
 import com.remarxk.guitween.config.GUITweenConfig;
 import com.remarxk.guitween.util.TweenUtil;
@@ -33,7 +32,19 @@ public class CompatUtility {
         if (!GUITweenConfig.isEnableJei())
             return jeiTween;
 
-        float totalTick = Math.max(GUITweenConfig.window.jeiLeftMoveDuration.get().floatValue(), 1);
+        if (GUITweenUtility.isWindowClosing) {
+            float duration = GUITweenConfig.window.closeJeiMoveDuration.get().floatValue();
+            float total = GUITweenConfig.getCloseJeiTotalDuration();
+            float elapsed = Math.max(0, total - GUITweenUtility.closeJeiTick);
+            float progress = duration <= 0 ? 1 : Math.min(1, elapsed / duration);
+
+            jeiTween.inTween = true;
+            jeiTween.dx = TweenUtil.tween(0, GUITweenConfig.window.closeJeiMoveX.get().floatValue(), progress, GUITweenConfig.window.closeJeiMoveEase.get());
+            jeiTween.dy = TweenUtil.tween(0, GUITweenConfig.window.closeJeiMoveY.get().floatValue(), progress, GUITweenConfig.window.closeJeiMoveEase.get());
+            return jeiTween;
+        }
+
+        float totalTick = Math.max(GUITweenConfig.window.jeiMoveDuration.get().floatValue(), 1);
         float progress = GUITweenUtility.jeiOpenTick / totalTick;
 
         if (progress > 1){
@@ -42,8 +53,8 @@ public class CompatUtility {
 
         jeiTween.inTween = true;
 
-        float dx = TweenUtil.tween(GUITweenConfig.window.jeiLeftMoveX.get().floatValue(), 0, progress, GUITweenConfig.window.jeiLeftMoveEase.get());
-        float dY = TweenUtil.tween(GUITweenConfig.window.jeiLeftMoveY.get().floatValue(), 0, progress, GUITweenConfig.window.jeiLeftMoveEase.get());
+        float dx = TweenUtil.tween(GUITweenConfig.window.jeiMoveX.get().floatValue(), 0, progress, GUITweenConfig.window.jeiMoveEase.get());
+        float dY = TweenUtil.tween(GUITweenConfig.window.jeiMoveY.get().floatValue(), 0, progress, GUITweenConfig.window.jeiMoveEase.get());
 
         jeiTween.dx = dx;
         jeiTween.dy = dY;
@@ -60,7 +71,20 @@ public class CompatUtility {
         if (!GUITweenConfig.isEnableJei())
             return jeiTween;
 
-        float totalTick = Math.max(GUITweenConfig.window.jeiRightMoveDuration.get().floatValue(), 1);
+        if (GUITweenUtility.isWindowClosing) {
+            float duration = GUITweenConfig.window.closeJeiMoveDuration.get().floatValue();
+            float total = GUITweenConfig.getCloseJeiTotalDuration();
+            float elapsed = Math.max(0, total - GUITweenUtility.closeJeiTick);
+            float progress = duration <= 0 ? 1 : Math.min(1, elapsed / duration);
+
+            jeiTween.inTween = true;
+            // X 自动镜像：配置按左侧方向填写，右侧自动取反
+            jeiTween.dx = TweenUtil.tween(0, -GUITweenConfig.window.closeJeiMoveX.get().floatValue(), progress, GUITweenConfig.window.closeJeiMoveEase.get());
+            jeiTween.dy = TweenUtil.tween(0, GUITweenConfig.window.closeJeiMoveY.get().floatValue(), progress, GUITweenConfig.window.closeJeiMoveEase.get());
+            return jeiTween;
+        }
+
+        float totalTick = Math.max(GUITweenConfig.window.jeiMoveDuration.get().floatValue(), 1);
         float progress = GUITweenUtility.jeiOpenTick / totalTick;
 
         if (progress > 1){
@@ -69,8 +93,9 @@ public class CompatUtility {
 
         jeiTween.inTween = true;
 
-        jeiTween.dx = TweenUtil.tween(GUITweenConfig.window.jeiRightMoveX.get().floatValue(), 0, progress, GUITweenConfig.window.jeiRightMoveEase.get());
-        jeiTween.dy = TweenUtil.tween(GUITweenConfig.window.jeiRightMoveY.get().floatValue(), 0, progress, GUITweenConfig.window.jeiRightMoveEase.get());
+        // X 自动镜像：配置按左侧方向填写，右侧自动取反
+        jeiTween.dx = TweenUtil.tween(-GUITweenConfig.window.jeiMoveX.get().floatValue(), 0, progress, GUITweenConfig.window.jeiMoveEase.get());
+        jeiTween.dy = TweenUtil.tween(GUITweenConfig.window.jeiMoveY.get().floatValue(), 0, progress, GUITweenConfig.window.jeiMoveEase.get());
 
         return jeiTween;
     }

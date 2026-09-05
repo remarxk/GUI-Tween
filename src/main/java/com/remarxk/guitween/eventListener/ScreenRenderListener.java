@@ -12,7 +12,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
-import net.minecraft.util.Mth;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -64,14 +63,25 @@ public class ScreenRenderListener {
 
         access.setGUITween$inTween(false);
 
-        float sign = access.gUITween$inCloseTween() ? -GUITweenConfig.window.closeWindowSpeed.get().floatValue() : 1;
-        float openTick = Mth.clamp(GUITweenUtility.openScreenTick + sign * GUITweenUtility.getDeltaTicks(),0, GUITweenConfig.getWindowTotalDuration());
-        GUITweenUtility.openScreenTick = openTick;
+        boolean closing = access.gUITween$inCloseTween();
+        GUITweenUtility.isWindowClosing = closing;
+        float deltaTicks = GUITweenUtility.getDeltaTicks();
 
-        GUITweenUtility.jeiOpenTick = Mth.clamp(GUITweenUtility.jeiOpenTick + sign * GUITweenUtility.getDeltaTicks(), 0, GUITweenConfig.getJeiTotalDuration());
+        if (closing) {
+            // 关闭动画使用独立计时：按真实帧数推进，速度恒为 1（不再有“关闭速度”）
+            GUITweenUtility.closeScreenTick = Math.max(0, GUITweenUtility.closeScreenTick - deltaTicks);
+            GUITweenUtility.closeJeiTick = Math.max(0, GUITweenUtility.closeJeiTick - deltaTicks);
 
-        if (sign < 0 && openTick <= 0 && GUITweenUtility.jeiOpenTick <= 0) {
-            access.gUITween$setNeedClose(true);
+            if (GUITweenUtility.closeScreenTick <= 0 && GUITweenUtility.closeJeiTick <= 0) {
+                access.gUITween$setNeedClose(true);
+            }
+        }
+        else {
+            GUITweenUtility.closeScreenTick = 0;
+            GUITweenUtility.closeJeiTick = 0;
+
+            GUITweenUtility.openScreenTick = Math.min(GUITweenConfig.getWindowTotalDuration(), GUITweenUtility.openScreenTick + deltaTicks);
+            GUITweenUtility.jeiOpenTick = Math.min(GUITweenConfig.getJeiTotalDuration(), GUITweenUtility.jeiOpenTick + deltaTicks);
         }
     }
 
