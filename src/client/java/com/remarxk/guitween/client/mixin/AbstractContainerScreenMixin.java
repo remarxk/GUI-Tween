@@ -912,6 +912,11 @@ public abstract class AbstractContainerScreenMixin <T extends ScreenHandler> ext
     private void renderMoveItem(DrawContext guiGraphics, int mouseX, int mouseY, float deltaTicks, CallbackInfo ci) {
         ContainerItemTween tween = GUITweenUtility.getMoveItemTween();
 
+        if (System.getProperty("guitween.debug.movetween") != null) {
+            com.remarxk.guitween.GUITween.LOGGER.info("[MoveTweenDbg] renderMoveItem enter screen={} moveEnabled={} toMap={} fake={}",
+                    this.getClass().getSimpleName(), GUITweenClient.CONFIG.isEnableMoveItem(), tween.getToMap().size(), tween.getFakeItemCount());
+        }
+
         if (!GUITweenClient.CONFIG.isEnableMoveItem()) {
             tween.clearAllFakeItem();
             return;

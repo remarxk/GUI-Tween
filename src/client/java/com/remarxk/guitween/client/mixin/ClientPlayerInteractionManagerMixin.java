@@ -45,8 +45,16 @@ public class ClientPlayerInteractionManagerMixin {
                 }
             }
 
+            if (System.getProperty("guitween.debug.movetween") != null) {
+                GUITween.LOGGER.info("[MoveTweenDbg] click menu={} type={} slotId={} slots={} changed={} cursor={}",
+                        menu.getClass().getSimpleName(), actionType, slotId, menu.slots.size(), changed, menu.getCursorStack());
+            }
+
             switch (actionType) {
                 case QUICK_MOVE -> {
+                    if (!GUITweenClient.CONFIG.isEnableMoveItem()) {
+                        return;
+                    }
                     for (int slot : changed) {
                         if (slot == slotId) {
                             continue;
@@ -70,6 +78,9 @@ public class ClientPlayerInteractionManagerMixin {
                     }
                 }
                 case SWAP -> {
+                    if (!GUITweenClient.CONFIG.isEnableMoveItem()) {
+                        return;
+                    }
                     int to = -1;
                     for (int slot : changed) {
                         if (slot != slotId) {
@@ -105,6 +116,9 @@ public class ClientPlayerInteractionManagerMixin {
                     }
                 }
                 case PICKUP_ALL -> {
+                    if (!GUITweenClient.CONFIG.isEnableMoveItem()) {
+                        return;
+                    }
                     for (int slot : changed) {
                         int movedCount = gUITween$getItemStackCount(list.get(slot)) - gUITween$getItemStackCount(menu.getSlot(slot).getStack());
                         if (movedCount <= 0) {
@@ -117,11 +131,17 @@ public class ClientPlayerInteractionManagerMixin {
                     }
                 }
                 case QUICK_CRAFT -> {
+                    if (!GUITweenClient.CONFIG.isEnableQuickCraft()) {
+                        return;
+                    }
                     for (int slot : changed) {
                         tween.addQuickCraftTween(menu.getSlot(slot));
                     }
                 }
                 case PICKUP -> {
+                    if (!GUITweenClient.CONFIG.isEnablePickupItem()) {
+                        return;
+                    }
                     for (int slot : changed) {
                         if (!menu.getSlot(slot).getStack().isEmpty()) {
                             tween.addPickupTween(menu.getSlot(slot));
