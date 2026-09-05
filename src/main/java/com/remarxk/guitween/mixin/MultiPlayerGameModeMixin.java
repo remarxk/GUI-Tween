@@ -21,6 +21,15 @@ import java.util.List;
 
 @Mixin(MultiPlayerGameMode.class)
 public class MultiPlayerGameModeMixin {
+    private static final boolean DBG = System.getProperty("guitween.debug.movetween") != null;
+
+    @Unique
+    private static void dbg(String msg) {
+        if (DBG) {
+            com.remarxk.guitween.GUITween.LOGGER.info("[MoveTweenDbg] " + msg);
+        }
+    }
+
     @Inject(
             method = "handleInventoryMouseClick",
             at = @At(
@@ -29,10 +38,6 @@ public class MultiPlayerGameModeMixin {
             )
     )
     private void handleInventoryMouseClickBefore(int containerId, int slotId, int mouseButton, ClickType clickType, Player player, CallbackInfo ci, @Local List<ItemStack> list) {
-        if (!GUITweenConfig.isEnableMoveItem()) {
-            return;
-        }
-
         AbstractContainerMenu menu = player.containerMenu;
 
         ContainerItemTween tween = GUITweenUtility.getMoveItemTween();
@@ -44,8 +49,14 @@ public class MultiPlayerGameModeMixin {
             }
         }
 
+        dbg("click menu=" + menu.getClass().getSimpleName() + " type=" + clickType + " slotId=" + slotId
+                + " slots=" + menu.slots.size() + " changed=" + changedSlots + " carried=" + menu.getCarried());
+
         switch (clickType) {
             case QUICK_MOVE -> {
+                if (!GUITweenConfig.isEnableMoveItem()) {
+                    return;
+                }
                 for (int slot : changedSlots) {
                     if (slot == slotId) {
                         continue;
@@ -71,9 +82,14 @@ public class MultiPlayerGameModeMixin {
                         fakeItem.setCount(0);
                     }
                     tween.addFakeItem(menu.getSlot(slot), fakeItem);
+                    dbg("QUICK_MOVE add tween from=" + slotId + " to=" + slot + " count=" + movedCount
+                            + " fakeEmpty=" + fakeItem.isEmpty() + " toMap=" + tween.getToMap().keySet());
                 }
             }
             case SWAP -> {
+                if (!GUITweenConfig.isEnableMoveItem()) {
+                    return;
+                }
                 int to = -1;
                 for (int slot : changedSlots) {
                     if (slot != slotId) {
@@ -109,6 +125,9 @@ public class MultiPlayerGameModeMixin {
                 }
             }
             case PICKUP_ALL -> {
+                if (!GUITweenConfig.isEnableMoveItem()) {
+                    return;
+                }
                 for (int slot : changedSlots) {
                     int movedCount = gUITween$getItemStackCount(list.get(slot)) - gUITween$getItemStackCount(menu.getSlot(slot).getItem());
                     if (movedCount <= 0) {
@@ -121,11 +140,17 @@ public class MultiPlayerGameModeMixin {
                 }
             }
             case QUICK_CRAFT -> {
+                if (!GUITweenConfig.isEnableQuickCraft()) {
+                    return;
+                }
                 for (int slot : changedSlots) {
                     tween.addQuickCraftTween(menu.getSlot(slot));
                 }
             }
             case PICKUP -> {
+                if (!GUITweenConfig.isEnablePickupItem()) {
+                    return;
+                }
                 for (int slot : changedSlots) {
                     if (!menu.getSlot(slot).getItem().isEmpty()) {
                         tween.addPickupTween(menu.getSlot(slot));

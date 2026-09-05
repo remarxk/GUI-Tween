@@ -209,6 +209,10 @@ public class ContainerItemTween {
         return toMap;
     }
 
+    public int getFakeItemCount() {
+        return fakeItems.size();
+    }
+
     public void addWaitRemove(int from, int to) {
         waitRemove.add(new Tuple<>(from, to));
     }
