@@ -27,7 +27,8 @@
     "rei.DefaultScreenOverlayRendererMixin",
     "rei.ScreenOverlayImpMixin",
     "sophisticated.StorageScreenBaseMixin",
-    "BossHealthOverlayMixin"
+    "BossHealthOverlayMixin",
+    "AbstractRecipeBookScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 0

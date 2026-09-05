@@ -309,6 +309,21 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
         guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, SLOT_HIGHLIGHT_BACK_SPRITE, x, y, 24, 24);
     }
 
+    @Override
+    public AbstractContainerMenu gUITween$getMenu() {
+        return this.menu;
+    }
+
+    @Override
+    public int gUITween$getGuiLeft() {
+        return this.getGuiLeft();
+    }
+
+    @Override
+    public int gUITween$getGuiTop() {
+        return this.getGuiTop();
+    }
+
     @WrapOperation(
             method = "renderSlot",
             at = @At(
@@ -428,11 +443,6 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
     @Inject(method = "render", at = @At(value = "TAIL"))
     public void renderMoveItem(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
         ContainerItemTween tween = GUITweenUtility.getMoveItemTween();
-
-        if (System.getProperty("guitween.debug.movetween") != null) {
-            com.remarxk.guitween.GUITween.LOGGER.info("[MoveTweenDbg] renderMoveItem enter screen={} moveEnabled={} toMap={} fake={}",
-                    this.getClass().getSimpleName(), GUITweenConfig.isEnableMoveItem(), tween.getToMap().size(), tween.getFakeItemCount());
-        }
 
         if (!GUITweenConfig.isEnableMoveItem()) {
             tween.clearAllFakeItem();

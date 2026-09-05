@@ -3,6 +3,7 @@ package com.remarxk.guitween.mixinAccess;
 import com.remarxk.guitween.anim.Tween;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.util.Tuple;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
@@ -72,4 +73,10 @@ public interface AbstractContainerScreenMixinAccess {
     public float getGUITween$clickTime();
 
     public void gUITween$renderSlotHighlightBack(GuiGraphics guiGraphics, int x, int y);
+
+    public AbstractContainerMenu gUITween$getMenu();
+
+    public int gUITween$getGuiLeft();
+
+    public int gUITween$getGuiTop();
 }

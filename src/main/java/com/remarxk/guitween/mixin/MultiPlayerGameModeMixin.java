@@ -21,15 +21,6 @@ import java.util.List;
 
 @Mixin(MultiPlayerGameMode.class)
 public class MultiPlayerGameModeMixin {
-    private static final boolean DBG = System.getProperty("guitween.debug.movetween") != null;
-
-    @Unique
-    private static void dbg(String msg) {
-        if (DBG) {
-            com.remarxk.guitween.GUITween.LOGGER.info("[MoveTweenDbg] " + msg);
-        }
-    }
-
     @Inject(
             method = "handleInventoryMouseClick",
             at = @At(
@@ -48,9 +39,6 @@ public class MultiPlayerGameModeMixin {
                 changedSlots.add(i);
             }
         }
-
-        dbg("click menu=" + menu.getClass().getSimpleName() + " type=" + clickType + " slotId=" + slotId
-                + " slots=" + menu.slots.size() + " changed=" + changedSlots + " carried=" + menu.getCarried());
 
         switch (clickType) {
             case QUICK_MOVE -> {
@@ -82,8 +70,6 @@ public class MultiPlayerGameModeMixin {
                         fakeItem.setCount(0);
                     }
                     tween.addFakeItem(menu.getSlot(slot), fakeItem);
-                    dbg("QUICK_MOVE add tween from=" + slotId + " to=" + slot + " count=" + movedCount
-                            + " fakeEmpty=" + fakeItem.isEmpty() + " toMap=" + tween.getToMap().keySet());
                 }
             }
             case SWAP -> {
