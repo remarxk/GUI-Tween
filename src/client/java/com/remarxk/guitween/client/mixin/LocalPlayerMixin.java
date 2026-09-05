@@ -2,6 +2,7 @@ package com.remarxk.guitween.client.mixin;
 
 import com.mojang.authlib.GameProfile;
 import com.remarxk.guitween.client.GUITweenClient;
+import com.remarxk.guitween.client.event.PlayGuiSoundEvent;
 import com.remarxk.guitween.client.eventListener.HotbarChangeListener;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -25,8 +26,10 @@ public class LocalPlayerMixin extends AbstractClientPlayerEntity {
     )
     public void onDropAfter(boolean fullStack, CallbackInfoReturnable<Boolean> cir) {
         if (!cir.getReturnValue()) {
-            if (GUITweenClient.CONFIG.isEnableExp())
+            if (GUITweenClient.CONFIG.isEnableExp()) {
                 HotbarChangeListener.lackTick = 0;
+                PlayGuiSoundEvent.post(new PlayGuiSoundEvent(PlayGuiSoundEvent.SoundType.LACK_ITEM));
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.remarxk.guitween.client;
 
 import com.remarxk.guitween.client.anim.AttackTween;
+import com.remarxk.guitween.client.anim.ContainerItemTween;
 import com.remarxk.guitween.client.anim.DragTween;
 import com.remarxk.guitween.client.anim.UseTween;
 import net.minecraft.client.MinecraftClient;
@@ -26,9 +27,12 @@ public class GUITweenUtility {
 
     public static String openScreenName;
     public static float openScreenTick;
+    public static float jeiOpenTick;
 
     public static boolean inTooltipTween;
     public static float tooltipTweenTick;
+
+    public static boolean inDragging;
 
     private static final Stack<Float> itemAlphaStack = new Stack<>();
     private static final Stack<Float> fontAlphaStack = new Stack<>();
@@ -37,6 +41,7 @@ public class GUITweenUtility {
     private final static AttackTween attackTween = new AttackTween();
     private final static UseTween usingTween = new UseTween();
     private final static DragTween dragTween = new DragTween();
+    private final static ContainerItemTween CONTAINER_ITEM_TWEEN = new ContainerItemTween();
 
     public static void addCompatWindow(CompatWindowCheck check) {
         COMPAT_WINDOW.add(check);
@@ -63,6 +68,7 @@ public class GUITweenUtility {
     public static void deleteOpenScreen() {
         openScreenName = null;
         openScreenTick = 0;
+        jeiOpenTick = 0;
     }
 
     public static void startTooltipTween(float tick) {
@@ -143,6 +149,12 @@ public class GUITweenUtility {
     public static DragTween getDragTween() {
         return dragTween;
     }
+
+    public static ContainerItemTween getMoveItemTween() {
+        return CONTAINER_ITEM_TWEEN;
+    }
+
+    public static boolean enablePictureMatrix = false;
 
     private final static HashMap<SpecialGuiElementRenderState, Matrix3x2f> pictureMatrix = new HashMap<>();
 

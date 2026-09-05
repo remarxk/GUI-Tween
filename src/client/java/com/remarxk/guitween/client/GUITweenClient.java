@@ -1,6 +1,7 @@
 package com.remarxk.guitween.client;
 
 import com.remarxk.guitween.GUITween;
+import com.remarxk.guitween.client.compat.SmoothSwappingCompat;
 import com.remarxk.guitween.client.config.GUITweenConfig;
 import com.remarxk.guitween.client.dataPack.RemapClassLoader;
 import com.remarxk.guitween.client.dataPack.WindowSlotsLoader;
@@ -21,6 +22,7 @@ public class GUITweenClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        SmoothSwappingCompat.init();
         registerReloadRes();
         registerEvents();
     }
@@ -33,8 +35,9 @@ public class GUITweenClient implements ClientModInitializer {
     private void registerEvents() {
         ClientTickEvents.END_CLIENT_TICK.register(HotbarChangeListener::onPlayerTick);
 
-        ScreenEvents.BEFORE_INIT.register((client, screen, scaledWidth, scaledHeight) ->
-                ScreenEvents.afterRender(screen).register(ScreenRenderListener::postRenderScreen)
-        );
+        ScreenEvents.BEFORE_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
+            ScreenEvents.afterRender(screen).register(ScreenRenderListener::postRenderScreen);
+            ScreenEvents.afterTick(screen).register(ScreenRenderListener::postScreenTick);
+        });
     }
 }

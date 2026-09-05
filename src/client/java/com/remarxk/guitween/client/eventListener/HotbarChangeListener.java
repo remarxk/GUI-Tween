@@ -5,6 +5,7 @@ import com.remarxk.guitween.client.GUITweenUtility;
 import com.remarxk.guitween.client.anim.Tween;
 import com.remarxk.guitween.client.anim.TweenPool;
 import com.remarxk.guitween.client.anim.UseTween;
+import com.remarxk.guitween.client.event.PlayGuiSoundEvent;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.world.ClientWorld;
@@ -113,8 +114,10 @@ public class HotbarChangeListener {
                 boolean curHasItem = selectedItem.getCount() > 0;
                 if (curHasItem != hasItem) {
                     hasItem = curHasItem;
-                    if (!hasItem)
+                    if (!hasItem) {
                         lackTick = 0;
+                        PlayGuiSoundEvent.post(new PlayGuiSoundEvent(PlayGuiSoundEvent.SoundType.LACK_ITEM));
+                    }
                 }
             }
         }

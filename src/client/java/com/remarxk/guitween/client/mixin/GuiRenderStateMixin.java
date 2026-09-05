@@ -35,8 +35,10 @@ public class GuiRenderStateMixin implements GuiRenderStateMixinAccess {
             )
     )
     private void submitPicturesInPictureStateBefore(SpecialGuiElementRenderState state, CallbackInfo ci) {
-        if (gUITween$guiGraphics != null) {
-            GUITweenUtility.pushPictureMatrix(state, new Matrix3x2f(gUITween$guiGraphics.getMatrices()));
+        if (gUITween$guiGraphics != null && GUITweenUtility.enablePictureMatrix) {
+            Matrix3x2f matrix3x2f = new Matrix3x2f();
+            gUITween$guiGraphics.getMatrices().get(matrix3x2f);
+            GUITweenUtility.pushPictureMatrix(state, matrix3x2f);
         }
     }
 }

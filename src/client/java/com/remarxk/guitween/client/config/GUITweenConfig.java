@@ -1,12 +1,14 @@
 package com.remarxk.guitween.client.config;
 
-import java.util.ArrayList;
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 
 import com.remarxk.guitween.GUITween;
 
+import com.remarxk.guitween.client.anim.GUITweenStyle;
 import com.remarxk.guitween.client.compat.ImmersiveUICompat;
+import com.remarxk.guitween.client.compat.SmoothSwappingCompat;
 import com.remarxk.guitween.client.util.Ease;
 import me.fzzyhmstrs.fzzy_config.annotations.Translation;
 import me.fzzyhmstrs.fzzy_config.config.Config;
@@ -18,7 +20,11 @@ import net.minecraft.util.Identifier;
 
 @Translation(prefix = "guitween.config")
 public class GUITweenConfig extends Config {
+    private static final GUITweenConfig DEFAULTS = new GUITweenConfig();
+
     public boolean enable = true;
+
+    public ValidatedChoice<GUITweenStyle> style = new ValidatedChoice<>(GUITweenStyle.DEFAULT, Arrays.stream(GUITweenStyle.values()).toList(), new ValidatedEnum(GUITweenStyle.class), WidgetType.SCROLLABLE);
 
     public boolean enableDebugWindow = false;
 
@@ -39,21 +45,23 @@ public class GUITweenConfig extends Config {
 
     public ValidatedChoice<Ease> windowGradientEase  = new ValidatedChoice<>(Ease.IN_OUT_SINE, Arrays.stream(Ease.values()).toList(), new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
 
-    public boolean enableJeiLeft = true;
+    public boolean enableCloseWindow = false;
+
+    public float closeWindowSpeed = 1.5f;
+
+    public boolean enableJei = true;
 
     public float jeiLeftMoveDuration = 6f;
 
-    public ValidatedChoice<Ease> jeiLeftMoveEase = new ValidatedChoice<>(Ease.OUT_BACK, Arrays.stream(Ease.values()).toList(), new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);;;
+    public ValidatedChoice<Ease> jeiLeftMoveEase = new ValidatedChoice<>(Ease.OUT_BACK, Arrays.stream(Ease.values()).toList(), new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
 
     public float jeiLeftMoveX = -50f;
 
     public float jeiLeftMoveY = 0f;
 
-    public boolean enableJeiRight = true;
-
     public float jeiRightMoveDuration = 6f;
 
-    public ValidatedChoice<Ease> jeiRightMoveEase = new ValidatedChoice<>(Ease.OUT_BACK, Arrays.stream(Ease.values()).toList(), new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);;
+    public ValidatedChoice<Ease> jeiRightMoveEase = new ValidatedChoice<>(Ease.OUT_BACK, Arrays.stream(Ease.values()).toList(), new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
 
     public float jeiRightMoveX = 50f;
 
@@ -81,7 +89,7 @@ public class GUITweenConfig extends Config {
 
     public float clickZoomStrength = 0.2f;
 
-    public float clickItemDuration =5;
+    public float clickItemDuration = 5;
 
     public boolean enableOutput = true;
 
@@ -107,8 +115,28 @@ public class GUITweenConfig extends Config {
 
     public float sameItemShakeWaitDuration = 20f;
 
-    @ConfigGroup.Pop
     public boolean enableQuick = true;
+
+    public boolean enableMove = true;
+
+    public float moveDuration = 6;
+
+    public ValidatedChoice<Ease> moveEase = new ValidatedChoice<>(Ease.IN_OUT_SINE, Arrays.stream(Ease.values()).toList(), new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
+
+    public boolean enableFinish = true;
+
+    public float finishPunchStrength = 0.2f;
+
+    public float finishDuration = 6;
+
+    public boolean enablePickup = true;
+
+    public float pickupDuration = 4;
+
+    public ValidatedChoice<Ease> pickupEase = new ValidatedChoice<>(Ease.IN_OUT_SINE, Arrays.stream(Ease.values()).toList(), new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
+
+    @ConfigGroup.Pop
+    public float quickCraftDuration = 4;
 
     public ConfigGroup hotbarGroup = new ConfigGroup("hotbar tween");
     public boolean enableHoldItem = true;
@@ -185,6 +213,10 @@ public class GUITweenConfig extends Config {
 
     public ValidatedChoice<Ease> chatOpenGradientEase = new ValidatedChoice<>(Ease.IN_OUT_SINE, Arrays.stream(Ease.values()).toList(), new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
 
+    public boolean enableCloseChat = true;
+
+    public float closeChatSpeed = 1.2f;
+
     public boolean enableChatComp = true;
 
     public float chatCompMoveDuration = 4f;
@@ -193,10 +225,47 @@ public class GUITweenConfig extends Config {
 
     public float chatCompGradientDuration = 6f;
 
+    @ConfigGroup.Pop
     public ValidatedChoice<Ease> chatCompGradientEase = new ValidatedChoice<>(Ease.IN_OUT_SINE, Arrays.stream(Ease.values()).toList(), new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
+
+    public ConfigGroup bossGroup = new ConfigGroup("boss tween");
+    public boolean enableBossShow = true;
+
+    public float bossShowDuration = 10f;
+
+    public ValidatedChoice<Ease> bossShowEase = new ValidatedChoice<>(Ease.IN_OUT_SINE, Arrays.stream(Ease.values()).toList(), new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
+
+    public float bossShowFadeDuration = 10f;
+
+    public ValidatedChoice<Ease> bossShowFadeEase = new ValidatedChoice<>(Ease.IN_OUT_SINE, Arrays.stream(Ease.values()).toList(), new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
+
+    public boolean enableBossHide = true;
+
+    public float bossHideDuration = 6f;
+
+    public ValidatedChoice<Ease> bossHideEase = new ValidatedChoice<>(Ease.IN_OUT_SINE, Arrays.stream(Ease.values()).toList(), new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
+
+    public float bossHideFadeDuration = 6f;
+
+    public ValidatedChoice<Ease> bossHideFadeEase = new ValidatedChoice<>(Ease.IN_OUT_SINE, Arrays.stream(Ease.values()).toList(), new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
+
+    public boolean enableBossHurt = true;
+
+    public float bossHurtShakeStrength = 1.5f;
+
+    @ConfigGroup.Pop
+    public float bossHurtDuration = 4f;
 
     public GUITweenConfig() {
         super(Identifier.of(GUITween.MODID, "config"));
+    }
+
+    public float getWindowTotalDuration() {
+        return Math.max(windowMoveDuration, windowGradientDuration);
+    }
+
+    public float getJeiTotalDuration() {
+        return Math.max(jeiLeftMoveDuration, jeiRightMoveDuration);
     }
 
     public float getHoldItemTotalDuration() {
@@ -219,6 +288,14 @@ public class GUITweenConfig extends Config {
         return Math.max(chatCompMoveDuration, chatCompGradientDuration);
     }
 
+    public float getBossShowMaxDuration() {
+        return Math.max(bossShowDuration, bossShowFadeDuration);
+    }
+
+    public float getBossHideMaxDuration() {
+        return Math.max(bossHideDuration, bossHideFadeDuration);
+    }
+
     public boolean isDisableTweenWindow(String screenName) {
         return disableNames.contains(screenName);
     }
@@ -231,12 +308,28 @@ public class GUITweenConfig extends Config {
         return isEnable() && enableWindow;
     }
 
-    public boolean isEnableJeiLeft() {
-        return isEnable() && enableJeiLeft;
+    public boolean isEnableCloseWindow() {
+        return isEnable() && enableCloseWindow;
     }
 
+    public boolean isEnableJei() {
+        return isEnable() && enableJei;
+    }
+
+    /**
+     * 兼容转发：旧 mixin 仍调用左/右两个开关，3.4.0 起统一为单一 JEI 面板开关。
+     */
+    @Deprecated
+    public boolean isEnableJeiLeft() {
+        return isEnableJei();
+    }
+
+    /**
+     * 兼容转发：见 {@link #isEnableJeiLeft()}。
+     */
+    @Deprecated
     public boolean isEnableJeiRight() {
-        return isEnable() && enableJeiRight;
+        return isEnableJei();
     }
 
     public boolean isEnableDebugWindow() {
@@ -269,6 +362,18 @@ public class GUITweenConfig extends Config {
 
     public boolean isEnableQuickCraft() {
         return isEnable() && enableQuick;
+    }
+
+    public boolean isEnableMoveItem() {
+        return isEnable() && enableMove && !SmoothSwappingCompat.isLoaded;
+    }
+
+    public boolean isEnableFinishItem() {
+        return isEnable() && enableFinish;
+    }
+
+    public boolean isEnablePickupItem() {
+        return isEnable() && enablePickup;
     }
 
     public boolean isEnableHoldItem() {
@@ -307,7 +412,90 @@ public class GUITweenConfig extends Config {
         return isEnable() && enableChat;
     }
 
+    public boolean isEnableCloseChat() {
+        return isEnable() && enableCloseChat;
+    }
+
     public boolean isEnableChatComp() {
         return isEnable() && enableChatComp;
+    }
+
+    public boolean isEnableBossShow() {
+        return isEnable() && enableBossShow;
+    }
+
+    public boolean isEnableBossHide() {
+        return isEnable() && enableBossHide;
+    }
+
+    public boolean isEnableBossHurt() {
+        return isEnable() && enableBossHurt;
+    }
+
+    public void applyStylePreset(GUITweenStyle newStyle) {
+        resetToDefaults();
+        enableDebugWindow = false;
+
+        switch (newStyle) {
+            case SIMPLE -> {
+                applySimpleStyle();
+            }
+            case COMPLETE -> {
+                applyCompleteStyle();
+            }
+        }
+
+        save();
+    }
+
+    private void applySimpleStyle() {
+        windowMoveEase.accept(Ease.OUT_QUART);
+        jeiLeftMoveEase.accept(Ease.OUT_QUART);
+        jeiRightMoveEase.accept(Ease.OUT_QUART);
+
+        enableSameItem = false;
+        enableClickItem = false;
+        enableFinish = false;
+        enableDrag = false;
+    }
+
+    private void applyCompleteStyle() {
+        enableCloseWindow = true;
+    }
+
+    private static GUITweenStyle lastAppliedStyle;
+
+    @Override
+    public void onUpdateClient() {
+        GUITweenStyle currentStyle = style.get();
+
+        if (lastAppliedStyle == null) {
+            lastAppliedStyle = currentStyle;
+            return;
+        }
+
+        if (currentStyle != lastAppliedStyle) {
+            lastAppliedStyle = currentStyle;
+            applyStylePreset(currentStyle);
+        }
+    }
+
+    private void resetToDefaults() {
+        for (Field field : GUITweenConfig.class.getDeclaredFields()) {
+            try {
+                if (java.lang.reflect.Modifier.isStatic(field.getModifiers()))
+                    continue;
+                if (field.getName().equals("style"))
+                    continue;
+                field.setAccessible(true);
+                Object value = field.get(this);
+                if (value instanceof me.fzzyhmstrs.fzzy_config.validation.ValidatedField<?> validated) {
+                    validated.restore();
+                } else {
+                    field.set(this, field.get(DEFAULTS));
+                }
+            } catch (IllegalAccessException ignored) {
+            }
+        }
     }
 }

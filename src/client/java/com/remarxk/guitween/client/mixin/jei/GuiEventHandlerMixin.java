@@ -1,9 +1,8 @@
 package com.remarxk.guitween.client.mixin.jei;
 
 import com.remarxk.guitween.client.GUITweenUtility;
-import com.remarxk.guitween.client.GUITweenClient;
+import com.remarxk.guitween.client.compat.CompatUtility;
 import com.remarxk.guitween.client.mixinAccess.AbstractContainerScreenMixinAccess;
-import com.remarxk.guitween.client.util.TweenUtil;
 import mezz.jei.gui.events.GuiEventHandler;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
@@ -32,13 +31,13 @@ public class GuiEventHandlerMixin {
             return;
         }
 
-        if (access.getGUITween$inTween()) {
+        CompatUtility.OpenTween openTween = CompatUtility.getOpenTween();
+
+        if (openTween.inTween) {
             GUITweenUtility.popAlpha();
 
-            float moveProgress = access.getGUITween$openTick() / GUITweenClient.CONFIG.windowMoveDuration;
-
-            gUITween$dx = TweenUtil.tween(GUITweenClient.CONFIG.windowMoveX, 0, moveProgress, GUITweenClient.CONFIG.windowMoveEase.get());
-            gUITween$dy = TweenUtil.tween(GUITweenClient.CONFIG.windowMoveY, 0, moveProgress, GUITweenClient.CONFIG.windowMoveEase.get());
+            gUITween$dx = openTween.dx;
+            gUITween$dy = openTween.dy;
 
             // 取消动画
             Matrix3x2fStack matrix3x2fStack = guiGraphics.getMatrices();
@@ -57,16 +56,15 @@ public class GuiEventHandlerMixin {
             return;
         }
 
-        if (access.getGUITween$inTween()) {
-            float gradientProgress = access.getGUITween$openTick() / GUITweenClient.CONFIG.windowGradientDuration;
+        CompatUtility.OpenTween openTween = CompatUtility.getOpenTween();
 
+        if (openTween.inTween) {
             Matrix3x2fStack poseStack = guiGraphics.getMatrices();
 
             // 还原动画
             poseStack.translate(gUITween$dx, gUITween$dy);
 
-            float alpha = TweenUtil.tween(GUITweenUtility.fFontMinAlpha, 1, gradientProgress, GUITweenClient.CONFIG.windowGradientEase.get());
-            GUITweenUtility.pushAlpha(alpha);
+            GUITweenUtility.pushAlpha(openTween.alpha);
         }
     }
 }

@@ -6,8 +6,12 @@
   "compatibilityLevel": "JAVA_21",
   "client": [
     "AbstractContainerScreenMixin",
+    "BossBarHudMixin",
     "ChatComponentMixin",
     "ChatScreenMixin",
+    "ClientPlayerInteractionManagerMixin",
+    "KeyboardMixin",
+    "ScreenMixin",
     "GuiGraphicsMixin",
     "GuiItemRenderStateMixin",
     "GuiMixin",

@@ -1,8 +1,6 @@
 package com.remarxk.guitween.client.mixin.jei;
 
-import com.remarxk.guitween.client.GUITweenClient;
-import com.remarxk.guitween.client.GUITweenUtility;
-import com.remarxk.guitween.client.util.TweenUtil;
+import com.remarxk.guitween.client.compat.CompatUtility;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -25,28 +23,15 @@ public class IngredientListOverlayMixin {
             )
     )
     public void drawScreenBefore(MinecraftClient minecraft, DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
-        if (GUITweenUtility.openScreenName == null)
+        CompatUtility.JeiTween jeiTween = CompatUtility.getJeiRightTween();
+        if (!jeiTween.inTween)
             return;
-
-        if (!GUITweenClient.CONFIG.isEnableJeiRight())
-            return;
-
-        float totalTick = Math.max(GUITweenClient.CONFIG.jeiRightMoveDuration, 1);
-        float progress = GUITweenUtility.openScreenTick / totalTick;
-
-        if (progress > 1){
-            return;
-        }
 
         gUITween$inTween = true;
 
         Matrix3x2fStack poseStack = guiGraphics.getMatrices();
         poseStack.pushMatrix();
-
-        float dx = TweenUtil.tween(GUITweenClient.CONFIG.jeiRightMoveX, 0, progress, GUITweenClient.CONFIG.jeiRightMoveEase.get());
-        float dy = TweenUtil.tween(GUITweenClient.CONFIG.jeiRightMoveY, 0, progress, GUITweenClient.CONFIG.jeiRightMoveEase.get());
-
-        poseStack.translate(dx, dy);
+        poseStack.translate(jeiTween.dx, jeiTween.dy);
     }
 
     @Inject(
