@@ -45,11 +45,6 @@ public class ClientPlayerInteractionManagerMixin {
                 }
             }
 
-            if (System.getProperty("guitween.debug.movetween") != null) {
-                GUITween.LOGGER.info("[MoveTweenDbg] click menu={} type={} slotId={} slots={} changed={} cursor={}",
-                        menu.getClass().getSimpleName(), actionType, slotId, menu.slots.size(), changed, menu.getCursorStack());
-            }
-
             switch (actionType) {
                 case QUICK_MOVE -> {
                     if (!GUITweenClient.CONFIG.isEnableMoveItem()) {

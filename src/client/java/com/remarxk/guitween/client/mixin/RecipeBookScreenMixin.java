@@ -1,6 +1,5 @@
 package com.remarxk.guitween.client.mixin;
 
-import com.remarxk.guitween.GUITween;
 import com.remarxk.guitween.client.GUITweenClient;
 import com.remarxk.guitween.client.GUITweenUtility;
 import com.remarxk.guitween.client.anim.ContainerItemTween;
@@ -38,11 +37,6 @@ public abstract class RecipeBookScreenMixin {
     )
     private void guitween$renderMoveItem(DrawContext guiGraphics, int mouseX, int mouseY, float deltaTicks, CallbackInfo ci) {
         ContainerItemTween tween = GUITweenUtility.getMoveItemTween();
-
-        if (System.getProperty("guitween.debug.movetween") != null) {
-            GUITween.LOGGER.info("[MoveTweenDbg] renderMoveItem(recipeBook) enter screen={} moveEnabled={} toMap={} fake={}",
-                    this.getClass().getSimpleName(), GUITweenClient.CONFIG.isEnableMoveItem(), tween.getToMap().size(), tween.getFakeItemCount());
-        }
 
         if (!GUITweenClient.CONFIG.isEnableMoveItem()) {
             tween.clearAllFakeItem();
