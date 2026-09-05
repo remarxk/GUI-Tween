@@ -26,8 +26,7 @@
     "jei.IngredientListOverlayMixin",
     "rei.ScreenOverlayImpMixin",
     "rei.DefaultScreenOverlayRendererMixin",
-    "overflowingbars.ArmorBarRendererMixin",
-    "RecipeBookScreenMixin"
+    "overflowingbars.ArmorBarRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

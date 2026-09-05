@@ -901,14 +901,7 @@ public abstract class AbstractContainerScreenMixin <T extends ScreenHandler> ext
         GUITweenUtility.endTooltipTween();
     }
 
-    @Inject(
-            method = "render",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/client/gui/screen/ingame/HandledScreen;renderCursorStack(Lnet/minecraft/client/gui/DrawContext;II)V",
-                    shift = At.Shift.BEFORE
-            )
-    )
+    @Inject(method = "renderMain", at = @At(value = "TAIL"))
     private void renderMoveItem(DrawContext guiGraphics, int mouseX, int mouseY, float deltaTicks, CallbackInfo ci) {
         ContainerItemTween tween = GUITweenUtility.getMoveItemTween();
 
