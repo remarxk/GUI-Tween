@@ -49,7 +49,7 @@ public class BossBarHudMixin {
 
     @Shadow
     @Final
-    private Map<UUID, ClientBossBar> bossBars;
+    Map<UUID, ClientBossBar> bossBars;
 
     @WrapOperation(
             method = "render",
@@ -136,22 +136,21 @@ public class BossBarHudMixin {
             method = "render",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/client/gui/DrawContext;drawTextWithShadow(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/text/Text;III)I"
+                    target = "Lnet/minecraft/client/gui/DrawContext;drawTextWithShadow(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/text/Text;III)V"
             )
     )
-    private int wrapText(DrawContext instance, TextRenderer font, Text text, int x, int y, int color, Operation<Integer> original) {
+    private void wrapText(DrawContext instance, TextRenderer font, Text text, int x, int y, int color, Operation<Void> original) {
         if (gUITween$alpha != null) {
             GUITweenUtility.pushFontAlpha(gUITween$alpha);
         }
 
-        int value = original.call(instance, font, text, x, y, color);
+        original.call(instance, font, text, x, y, color);
 
         if (gUITween$alpha != null) {
             GUITweenUtility.popFontAlpha();
 
             gUITween$alpha = null;
         }
-        return value;
     }
 
     @Inject(

@@ -166,6 +166,6 @@ public abstract class ChatScreenMixin extends Screen {
             return true;
         }
 
-        return original.call(key);
+        return original.call(instance, key);
     }
 }
