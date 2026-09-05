@@ -1,48 +1,80 @@
 package com.remarxk.guitween.config;
 
-import com.remarxk.guitween.GUITween;
-import net.minecraft.client.Minecraft;
+import com.remarxk.guitween.anim.GUITweenStyle;
+import com.remarxk.guitween.gui.DropdownWidget;
+import com.remarxk.guitween.util.Ease;
+import net.minecraft.client.OptionInstance;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.PopupScreen;
 import net.minecraft.network.chat.Component;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
+import net.neoforged.neoforge.common.ModConfigSpec;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public class GUITweenConfigFilter implements ConfigurationScreen.ConfigurationSectionScreen.Filter {
     @Override
     public ConfigurationScreen.ConfigurationSectionScreen.@Nullable Element filterEntry(ConfigurationScreen.ConfigurationSectionScreen.Context context, String key, ConfigurationScreen.ConfigurationSectionScreen.Element original) {
         if (key.contains("Ease")) {
+            ModConfigSpec.EnumValue<Ease> configValue = null;
+
+            for (var entry : context.entries()) {
+                if (entry.getKey().equals(key)) {
+                    configValue = (ModConfigSpec.EnumValue<Ease>) entry.getRawValue();
+                    break;
+                }
+            }
+
+            if (configValue == null)
+                return original;
+
+            final ModConfigSpec.EnumValue<Ease> easeConfig = configValue;
+
+            DropdownWidget dropdownWidget = new DropdownWidget(
+                    0, 0, Button.DEFAULT_WIDTH, Button.DEFAULT_HEIGHT,
+                    Arrays.stream(Ease.values())
+                            .map(e -> Component.literal(e.name()))
+                            .collect(Collectors.toList()),
+                    index -> easeConfig.set(Ease.values()[index])
+            );
+
+            dropdownWidget.setSelectedIndex(configValue.get().ordinal());
+
             return new ConfigurationScreen.ConfigurationSectionScreen.Element(
                     original.name(),
                     original.tooltip(),
-                    Button.builder(
-                            Component.literal("Ease"),
-                            new Button.OnPress() {
-                                @Override
-                                public void onPress(Button button) {
-                                    var popupScreen = new PopupScreen.Builder(context.parent(), original.name());
-                                    popupScreen.addButton(Component.literal("name1"), screen -> {
-                                        GUITween.LOGGER.info("点击1");
-                                        button.setMessage(Component.literal("name1"));
-                                        screen.onClose();
-                                    });
+                    dropdownWidget
+            );
+        }
+        else if (key.contains("style")) {
+            ModConfigSpec.EnumValue<GUITweenStyle> foundStyle = null;
 
-                                    popupScreen.addButton(Component.literal("name2"), screen -> {
-                                        GUITween.LOGGER.info("点击2");
-                                        button.setMessage(Component.literal("name2"));
-                                        screen.onClose();
-                                    });
+            for (var entry : context.entries()) {
+                if (entry.getKey().equals(key)) {
+                    foundStyle = (ModConfigSpec.EnumValue<GUITweenStyle>) entry.getRawValue();
+                    break;
+                }
+            }
 
-                                    popupScreen.addButton(Component.literal("name3"), screen -> {
-                                        GUITween.LOGGER.info("点击3");
-                                        button.setMessage(Component.literal("name3"));
-                                        screen.onClose();
-                                    });
+            final ModConfigSpec.EnumValue<GUITweenStyle> configValue = foundStyle;
+            if (configValue == null)
+                return original;
 
-                                    Minecraft.getInstance().setScreen(popupScreen.build());
-                                }
+            return new ConfigurationScreen.ConfigurationSectionScreen.Element(
+                    original.name(),
+                    original.tooltip(),
+                    new OptionInstance<>(
+                            "guitween.config.style",
+                            OptionInstance.noTooltip(),
+                            (caption, value) -> value.getTranslatedName(),
+                            new ConfigurationScreen.ConfigurationSectionScreen.Custom<>(Arrays.asList(GUITweenStyle.values())),
+                            configValue.get(),
+                            newValue -> {
+                                configValue.set(newValue);
+                                GUITweenConfig.applyStylePreset(newValue);
                             }
-                    ).build()
+                    )
             );
         }
 

@@ -1,15 +1,16 @@
 package com.remarxk.guitween.mixin;
 
-import com.remarxk.guitween.GUITween;
 import com.remarxk.guitween.GUITweenUtility;
 import com.remarxk.guitween.config.GUITweenConfig;
 import com.remarxk.guitween.util.TweenUtil;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import org.joml.Matrix3x2fStack;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -18,10 +19,19 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ChatScreen.class)
 public abstract class ChatScreenMixin extends Screen {
     @Unique
+    private boolean gUITween$inCloseTween;
+
+    @Unique
     private float gUITween$openTick;
 
     @Unique
     private boolean gUITween$inTween;
+
+    @Unique
+    private boolean gUITween$forceClose;
+
+    @Shadow
+    protected EditBox input;
 
     protected ChatScreenMixin(Component title) {
         super(title);
@@ -29,6 +39,8 @@ public abstract class ChatScreenMixin extends Screen {
 
     @Inject(method = "init", at = @At(value = "HEAD"))
     public void initOpenTick(CallbackInfo ci) {
+        gUITween$inCloseTween = false;
+        gUITween$forceClose = false;
         gUITween$openTick = 0;
     }
 
@@ -65,7 +77,7 @@ public abstract class ChatScreenMixin extends Screen {
             remap = false
     )
     public void renderBefore(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
-        if (!GUITweenConfig.isEnableChat())
+        if (!GUITweenConfig.isEnableChat() && !gUITween$inCloseTween)
             return;
 
         if (gUITween$openTick > GUITweenConfig.getChatOpenMaxDuration())
@@ -112,6 +124,52 @@ public abstract class ChatScreenMixin extends Screen {
 
         gUITween$popTween(guiGraphics);
         gUITween$inTween = false;
-        gUITween$openTick += GUITweenUtility.getDeltaTicks();
+
+        float sign = gUITween$inCloseTween ? -GUITweenConfig.chat.closeChatSpeed.get().floatValue() : 1;
+        gUITween$openTick = gUITween$openTick + sign * GUITweenUtility.getDeltaTicks();
+        if (gUITween$openTick < 0)
+            gUITween$openTick = 0;
+
+        if (gUITween$openTick <= 0 && gUITween$inCloseTween) {
+            gUITween$inCloseTween = false;
+            gUITween$forceClose = true;
+            onClose();
+        }
+    }
+
+    @Unique
+    private boolean guiTween$playCloseTween(){
+        if (!GUITweenConfig.isEnableCloseChat())
+            return false;
+
+        if (!GUITweenConfig.isEnableChat()) {
+            gUITween$openTick = GUITweenConfig.getChatOpenMaxDuration();
+        }
+
+        gUITween$inCloseTween = !gUITween$inCloseTween;
+
+        if (gUITween$inCloseTween) {
+            gUITween$openTick = Math.min(gUITween$openTick, GUITweenConfig.getChatOpenMaxDuration());
+        }
+
+        return gUITween$inCloseTween;
+    }
+
+    @Inject(
+            method = "onClose",
+            at = @At(
+                    value = "HEAD"
+            ),
+            cancellable = true)
+    private void onCloseBefore(CallbackInfo ci) {
+        if (gUITween$forceClose) {
+            gUITween$forceClose = false;
+            return;
+        }
+
+        if (guiTween$playCloseTween()) {
+            input.setValue("");
+            ci.cancel();
+        }
     }
 }

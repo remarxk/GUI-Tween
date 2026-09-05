@@ -2,12 +2,13 @@ package com.remarxk.guitween.mixin;
 
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.remarxk.guitween.GUITweenUtility;
-import com.remarxk.guitween.eventListener.HotbarChangeListener;
 import com.remarxk.guitween.anim.AttackTween;
 import com.remarxk.guitween.anim.Tween;
+import com.remarxk.guitween.anim.TweenPool;
 import com.remarxk.guitween.anim.UseTween;
 import com.remarxk.guitween.config.GUITweenConfig;
-import com.remarxk.guitween.anim.TweenPool;
+import com.remarxk.guitween.event.PlayGuiSoundEvent;
+import com.remarxk.guitween.eventListener.HotbarChangeListener;
 import com.remarxk.guitween.util.TweenUtil;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
@@ -18,6 +19,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.common.NeoForge;
 import org.joml.Matrix3x2fStack;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
@@ -52,6 +54,10 @@ public class GuiMixin {
                 hasTween = true;
 
                 scale = TweenUtil.tween(tween.startValue, tween.stopValue, tween.tick, tween.totalTick, tween.ease);
+
+                if (!tween.rewind && tween.tick == 0) {
+                    NeoForge.EVENT_BUS.post(new PlayGuiSoundEvent(PlayGuiSoundEvent.SoundType.SELECT_ITEM));
+                }
 
                 float deltaTicks = GUITweenUtility.getDeltaTicks();
                 if (!tween.rewind) {

@@ -23,6 +23,14 @@ public interface AbstractContainerScreenMixinAccess {
 
     public void setGUITween$openTick(float openTick);
 
+    public boolean gUITween$playCloseTween();
+
+    public boolean gUITween$inCloseTween();
+
+    public void gUITween$setNeedClose(boolean close);
+
+    public boolean gUITween$getNeedClose();
+
     public Slot getGUITween$lastHoverSlot();
 
     public void setGUITween$lastHoverSlot(Slot slot);

@@ -1,15 +1,20 @@
 package com.remarxk.guitween.config;
 
-import com.remarxk.guitween.GUITween;
 import com.remarxk.guitween.util.Ease;
-
+import com.remarxk.guitween.anim.GUITweenStyle;
+import com.remarxk.guitween.compat.SmoothSwappingCompat;
+import com.electronwill.nightconfig.core.Config;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
+
+import java.util.function.Consumer;
 
 public class GUITweenConfig {
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
     public static final ModConfigSpec.BooleanValue enable;
+
+    public static final ModConfigSpec.EnumValue<GUITweenStyle> style;
 
     public static final ModConfigSpec.BooleanValue enableDebugWindow;
 
@@ -29,14 +34,20 @@ public class GUITweenConfig {
     public static final ChatTweenConfig chat;
     public static final ModConfigSpec chatSpec;
 
+    /// boss
+    public static final BossTweenConfig boss;
+    public static final ModConfigSpec bossSpec;
+
     public static final ModConfigSpec SPEC;
 
     static {
-        GUITween.LOGGER.info("GUITweenConfig 初始化");
-
         enable = BUILDER
                 .translation("guitween.config.enable")
                 .define("enable", true);
+
+        style = BUILDER
+                .translation("guitween.config.style")
+                .defineEnum("style", GUITweenStyle.DEFAULT);
 
         enableDebugWindow = BUILDER
                 .translation("guitween.config.enableDebugWindow")
@@ -66,7 +77,21 @@ public class GUITweenConfig {
         chat = chatPair.getLeft();
         chatSpec = chatPair.getRight();
 
+        Pair<BossTweenConfig, ModConfigSpec> bossPair =
+                BUILDER.configure(BossTweenConfig::new);
+
+        boss = bossPair.getLeft();
+        bossSpec = bossPair.getRight();
+
         SPEC = BUILDER.build();
+    }
+
+    public static float getWindowTotalDuration() {
+        return Math.max(window.moveDuration.get().floatValue(), window.gradientDuration.get().floatValue());
+    }
+
+    public static float getJeiTotalDuration() {
+        return Math.max(window.jeiLeftMoveDuration.get().floatValue(), window.jeiRightMoveDuration.get().floatValue());
     }
 
     public static float getHoldItemTotalDuration() {
@@ -89,6 +114,14 @@ public class GUITweenConfig {
         return Math.max(chat.compMoveDuration.get().floatValue(), chat.compGradientDuration.get().floatValue());
     }
 
+    public static float getBossShowMaxDuration() {
+        return Math.max(boss.bossShowDuration.get().floatValue(), boss.bossShowFadeDuration.get().floatValue());
+    }
+
+    public static float getBossHideMaxDuration() {
+        return Math.max(boss.bossHideDuration.get().floatValue(), boss.bossHideFadeDuration.get().floatValue());
+    }
+
     public static boolean isDisableTweenWindow(String screenName) {
         return window.disableNames.get().contains(screenName);
     }
@@ -97,16 +130,87 @@ public class GUITweenConfig {
         return enable.get();
     }
 
+    public static void applyStylePreset(GUITweenStyle newStyle) {
+        resetSpec(windowSpec);
+        resetSpec(windowItemSpec);
+        resetSpec(hotbarSpec);
+        resetSpec(chatSpec);
+        resetSpec(bossSpec);
+        enableDebugWindow.set(false);
+
+        switch (newStyle) {
+            case SIMPLE -> {
+                applySimpleStyle();
+            }
+            case COMPLETE -> {
+                applyCompleteStyle();
+            }
+        }
+
+        SPEC.save();
+    }
+
+    private static void applySimpleStyle() {
+        window.moveEase.set(Ease.OUT_QUART);
+        window.jeiLeftMoveEase.set(Ease.OUT_QUART);
+        window.jeiRightMoveEase.set(Ease.OUT_QUART);
+
+        windowItem.enableSameItem.set(false);
+        windowItem.enableClickItem.set(false);
+        windowItem.enableFinish.set(false);
+        windowItem.enableDrag.set(false);
+    }
+
+    private static void applyCompleteStyle() {
+        window.enableCloseWindow.set(true);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void resetSpec(ModConfigSpec spec) {
+        forEachConfigValue(spec.getValues().valueMap().values(), cv -> {
+            if (cv.getPath().contains("style") || cv.getPath().contains("enable"))
+                return;
+            ((ModConfigSpec.ConfigValue<Object>) cv).set(((ModConfigSpec.ConfigValue<Object>) cv).getDefault());
+        });
+    }
+
+    private static void forEachConfigValue(Iterable<Object> values, Consumer<ModConfigSpec.ConfigValue<?>> consumer) {
+        for (Object value : values) {
+            if (value instanceof ModConfigSpec.ConfigValue<?> cv) {
+                consumer.accept(cv);
+            } else if (value instanceof Config innerConfig) {
+                forEachConfigValue(innerConfig.valueMap().values(), consumer);
+            }
+        }
+    }
+
     public static boolean isEnableWindow() {
         return isEnable() && window.enable.get();
     }
 
-    public static boolean isEnableJeiLeft() {
-        return isEnable() && window.enableJeiLeft.get();
+    public static boolean isEnableCloseWindow() {
+        return isEnable() && window.enableCloseWindow.get();
     }
 
+    public static boolean isEnableJei() {
+        return isEnable() && window.enableJei.get();
+    }
+
+    /**
+     * 兼容转发：1.21.11 旧的 REI/JEI mixin 仍调用左/右两个开关，
+     * 3.4.0 起统一为单一 JEI 面板开关。
+     */
+    @Deprecated
+    public static boolean isEnableJeiLeft() {
+        return isEnableJei();
+    }
+
+    /**
+     * 兼容转发：见 {@link #isEnableJeiLeft()}。
+     */
+    @Deprecated
     public static boolean isEnableJeiRight() {
-        return isEnable() && window.enableJeiRight.get();
+        return isEnableJei();
     }
 
     public static boolean isEnableDebugWindow() {
@@ -139,6 +243,18 @@ public class GUITweenConfig {
 
     public static boolean isEnableQuickCraft() {
         return isEnable() && windowItem.enableQuick.get();
+    }
+
+    public static boolean isEnableMoveItem() {
+        return isEnable() && windowItem.enableMove.get() && !SmoothSwappingCompat.isLoaded;
+    }
+
+    public static boolean isEnableFinishItem() {
+        return isEnable() && windowItem.enableFinish.get();
+    }
+
+    public static boolean isEnablePickupItem() {
+        return isEnable() && windowItem.enablePickup.get();
     }
 
     public static boolean isEnableHoldItem() {
@@ -179,5 +295,21 @@ public class GUITweenConfig {
 
     public static boolean isEnableChatComp() {
         return isEnable() && chat.enableChatComp.get();
+    }
+
+    public static boolean isEnableCloseChat() {
+        return isEnable() && chat.enableCloseChat.get();
+    }
+
+    public static boolean isEnableBossShow() {
+        return isEnable() && boss.enableBossShow.get();
+    }
+
+    public static boolean isEnableBossHide() {
+        return isEnable() && boss.enableBossHide.get();
+    }
+
+    public static boolean isEnableBossHurt() {
+        return isEnable() && boss.enableBossHurt.get();
     }
 }

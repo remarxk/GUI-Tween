@@ -52,6 +52,26 @@ public class WindowItemTweenConfig {
 
     public final ModConfigSpec.BooleanValue enableQuick;
 
+    public final ModConfigSpec.BooleanValue enableMove;
+
+    public final ModConfigSpec.DoubleValue moveDuration;
+
+    public final ModConfigSpec.EnumValue<Ease> moveEase;
+
+    public final ModConfigSpec.BooleanValue enableFinish;
+
+    public final ModConfigSpec.DoubleValue finishPunchStrength;
+
+    public final ModConfigSpec.DoubleValue finishDuration;
+
+    public final ModConfigSpec.BooleanValue enablePickup;
+
+    public final ModConfigSpec.DoubleValue pickupDuration;
+
+    public final ModConfigSpec.EnumValue<Ease> pickupEase;
+
+    public final ModConfigSpec.DoubleValue quickCraftDuration;
+
     public WindowItemTweenConfig(ModConfigSpec.Builder builder) {
         builder.translation("guitween.config.screenItemGroup").push("screenItemGroup");
 
@@ -150,6 +170,46 @@ public class WindowItemTweenConfig {
         enableQuick = builder
                 .translation("guitween.config.enableQuick")
                 .define("enableQuick", true);
+
+        enableMove = builder
+                .translation("guitween.config.enableMove")
+                .define("enableMove", true);
+
+        moveDuration = builder
+                .translation("guitween.config.moveDuration")
+                .defineInRange("moveDuration", 6d, 0, 1000d);
+
+        moveEase = builder
+                .translation("guitween.config.moveEase")
+                .defineEnum("moveEase", Ease.IN_OUT_SINE);
+
+        enableFinish = builder
+                .translation("guitween.config.enableFinish")
+                .define("enableFinish", true);
+
+        finishPunchStrength = builder
+                .translation("guitween.config.finishPunchStrength")
+                .defineInRange("finishPunchStrength", 0.2d, 0, 1000d);
+
+        finishDuration = builder
+                .translation("guitween.config.finishDuration")
+                .defineInRange("finishDuration", 6d, 0, 1000d);
+
+        enablePickup = builder
+                .translation("guitween.config.enablePickup")
+                .define("enablePickup", true);
+
+        pickupDuration = builder
+                .translation("guitween.config.pickupDuration")
+                .defineInRange("pickupDuration", 4d, 0, 1000d);
+
+        pickupEase = builder
+                .translation("guitween.config.pickupEase")
+                .defineEnum("pickupEase", Ease.IN_OUT_SINE);
+
+        quickCraftDuration = builder
+                .translation("guitween.config.quickCraftDuration")
+                .defineInRange("quickCraftDuration", 4d, 0, 1000d);
 
         builder.pop();
     }

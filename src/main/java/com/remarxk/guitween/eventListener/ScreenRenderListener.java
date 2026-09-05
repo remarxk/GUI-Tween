@@ -4,17 +4,18 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.remarxk.guitween.GUITween;
 import com.remarxk.guitween.GUITweenUtility;
 import com.remarxk.guitween.config.GUITweenConfig;
+import com.remarxk.guitween.event.PostScreenTickEvent;
 import com.remarxk.guitween.mixinAccess.AbstractContainerScreenMixinAccess;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
+import net.minecraft.util.Mth;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.ContainerScreenEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import org.joml.Matrix3x2fStack;
 
@@ -106,6 +107,32 @@ public class ScreenRenderListener {
 
         access.setGUITween$inTween(false);
 
-        access.setGUITween$openTick(access.getGUITween$openTick() + GUITweenUtility.getDeltaTicks());
+        float sign = access.gUITween$inCloseTween() ? -GUITweenConfig.window.closeWindowSpeed.get().floatValue() : 1;
+        float openTick = Mth.clamp(access.getGUITween$openTick() + sign * GUITweenUtility.getDeltaTicks(), 0, GUITweenConfig.getWindowTotalDuration());
+        access.setGUITween$openTick(openTick);
+        GUITweenUtility.openScreenTick = openTick;
+
+        GUITweenUtility.jeiOpenTick = Mth.clamp(GUITweenUtility.jeiOpenTick + sign * GUITweenUtility.getDeltaTicks(), 0, GUITweenConfig.getJeiTotalDuration());
+
+        if (sign < 0 && openTick <= 0 && GUITweenUtility.jeiOpenTick <= 0) {
+            access.gUITween$setNeedClose(true);
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void postScreenTick(PostScreenTickEvent event) {
+        Screen screen = event.getScreen();
+
+        if (!(screen instanceof AbstractContainerScreen<?> containerScreen)) {
+            return;
+        }
+
+        if (!(containerScreen instanceof AbstractContainerScreenMixinAccess access)) {
+            return;
+        }
+
+        if (access.gUITween$getNeedClose()) {
+            screen.onClose();
+        }
     }
 }

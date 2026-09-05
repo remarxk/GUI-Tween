@@ -23,7 +23,11 @@ public class WindowTweenConfig {
 
     public final ModConfigSpec.EnumValue<Ease> gradientEase;
 
-    public final ModConfigSpec.BooleanValue enableJeiLeft;
+    public final ModConfigSpec.BooleanValue enableCloseWindow;
+
+    public final ModConfigSpec.DoubleValue closeWindowSpeed;
+
+    public final ModConfigSpec.BooleanValue enableJei;
 
     public final ModConfigSpec.DoubleValue jeiLeftMoveDuration;
 
@@ -32,8 +36,6 @@ public class WindowTweenConfig {
     public final ModConfigSpec.DoubleValue jeiLeftMoveX;
 
     public final ModConfigSpec.DoubleValue jeiLeftMoveY;
-
-    public final ModConfigSpec.BooleanValue enableJeiRight;
 
     public final ModConfigSpec.DoubleValue jeiRightMoveDuration;
 
@@ -83,9 +85,9 @@ public class WindowTweenConfig {
                 .translation("guitween.config.windowGradientEase")
                 .defineEnum("windowGradientEase", Ease.IN_OUT_SINE);
 
-        enableJeiLeft = BUILDER
-                .translation("guitween.config.enableJeiLeft")
-                .define("enableJeiLeft", true);
+        enableJei = BUILDER
+                .translation("guitween.config.enableJei")
+                .define("enableJei", true);
 
         jeiLeftMoveDuration = BUILDER
                 .translation("guitween.config.jeiLeftMoveDuration")
@@ -103,10 +105,6 @@ public class WindowTweenConfig {
                 .translation("guitween.config.jeiLeftMoveY")
                 .defineInRange("jeiLeftMoveY", 0f, -10000, 10000);
 
-        enableJeiRight = BUILDER
-                .translation("guitween.config.enableJeiRight")
-                .define("enableJeiRight", true);
-
         jeiRightMoveDuration = BUILDER
                 .translation("guitween.config.jeiRightMoveDuration")
                 .defineInRange("jeiRightMoveDuration", 6d, 0, 1000d);
@@ -122,6 +120,14 @@ public class WindowTweenConfig {
         jeiRightMoveY = BUILDER
                 .translation("guitween.config.jeiRightMoveY")
                 .defineInRange("jeiRightMoveY", 0f, -10000, 10000);
+
+        enableCloseWindow = BUILDER
+                .translation("guitween.config.enableCloseWindow")
+                .define("enableCloseWindow", false);
+
+        closeWindowSpeed = BUILDER
+                .translation("guitween.config.closeWindowSpeed")
+                .defineInRange("closeWindowSpeed", 1.5d, 0, 1000d);
 
         BUILDER.pop();
     }

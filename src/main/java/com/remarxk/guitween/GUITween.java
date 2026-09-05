@@ -9,7 +9,9 @@ import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
+import com.remarxk.guitween.compat.SmoothSwappingCompat;
 import com.remarxk.guitween.config.GUITweenConfig;
+import com.remarxk.guitween.config.GUITweenConfigFilter;
 
 @Mod(GUITween.MODID)
 public class GUITween
@@ -20,11 +22,11 @@ public class GUITween
 
     public GUITween(IEventBus modEventBus, ModContainer modContainer)
     {
-        modContainer.registerConfig(ModConfig.Type.CLIENT, GUITweenConfig.SPEC);
-        modContainer.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
+        modEventBus.register(SmoothSwappingCompat.class);
 
-//        modContainer.registerExtensionPoint(IConfigScreenFactory.class, (mod, parent) -> {
-//            return new ConfigurationScreen(mod, parent, new GUITweenConfigFilter());
-//        });
+        modContainer.registerConfig(ModConfig.Type.CLIENT, GUITweenConfig.SPEC);
+        modContainer.registerExtensionPoint(IConfigScreenFactory.class, (mod, parent) -> {
+            return new ConfigurationScreen(mod, parent, new GUITweenConfigFilter());
+        });
     }
 }
