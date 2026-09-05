@@ -36,6 +36,51 @@ public class ContainerItemTween {
         quickCraftTweenMap.clear();
     }
 
+    /**
+     * 直接清空所有“假物品”与等待移除记录（动画被禁用/界面异常时兜底，防止槽位被永久隐藏）。
+     */
+    public void clearAllFakeItem() {
+        fakeItems.clear();
+        waitRemove.clear();
+    }
+
+    /**
+     * 清理已没有飞行任务对应的空假物品（例如中间路径异常导致 EMPTY 残留时，槽位不再被隐藏）。
+     */
+    public void removeStaleEmptyFake(ScreenHandler menu) {
+        if (fakeItems.isEmpty()) {
+            return;
+        }
+
+        List<Slot> stale = new ArrayList<>();
+        for (var entry : fakeItems.entrySet()) {
+            Slot slot = entry.getKey();
+            ItemStack value = entry.getValue();
+            if (value != null && value.isEmpty() && !hasActiveTweenOn(slot.id)) {
+                stale.add(slot);
+            }
+        }
+
+        for (Slot slot : stale) {
+            fakeItems.remove(slot);
+        }
+    }
+
+    private boolean hasActiveTweenOn(int slotIndex) {
+        for (var entry : toMap.entrySet()) {
+            int to = entry.getKey();
+            for (Single single : entry.getValue().values()) {
+                if (!single.rewind && to == slotIndex) {
+                    return true;
+                }
+                if (single.rewind && single.from == slotIndex) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public void addMoveTween(int from, int to, ItemStack itemStack) {
         if (!GUITweenClient.CONFIG.isEnableMoveItem())
             return;

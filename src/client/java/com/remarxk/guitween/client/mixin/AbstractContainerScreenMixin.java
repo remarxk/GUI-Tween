@@ -911,33 +911,43 @@ public abstract class AbstractContainerScreenMixin <T extends ScreenHandler> ext
     )
     private void renderMoveItem(DrawContext guiGraphics, int mouseX, int mouseY, float deltaTicks, CallbackInfo ci) {
         ContainerItemTween tween = GUITweenUtility.getMoveItemTween();
-        HashMap<Integer, HashMap<Integer, ContainerItemTween.Single>> toMap = tween.getToMap();
-        if (!toMap.isEmpty()) {
-            toMap.forEach((to, fromList) -> {
-                int targetX;
-                int targetY;
-                if (to != -1) {
-                    Slot toSlot = handler.getSlot(to);
-                    targetX = toSlot.x + this.x;
-                    targetY = toSlot.y + this.y;
-                }
-                else {
-                    int i2 = handler.getCursorStack().isEmpty() ? 8 : 16;
-                    targetX = mouseX - 8;
-                    targetY = mouseY - i2;
-                }
 
-                for (ContainerItemTween.Single single : fromList.values()) {
-                    Slot fromSlot = handler.getSlot(single.from);
-                    Tuple<Integer, Integer> pos = tween.getMoveTweenValue(fromSlot.x + this.x, fromSlot.y + this.y, targetX, targetY, single, to, handler);
-                    if (pos != null) {
-                        drawItem(guiGraphics, single.itemStack, pos.getA(), pos.getB(), null);
-                    }
-                }
-            });
+        if (!GUITweenClient.CONFIG.isEnableMoveItem()) {
+            tween.clearAllFakeItem();
+            return;
         }
 
+        HashMap<Integer, HashMap<Integer, ContainerItemTween.Single>> toMap = tween.getToMap();
+        if (toMap.isEmpty()) {
+            tween.clearAllFakeItem();
+            return;
+        }
+
+        toMap.forEach((to, fromList) -> {
+            int targetX;
+            int targetY;
+            if (to != -1) {
+                Slot toSlot = handler.getSlot(to);
+                targetX = toSlot.x + this.x;
+                targetY = toSlot.y + this.y;
+            }
+            else {
+                int i2 = handler.getCursorStack().isEmpty() ? 8 : 16;
+                targetX = mouseX - 8;
+                targetY = mouseY - i2;
+            }
+
+            for (ContainerItemTween.Single single : fromList.values()) {
+                Slot fromSlot = handler.getSlot(single.from);
+                Tuple<Integer, Integer> pos = tween.getMoveTweenValue(fromSlot.x + this.x, fromSlot.y + this.y, targetX, targetY, single, to, handler);
+                if (pos != null) {
+                    drawItem(guiGraphics, single.itemStack, pos.getA(), pos.getB(), null);
+                }
+            }
+        });
+
         tween.removeUnuseFakeItem(handler);
+        tween.removeStaleEmptyFake(handler);
     }
 
     @WrapOperation(
