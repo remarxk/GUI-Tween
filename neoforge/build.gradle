@@ -52,8 +52,8 @@ repositories {
 }
 
 dependencies {
-    compileOnly "curse.maven:jei-238222:7861613"
-    runtimeOnly "curse.maven:jei-238222:7861613"
+    compileOnly "curse.maven:jei-238222:8767759"
+    runtimeOnly "curse.maven:jei-238222:8767759"
 }
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }

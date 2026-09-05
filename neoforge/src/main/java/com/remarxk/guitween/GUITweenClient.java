@@ -1,5 +1,6 @@
 package com.remarxk.guitween;
 
+import com.remarxk.guitween.compat.SmoothSwappingCompat;
 import com.remarxk.guitween.config.GUITweenConfig;
 import com.remarxk.guitween.config.GUITweenConfigFilter;
 import com.remarxk.guitween.config.NeoForgeConfigAdapter;
@@ -15,6 +16,7 @@ import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
@@ -29,6 +31,8 @@ public class GUITweenClient {
     public GUITweenClient(ModContainer container) {
         container.registerConfig(ModConfig.Type.CLIENT, NeoforgeGUITweenConfig.SPEC);
         container.registerExtensionPoint(IConfigScreenFactory.class, (mod, parent) -> new ConfigurationScreen(mod, parent, new GUITweenConfigFilter()));
+
+        SmoothSwappingCompat.isLoaded = ModList.get().isLoaded("smoothswapping");
 
         GUITweenConfig.setConfig(new NeoForgeConfigAdapter());
     }
@@ -45,6 +49,7 @@ public class GUITweenClient {
     public static class ClientTickEventListener {
         @SubscribeEvent
         public static void onClientTick(final ClientTickEvent.Post event) {
+            GUITweenConfig.checkStyleUpdate();
             HotbarChangeListener.onPlayerTick(Minecraft.getInstance());
         }
     }

@@ -34,7 +34,7 @@ dependencies {
     compileOnly "org.ow2.asm:asm:9.5"
     compileOnly "org.ow2.asm:asm-tree:9.5"
 
-    compileOnly "curse.maven:jei-238222:7861613"
+    compileOnly "curse.maven:jei-238222:8767759"
 }
 
 configurations {

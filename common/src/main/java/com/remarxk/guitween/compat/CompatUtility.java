@@ -29,11 +29,23 @@ public class CompatUtility {
         if (GUITweenUtility.openScreenName == null)
             return jeiTween;
 
-        if (!GUITweenConfig.isEnableJeiLeft())
+        if (!GUITweenConfig.isEnableJei())
             return jeiTween;
 
-        float totalTick = Math.max(GUITweenConfig.jeiLeftMoveDuration(), 1);
-        float progress = GUITweenUtility.openScreenTick / totalTick;
+        if (GUITweenUtility.isWindowClosing) {
+            float duration = GUITweenConfig.closeJeiMoveDuration();
+            float total = GUITweenConfig.getCloseJeiTotalDuration();
+            float elapsed = Math.max(0, total - GUITweenUtility.closeJeiTick);
+            float progress = duration <= 0 ? 1 : Math.min(1, elapsed / duration);
+
+            jeiTween.inTween = true;
+            jeiTween.dx = TweenUtil.tween(0, GUITweenConfig.closeJeiMoveX(), progress, GUITweenConfig.closeJeiMoveEase());
+            jeiTween.dy = TweenUtil.tween(0, GUITweenConfig.closeJeiMoveY(), progress, GUITweenConfig.closeJeiMoveEase());
+            return jeiTween;
+        }
+
+        float totalTick = Math.max(GUITweenConfig.jeiMoveDuration(), 1);
+        float progress = GUITweenUtility.jeiOpenTick / totalTick;
 
         if (progress > 1){
             return jeiTween;
@@ -41,8 +53,8 @@ public class CompatUtility {
 
         jeiTween.inTween = true;
 
-        float dx = TweenUtil.tween(GUITweenConfig.jeiLeftMoveX(), 0, progress, GUITweenConfig.jeiLeftMoveEase());
-        float dY = TweenUtil.tween(GUITweenConfig.jeiLeftMoveY(), 0, progress, GUITweenConfig.jeiLeftMoveEase());
+        float dx = TweenUtil.tween(GUITweenConfig.jeiMoveX(), 0, progress, GUITweenConfig.jeiMoveEase());
+        float dY = TweenUtil.tween(GUITweenConfig.jeiMoveY(), 0, progress, GUITweenConfig.jeiMoveEase());
 
         jeiTween.dx = dx;
         jeiTween.dy = dY;
@@ -56,11 +68,24 @@ public class CompatUtility {
         if (GUITweenUtility.openScreenName == null)
             return jeiTween;
 
-        if (!GUITweenConfig.isEnableJeiRight())
+        if (!GUITweenConfig.isEnableJei())
             return jeiTween;
 
-        float totalTick = Math.max(GUITweenConfig.jeiRightMoveDuration(), 1);
-        float progress = GUITweenUtility.openScreenTick / totalTick;
+        if (GUITweenUtility.isWindowClosing) {
+            float duration = GUITweenConfig.closeJeiMoveDuration();
+            float total = GUITweenConfig.getCloseJeiTotalDuration();
+            float elapsed = Math.max(0, total - GUITweenUtility.closeJeiTick);
+            float progress = duration <= 0 ? 1 : Math.min(1, elapsed / duration);
+
+            jeiTween.inTween = true;
+            // X 自动镜像：配置按左侧方向填写，右侧自动取反
+            jeiTween.dx = TweenUtil.tween(0, -GUITweenConfig.closeJeiMoveX(), progress, GUITweenConfig.closeJeiMoveEase());
+            jeiTween.dy = TweenUtil.tween(0, GUITweenConfig.closeJeiMoveY(), progress, GUITweenConfig.closeJeiMoveEase());
+            return jeiTween;
+        }
+
+        float totalTick = Math.max(GUITweenConfig.jeiMoveDuration(), 1);
+        float progress = GUITweenUtility.jeiOpenTick / totalTick;
 
         if (progress > 1){
             return jeiTween;
@@ -68,8 +93,9 @@ public class CompatUtility {
 
         jeiTween.inTween = true;
 
-        jeiTween.dx = TweenUtil.tween(GUITweenConfig.jeiRightMoveX(), 0, progress, GUITweenConfig.jeiRightMoveEase());
-        jeiTween.dy = TweenUtil.tween(GUITweenConfig.jeiRightMoveY(), 0, progress, GUITweenConfig.jeiRightMoveEase());
+        // X 自动镜像：配置按左侧方向填写，右侧自动取反
+        jeiTween.dx = TweenUtil.tween(-GUITweenConfig.jeiMoveX(), 0, progress, GUITweenConfig.jeiMoveEase());
+        jeiTween.dy = TweenUtil.tween(GUITweenConfig.jeiMoveY(), 0, progress, GUITweenConfig.jeiMoveEase());
 
         return jeiTween;
     }

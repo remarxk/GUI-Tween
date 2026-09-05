@@ -1,5 +1,6 @@
 package com.remarxk.guitween.config;
 
+import com.remarxk.guitween.anim.GUITweenStyle;
 import com.remarxk.guitween.util.Ease;
 
 import java.util.List;
@@ -10,6 +11,10 @@ public interface IGUITweenConfig {
     boolean enable();
     boolean enableDebugWindow();
     boolean isEnableDebugWindow();
+
+    GUITweenStyle style();
+
+    void applyStylePreset(GUITweenStyle newStyle);
 
     // ===== window =====
     boolean enableWindow();
@@ -24,19 +29,25 @@ public interface IGUITweenConfig {
     Ease windowGradientEase();
 
     boolean enableCloseWindow();
-    float closeWindowSpeed();
 
-    boolean enableJeiLeft();
-    float jeiLeftMoveDuration();
-    Ease jeiLeftMoveEase();
-    float jeiLeftMoveX();
-    float jeiLeftMoveY();
+    float closeMoveDuration();
+    Ease closeMoveEase();
+    float closeMoveX();
+    float closeMoveY();
 
-    boolean enableJeiRight();
-    float jeiRightMoveDuration();
-    Ease jeiRightMoveEase();
-    float jeiRightMoveX();
-    float jeiRightMoveY();
+    float closeGradientDuration();
+    Ease closeGradientEase();
+
+    boolean enableJei();
+    float jeiMoveDuration();
+    Ease jeiMoveEase();
+    float jeiMoveX();
+    float jeiMoveY();
+
+    float closeJeiMoveDuration();
+    Ease closeJeiMoveEase();
+    float closeJeiMoveX();
+    float closeJeiMoveY();
 
     // ===== screen item =====
     boolean enableHover();
@@ -69,6 +80,16 @@ public interface IGUITweenConfig {
     float sameItemShakeWaitDuration();
 
     boolean enableQuick();
+    boolean enableMove();
+    float moveDuration();
+    Ease moveEase();
+    boolean enableFinish();
+    float finishPunchStrength();
+    float finishDuration();
+    boolean enablePickup();
+    float pickupDuration();
+    Ease pickupEase();
+    float quickCraftDuration();
 
     // ===== hotbar =====
     boolean enableHoldItem();
@@ -149,9 +170,19 @@ public interface IGUITweenConfig {
 
     // ===== 默认逻辑（复用 Fabric）=====
     default float getWindowTotalDuration() {
-        float windowMax = Math.max(windowMoveDuration(), windowGradientDuration());
-        float jeiMax = Math.max(jeiLeftMoveDuration(), jeiRightMoveDuration());
-        return Math.max(windowMax, jeiMax);
+        return Math.max(windowMoveDuration(), windowGradientDuration());
+    }
+
+    default float getJeiTotalDuration() {
+        return jeiMoveDuration();
+    }
+
+    default float getCloseWindowTotalDuration() {
+        return Math.max(closeMoveDuration(), closeGradientDuration());
+    }
+
+    default float getCloseJeiTotalDuration() {
+        return closeJeiMoveDuration();
     }
 
     default float getHoldItemTotalDuration() {
@@ -195,12 +226,8 @@ public interface IGUITweenConfig {
         return enable() && enableCloseWindow();
     }
 
-    default boolean isEnableJeiLeft() {
-        return enable() && enableJeiLeft();
-    }
-
-    default boolean isEnableJeiRight() {
-        return enable() && enableJeiRight();
+    default boolean isEnableJei() {
+        return enable() && enableJei();
     }
 
     default boolean isEnableHoverItem() {
@@ -229,6 +256,18 @@ public interface IGUITweenConfig {
 
     default boolean isEnableQuickCraft() {
         return enable() && enableQuick();
+    }
+
+    default boolean isEnableMoveItem() {
+        return enable() && enableMove();
+    }
+
+    default boolean isEnableFinishItem() {
+        return enable() && enableFinish();
+    }
+
+    default boolean isEnablePickupItem() {
+        return enable() && enablePickup();
     }
 
     default boolean isEnableHoldItem() {

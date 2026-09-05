@@ -4,57 +4,14 @@ import com.remarxk.guitween.GUITweenUtility;
 import com.remarxk.guitween.compat.CompatUtility;
 import com.remarxk.guitween.config.GUITweenConfig;
 import com.remarxk.guitween.mixinAccess.AbstractContainerScreenMixinAccess;
-import com.remarxk.guitween.util.DebugUtil;
-import com.remarxk.guitween.util.TweenUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
-import net.minecraft.util.Mth;
 import org.joml.Matrix3x2fStack;
 
 public class ScreenRenderListener {
-    public static void postRenderBackground(Screen screen, GuiGraphicsExtractor drawContext, int mouseX, int mouseY, float tickDelta) {
-        if (!(screen instanceof AbstractContainerScreen<?> containerScreen))
-            return;
-
-        if (!(containerScreen instanceof AbstractContainerScreenMixinAccess access)) {
-            return;
-        }
-
-        String gUITween$screenName = access.getGUITween$screenName();
-        float gUITween$openTick = access.getGUITween$openTick();
-
-        GUITweenUtility.setOpenScreen(gUITween$screenName, gUITween$openTick);
-
-        if (!GUITweenConfig.isEnableWindow())
-            return;
-
-        if (access.getGUITween$isDisableScreenTween())
-            return;
-
-        float moveProgress = gUITween$openTick / GUITweenConfig.windowMoveDuration();
-        float gradientProgress = gUITween$openTick / GUITweenConfig.windowGradientDuration();
-
-        if (moveProgress >= 1 && gradientProgress >= 1)
-            return;
-
-        access.setGUITween$inTween(true);
-
-        float dx = TweenUtil.tween(GUITweenConfig.windowMoveX(), 0, moveProgress, GUITweenConfig.windowMoveEase());
-        float dy = TweenUtil.tween(GUITweenConfig.windowMoveY(), 0, moveProgress, GUITweenConfig.windowMoveEase());
-
-        Matrix3x2fStack poseStack = drawContext.pose();
-
-        // 动画变换
-        poseStack.pushMatrix();
-        poseStack.translate(dx, dy);  // 上移
-
-        float alpha = TweenUtil.tween(0.05f, 1, gradientProgress, GUITweenConfig.windowGradientEase());
-        GUITweenUtility.pushAlpha(alpha);
-    }
-    
     public static void postRenderScreen(Screen screen, GuiGraphicsExtractor drawContext, int mouseX, int mouseY, float tickDelta) {
         if (!(screen instanceof AbstractContainerScreen<?> containerScreen)) {
             return;
@@ -96,12 +53,25 @@ public class ScreenRenderListener {
 
         access.setGUITween$inTween(false);
 
-        float sign = access.gUITween$inCloseTween() ? -GUITweenConfig.closeWindowSpeed() : 1;
-        float openTick = Mth.clamp(access.getGUITween$openTick() + sign * GUITweenUtility.getDeltaTicks(),0, GUITweenConfig.getWindowTotalDuration());
-        access.setGUITween$openTick(openTick);
+        boolean closing = access.gUITween$inCloseTween();
+        GUITweenUtility.isWindowClosing = closing;
+        float deltaTicks = GUITweenUtility.getDeltaTicks();
 
-        if (sign < 0 && openTick <= 0) {
-            access.gUITween$setNeedClose(true);
+        if (closing) {
+            // 关闭动画使用独立计时：按真实帧数推进，速度恒为 1（不再有“关闭速度”）
+            GUITweenUtility.closeScreenTick = Math.max(0, GUITweenUtility.closeScreenTick - deltaTicks);
+            GUITweenUtility.closeJeiTick = Math.max(0, GUITweenUtility.closeJeiTick - deltaTicks);
+
+            if (GUITweenUtility.closeScreenTick <= 0 && GUITweenUtility.closeJeiTick <= 0) {
+                access.gUITween$setNeedClose(true);
+            }
+        }
+        else {
+            GUITweenUtility.closeScreenTick = 0;
+            GUITweenUtility.closeJeiTick = 0;
+
+            GUITweenUtility.openScreenTick = Math.min(GUITweenConfig.getWindowTotalDuration(), GUITweenUtility.openScreenTick + deltaTicks);
+            GUITweenUtility.jeiOpenTick = Math.min(GUITweenConfig.getJeiTotalDuration(), GUITweenUtility.jeiOpenTick + deltaTicks);
         }
     }
 

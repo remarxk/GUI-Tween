@@ -1,5 +1,6 @@
 package com.remarxk.guitween.config;
 
+import com.remarxk.guitween.anim.GUITweenStyle;
 import com.remarxk.guitween.util.Ease;
 
 import java.util.List;
@@ -20,11 +21,20 @@ public class FabricConfigAdapter implements IGUITweenConfig {
         return c.isEnableDebugWindow();
     }
 
+    @Override
+    public GUITweenStyle style() {
+        return c.style.get();
+    }
+
+    @Override
+    public void applyStylePreset(GUITweenStyle newStyle) {
+        c.applyStylePreset(newStyle);
+    }
+
     // ===== window =====
     @Override public boolean enableWindow() { return c.enableWindow; }
     @Override public boolean enableCloseWindow() { return c.enableCloseWindow; }
-    @Override public boolean enableJeiLeft() { return c.enableJeiLeft; }
-    @Override public boolean enableJeiRight() { return c.enableJeiRight; }
+    @Override public boolean enableJei() { return c.enableJei; }
 
     @Override public float windowMoveDuration() { return c.windowMoveDuration; }
     @Override public Ease windowMoveEase() { return c.windowMoveEase.get(); }
@@ -34,17 +44,22 @@ public class FabricConfigAdapter implements IGUITweenConfig {
     @Override public float windowGradientDuration() { return c.windowGradientDuration; }
     @Override public Ease windowGradientEase() { return c.windowGradientEase.get(); }
 
-    @Override public float closeWindowSpeed() { return c.closeWindowSpeed; }
+    @Override public float closeMoveDuration() { return c.closeMoveDuration; }
+    @Override public Ease closeMoveEase() { return c.closeMoveEase.get(); }
+    @Override public float closeMoveX() { return c.closeMoveX; }
+    @Override public float closeMoveY() { return c.closeMoveY; }
+    @Override public float closeGradientDuration() { return c.closeGradientDuration; }
+    @Override public Ease closeGradientEase() { return c.closeGradientEase.get(); }
 
-    @Override public float jeiLeftMoveDuration() { return c.jeiLeftMoveDuration; }
-    @Override public Ease jeiLeftMoveEase() { return c.jeiLeftMoveEase.get(); }
-    @Override public float jeiLeftMoveX() { return c.jeiLeftMoveX; }
-    @Override public float jeiLeftMoveY() { return c.jeiLeftMoveY; }
+    @Override public float jeiMoveDuration() { return c.jeiMoveDuration; }
+    @Override public Ease jeiMoveEase() { return c.jeiMoveEase.get(); }
+    @Override public float jeiMoveX() { return c.jeiMoveX; }
+    @Override public float jeiMoveY() { return c.jeiMoveY; }
 
-    @Override public float jeiRightMoveDuration() { return c.jeiRightMoveDuration; }
-    @Override public Ease jeiRightMoveEase() { return c.jeiRightMoveEase.get(); }
-    @Override public float jeiRightMoveX() { return c.jeiRightMoveX; }
-    @Override public float jeiRightMoveY() { return c.jeiRightMoveY; }
+    @Override public float closeJeiMoveDuration() { return c.closeJeiMoveDuration; }
+    @Override public Ease closeJeiMoveEase() { return c.closeJeiMoveEase.get(); }
+    @Override public float closeJeiMoveX() { return c.closeJeiMoveX; }
+    @Override public float closeJeiMoveY() { return c.closeJeiMoveY; }
 
     @Override public List<String> disableNames() { return c.disableNames; }
 
@@ -73,11 +88,22 @@ public class FabricConfigAdapter implements IGUITweenConfig {
 
     @Override public boolean enableSameItem() { return c.enableSameItem; }
     @Override public boolean enableQuick() { return c.enableQuick; }
+    @Override public boolean enableMove() { return c.enableMove; }
+    @Override public boolean enableFinish() { return c.enableFinish; }
+    @Override public boolean enablePickup() { return c.enablePickup; }
     @Override public float sameItemDelay() { return c.sameItemDelay; }
     @Override public float sameItemShakeStrength() { return c.sameItemShakeStrength; }
     @Override public float sameItemShakeDuration() { return c.sameItemShakeDuration; }
     @Override public float sameItemShakeFrequency() { return c.sameItemShakeFrequency; }
     @Override public float sameItemShakeWaitDuration() { return c.sameItemShakeWaitDuration; }
+
+    @Override public float moveDuration() { return c.moveDuration; }
+    @Override public Ease moveEase() { return c.moveEase.get(); }
+    @Override public float finishPunchStrength() { return c.finishPunchStrength; }
+    @Override public float finishDuration() { return c.finishDuration; }
+    @Override public float pickupDuration() { return c.pickupDuration; }
+    @Override public Ease pickupEase() { return c.pickupEase.get(); }
+    @Override public float quickCraftDuration() { return c.quickCraftDuration; }
 
     // ===== hotbar =====
     @Override public boolean enableHoldItem() { return c.enableHoldItem; }

@@ -1,5 +1,7 @@
 package com.remarxk.guitween.config;
 
+import com.remarxk.guitween.anim.GUITweenStyle;
+import com.remarxk.guitween.util.Ease;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -7,6 +9,8 @@ public class NeoforgeGUITweenConfig {
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
     public static final ModConfigSpec.BooleanValue enable;
+
+    public static final ModConfigSpec.EnumValue<GUITweenStyle> style;
 
     public static final ModConfigSpec.BooleanValue enableDebugWindow;
 
@@ -36,6 +40,10 @@ public class NeoforgeGUITweenConfig {
         enable = BUILDER
                 .translation("guitween.config.enable")
                 .define("enable", true);
+
+        style = BUILDER
+                .translation("guitween.config.style")
+                .defineEnum("style", GUITweenStyle.DEFAULT);
 
         enableDebugWindow = BUILDER
                 .translation("guitween.config.enableDebugWindow")
@@ -94,6 +102,65 @@ public class NeoforgeGUITweenConfig {
         return Math.max(chat.compMoveDuration.get().floatValue(), chat.compGradientDuration.get().floatValue());
     }
 
+    public static float getJeiTotalDuration() {
+        return window.jeiMoveDuration.get().floatValue();
+    }
+
+    public static void applyStylePreset(GUITweenStyle newStyle) {
+        resetSpec(windowSpec);
+        resetSpec(windowItemSpec);
+        resetSpec(hotbarSpec);
+        resetSpec(chatSpec);
+        resetSpec(bossSpec);
+        enableDebugWindow.set(false);
+
+        switch (newStyle) {
+            case SIMPLE -> {
+                applySimpleStyle();
+            }
+            case COMPLETE -> {
+                applyCompleteStyle();
+            }
+        }
+
+        SPEC.save();
+    }
+
+    private static void applySimpleStyle() {
+        window.moveEase.set(Ease.OUT_QUART);
+        window.closeMoveEase.set(Ease.OUT_QUART);
+        window.jeiMoveEase.set(Ease.OUT_QUART);
+        window.closeJeiMoveEase.set(Ease.OUT_QUART);
+
+        windowItem.enableSameItem.set(false);
+        windowItem.enableClickItem.set(false);
+        windowItem.enableFinish.set(false);
+        windowItem.enableDrag.set(false);
+    }
+
+    private static void applyCompleteStyle() {
+        window.enableCloseWindow.set(true);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void resetSpec(ModConfigSpec spec) {
+        forEachConfigValue(spec.getValues().valueMap().values(), cv -> {
+            if (cv.getPath().contains("style") || cv.getPath().contains("enable"))
+                return;
+            ((ModConfigSpec.ConfigValue<Object>) cv).set(((ModConfigSpec.ConfigValue<Object>) cv).getDefault());
+        });
+    }
+
+    private static void forEachConfigValue(Iterable<Object> values, java.util.function.Consumer<ModConfigSpec.ConfigValue<?>> consumer) {
+        for (Object value : values) {
+            if (value instanceof ModConfigSpec.ConfigValue<?> cv) {
+                consumer.accept(cv);
+            } else if (value instanceof com.electronwill.nightconfig.core.Config innerConfig) {
+                forEachConfigValue(innerConfig.valueMap().values(), consumer);
+            }
+        }
+    }
+
     public static boolean isDisableTweenWindow(String screenName) {
         return window.disableNames.get().contains(screenName);
     }
@@ -106,12 +173,8 @@ public class NeoforgeGUITweenConfig {
         return isEnable() && window.enable.get();
     }
 
-    public static boolean isEnableJeiLeft() {
-        return isEnable() && window.enableJeiLeft.get();
-    }
-
-    public static boolean isEnableJeiRight() {
-        return isEnable() && window.enableJeiRight.get();
+    public static boolean isEnableJei() {
+        return isEnable() && window.enableJei.get();
     }
 
     public static boolean isEnableDebugWindow() {
@@ -144,6 +207,18 @@ public class NeoforgeGUITweenConfig {
 
     public static boolean isEnableQuickCraft() {
         return isEnable() && windowItem.enableQuick.get();
+    }
+
+    public static boolean isEnableMoveItem() {
+        return isEnable() && windowItem.enableMove.get();
+    }
+
+    public static boolean isEnableFinishItem() {
+        return isEnable() && windowItem.enableFinish.get();
+    }
+
+    public static boolean isEnablePickupItem() {
+        return isEnable() && windowItem.enablePickup.get();
     }
 
     public static boolean isEnableHoldItem() {

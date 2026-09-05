@@ -80,8 +80,9 @@ public abstract class ChatScreenMixin extends Screen {
             remap = false
     )
     public void renderBefore(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a, CallbackInfo ci) {
-        if (!GUITweenConfig.isEnableChat())
+        if (!GUITweenConfig.isEnableChat() && !gUITween$inCloseTween) {
             return;
+        }
 
         if (gUITween$openTick > GUITweenConfig.getChatOpenMaxDuration())
             return;
@@ -138,8 +139,12 @@ public abstract class ChatScreenMixin extends Screen {
 
     @Unique
     private boolean guiTween$playCloseTween(){
-        if (!GUITweenConfig.isEnableCloseChat() || !GUITweenConfig.isEnableChat())
+        if (!GUITweenConfig.isEnableCloseChat())
             return false;
+
+        if (!GUITweenConfig.isEnableChat()) {
+            gUITween$openTick = GUITweenConfig.getChatOpenMaxDuration();
+        }
 
         gUITween$inCloseTween = !gUITween$inCloseTween;
 

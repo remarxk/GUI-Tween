@@ -1,6 +1,7 @@
 package com.remarxk.guitween.client;
 
 import com.remarxk.guitween.Constants;
+import com.remarxk.guitween.compat.SmoothSwappingCompat;
 import com.remarxk.guitween.config.FabricConfigAdapter;
 import com.remarxk.guitween.config.FabricGUITweenConfig;
 import com.remarxk.guitween.config.GUITweenConfig;
@@ -15,6 +16,7 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
 
@@ -23,6 +25,8 @@ public class GUITweenClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        SmoothSwappingCompat.isLoaded = FabricLoader.getInstance().isModLoaded("smoothswapping");
+
         GUITweenConfig.setConfig(new FabricConfigAdapter(CONFIG));
 
         registerReloadRes();
@@ -34,10 +38,12 @@ public class GUITweenClient implements ClientModInitializer {
     }
 
     public void registerEvents() {
-        ClientTickEvents.END_CLIENT_TICK.register(HotbarChangeListener::onPlayerTick);
+        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            GUITweenConfig.checkStyleUpdate();
+            HotbarChangeListener.onPlayerTick(client);
+        });
 
         ScreenEvents.BEFORE_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
-//            ScreenEvents.afterBackground(screen).register(ScreenRenderListener::postRenderBackground);
             ScreenEvents.afterTick(screen).register(ScreenRenderListener::postScreenTick);
             ScreenEvents.afterExtract(screen).register(ScreenRenderListener::postRenderScreen);
         });

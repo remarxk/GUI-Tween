@@ -17,12 +17,51 @@ public class BookmarkOverlayMixin {
     private boolean gUITween$inTween;
 
     @Inject(
-            method = "drawScreen",
+            method = "drawBackground",
             at = @At(
                     value = "HEAD"
-            )
+            ),
+            require = 0
     )
-    public void drawScreenBefore(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
+    public void drawBackgroundBefore(GuiGraphicsExtractor guiGraphics, CallbackInfo ci) {
+        gUITween$startTween(guiGraphics);
+    }
+
+    @Inject(
+            method = "drawBackground",
+            at = @At(
+                    value = "TAIL"
+            ),
+            require = 0
+    )
+    public void drawBackgroundAfter(GuiGraphicsExtractor guiGraphics, CallbackInfo ci) {
+        gUITween$endTween(guiGraphics);
+    }
+
+    @Inject(
+            method = "drawForeground",
+            at = @At(
+                    value = "HEAD"
+            ),
+            require = 0
+    )
+    public void drawForegroundBefore(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
+        gUITween$startTween(guiGraphics);
+    }
+
+    @Inject(
+            method = "drawForeground",
+            at = @At(
+                    value = "TAIL"
+            ),
+            require = 0
+    )
+    public void drawForegroundAfter(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
+        gUITween$endTween(guiGraphics);
+    }
+
+    @Unique
+    private void gUITween$startTween(GuiGraphicsExtractor guiGraphics) {
         CompatUtility.JeiTween jeiTween = CompatUtility.getJeiLeftTween();
         if (jeiTween.inTween) {
             gUITween$inTween = true;
@@ -33,13 +72,8 @@ public class BookmarkOverlayMixin {
         }
     }
 
-    @Inject(
-            method = "drawScreen",
-            at = @At(
-                    value = "TAIL"
-            )
-    )
-    public void drawScreenAfter(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
+    @Unique
+    private void gUITween$endTween(GuiGraphicsExtractor guiGraphics) {
         if (!gUITween$inTween) {
             return;
         }
