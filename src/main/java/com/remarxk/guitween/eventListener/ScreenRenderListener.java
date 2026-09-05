@@ -13,7 +13,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
-import net.minecraft.util.Mth;
 import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -53,23 +52,49 @@ public class ScreenRenderListener {
         GUITweenUtility.setOpenScreen(gUITween$screenName, GUITweenUtility.openScreenTick);
         GUITweenUtility.jeiOpenTick = Math.max(GUITweenUtility.jeiOpenTick, GUITweenUtility.openScreenTick);
 
-        if (!GUITween.CONFIG.isEnableWindow() && !access.gUITween$inCloseTween())
+        boolean closing = access.gUITween$inCloseTween();
+        GUITweenUtility.isWindowClosing = closing;
+        if (!GUITween.CONFIG.isEnableWindow() && !closing)
             return;
 
         if (access.getGUITween$isDisableScreenTween())
             return;
 
-        float moveProgress = GUITweenUtility.openScreenTick / GUITween.CONFIG.windowMoveDuration;
-        float gradientProgress = GUITweenUtility.openScreenTick / GUITween.CONFIG.windowGradientDuration;
+        float dx;
+        float dy;
+        float alpha;
+        float moveProgress;
+        float gradientProgress;
 
-        if (moveProgress >= 1 && gradientProgress >= 1)
-            return;
+        if (closing) {
+            // 独立的关闭动画：从居中位置向 closeMoveX/Y 移动，渐变 alpha 从 1 到 0
+            float total = GUITween.CONFIG.getCloseWindowTotalDuration();
+            float elapsed = Math.max(0, total - GUITweenUtility.closeScreenTick);
+            moveProgress = GUITween.CONFIG.closeMoveDuration <= 0
+                    ? 1
+                    : Math.min(1, elapsed / GUITween.CONFIG.closeMoveDuration);
+            gradientProgress = GUITween.CONFIG.closeGradientDuration <= 0
+                    ? 1
+                    : Math.min(1, elapsed / GUITween.CONFIG.closeGradientDuration);
+
+            dx = TweenUtil.tween(0, GUITween.CONFIG.closeMoveX, moveProgress, GUITween.CONFIG.closeMoveEase.get());
+            dy = TweenUtil.tween(0, GUITween.CONFIG.closeMoveY, moveProgress, GUITween.CONFIG.closeMoveEase.get());
+            alpha = TweenUtil.tween(1, 0, gradientProgress, GUITween.CONFIG.closeGradientEase.get());
+        }
+        else {
+            moveProgress = GUITweenUtility.openScreenTick / GUITween.CONFIG.windowMoveDuration;
+            gradientProgress = GUITweenUtility.openScreenTick / GUITween.CONFIG.windowGradientDuration;
+
+            if (moveProgress >= 1 && gradientProgress >= 1)
+                return;
+
+            dx = TweenUtil.tween(GUITween.CONFIG.windowMoveX, 0, moveProgress, GUITween.CONFIG.windowMoveEase.get());
+            dy = TweenUtil.tween(GUITween.CONFIG.windowMoveY, 0, moveProgress, GUITween.CONFIG.windowMoveEase.get());
+            alpha = TweenUtil.tween(0.05f, 1, gradientProgress, GUITween.CONFIG.windowGradientEase.get());
+        }
 
         access.setGUITween$inTween(true);
 
-        float dx = TweenUtil.tween(GUITween.CONFIG.windowMoveX, 0, moveProgress, GUITween.CONFIG.windowMoveEase.get());
-        float dy = TweenUtil.tween(GUITween.CONFIG.windowMoveY, 0, moveProgress, GUITween.CONFIG.windowMoveEase.get());
-        float alpha = TweenUtil.tween(0.05f, 1, gradientProgress, GUITween.CONFIG.windowGradientEase.get());
         CompatUtility.startOpenTween(dx, dy, alpha);
 
         PoseStack poseStack = guiGraphics.pose();
@@ -131,14 +156,25 @@ public class ScreenRenderListener {
 
         access.setGUITween$inTween(false);
 
-        float sign = access.gUITween$inCloseTween() ? -GUITween.CONFIG.closeWindowSpeed : 1;
-        float openTick = Mth.clamp(GUITweenUtility.openScreenTick + sign * GUITweenUtility.getDeltaTicks(),0, GUITween.CONFIG.getWindowTotalDuration());
-        GUITweenUtility.openScreenTick = openTick;
+        boolean closing = access.gUITween$inCloseTween();
+        GUITweenUtility.isWindowClosing = closing;
+        float deltaTicks = GUITweenUtility.getDeltaTicks();
 
-        GUITweenUtility.jeiOpenTick = Mth.clamp(GUITweenUtility.jeiOpenTick + sign * GUITweenUtility.getDeltaTicks(), 0, GUITween.CONFIG.getJeiTotalDuration());
+        if (closing) {
+            // 关闭动画使用独立计时：按真实帧数推进，速度恒为 1（不再有“关闭速度”）
+            GUITweenUtility.closeScreenTick = Math.max(0, GUITweenUtility.closeScreenTick - deltaTicks);
+            GUITweenUtility.closeJeiTick = Math.max(0, GUITweenUtility.closeJeiTick - deltaTicks);
 
-        if (sign < 0 && openTick <= 0 && GUITweenUtility.jeiOpenTick <= 0) {
-            access.gUITween$setNeedClose(true);
+            if (GUITweenUtility.closeScreenTick <= 0 && GUITweenUtility.closeJeiTick <= 0) {
+                access.gUITween$setNeedClose(true);
+            }
+        }
+        else {
+            GUITweenUtility.closeScreenTick = 0;
+            GUITweenUtility.closeJeiTick = 0;
+
+            GUITweenUtility.openScreenTick = Math.min(GUITween.CONFIG.getWindowTotalDuration(), GUITweenUtility.openScreenTick + deltaTicks);
+            GUITweenUtility.jeiOpenTick = Math.min(GUITween.CONFIG.getJeiTotalDuration(), GUITweenUtility.jeiOpenTick + deltaTicks);
         }
     }
 
