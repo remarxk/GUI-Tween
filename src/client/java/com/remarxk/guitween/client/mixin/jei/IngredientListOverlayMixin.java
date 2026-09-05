@@ -17,12 +17,13 @@ public class IngredientListOverlayMixin {
     private boolean gUITween$inTween;
 
     @Inject(
-            method = "drawScreen",
+            method = "drawForeground",
             at = @At(
                     value = "HEAD"
-            )
+            ),
+            require = 0
     )
-    public void drawScreenBefore(MinecraftClient minecraft, DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
+    public void drawForegroundBefore(MinecraftClient minecraft, DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
         CompatUtility.JeiTween jeiTween = CompatUtility.getJeiRightTween();
         if (!jeiTween.inTween)
             return;
@@ -35,12 +36,13 @@ public class IngredientListOverlayMixin {
     }
 
     @Inject(
-            method = "drawScreen",
+            method = "drawForeground",
             at = @At(
                     value = "TAIL"
-            )
+            ),
+            require = 0
     )
-    public void drawScreenAfter(MinecraftClient minecraft, DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
+    public void drawForegroundAfter(MinecraftClient minecraft, DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
         if (!gUITween$inTween) {
             return;
         }

@@ -24,23 +24,23 @@ public class GUITweenMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-        if (mixinClassName.contains("com.remarxk.guitween.mixin.rei")) {
+        if (mixinClassName.contains("com.remarxk.guitween.client.mixin.rei")) {
             return modIsLoad("roughlyenoughitems");
         }
 
-        if (mixinClassName.startsWith("com.remarxk.guitween.mixin.emi")) {
+        if (mixinClassName.startsWith("com.remarxk.guitween.client.mixin.emi")) {
             return modIsLoad("emi");
         }
 
-        if (mixinClassName.contains("com.remarxk.guitween.mixin.jei")) {
+        if (mixinClassName.contains("com.remarxk.guitween.client.mixin.jei")) {
             return modIsLoad(ModIds.JEI_ID);
         }
 
-        if (mixinClassName.contains("com.remarxk.guitween.mixin.sodium")) {
+        if (mixinClassName.contains("com.remarxk.guitween.client.mixin.sodium")) {
             return modIsLoad("sodium");
         }
 
-        if (mixinClassName.contains("com.remarxk.guitween.mixin.overflowingbars")) {
+        if (mixinClassName.contains("com.remarxk.guitween.client.mixin.overflowingbars")) {
             return modIsLoad(OverflowingBars.MOD_ID);
         }
 
