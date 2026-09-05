@@ -309,21 +309,6 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
         guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, SLOT_HIGHLIGHT_BACK_SPRITE, x, y, 24, 24);
     }
 
-    @Override
-    public AbstractContainerMenu gUITween$getMenu() {
-        return this.menu;
-    }
-
-    @Override
-    public int gUITween$getGuiLeft() {
-        return this.getGuiLeft();
-    }
-
-    @Override
-    public int gUITween$getGuiTop() {
-        return this.getGuiTop();
-    }
-
     @WrapOperation(
             method = "renderSlot",
             at = @At(
@@ -440,7 +425,7 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
         }
     }
 
-    @Inject(method = "render", at = @At(value = "TAIL"))
+    @Inject(method = "renderContents", at = @At(value = "TAIL"))
     public void renderMoveItem(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
         ContainerItemTween tween = GUITweenUtility.getMoveItemTween();
 
