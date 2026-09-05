@@ -1,10 +1,6 @@
 package com.remarxk.guitween.mixin.jei;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.remarxk.guitween.GUITween;
-import com.remarxk.guitween.GUITweenUtility;
-import com.remarxk.guitween.config.GUITweenConfig;
-import com.remarxk.guitween.util.TweenUtil;
+import com.remarxk.guitween.compat.CompatUtility;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -21,43 +17,31 @@ public class IngredientListOverlayMixin {
     private boolean gUITween$inTween;
 
     @Inject(
-            method = "drawScreen",
+            method = "drawForeground",
             at = @At(
                     value = "HEAD"
-            )
+            ),
+            require = 0
     )
-    public void drawScreenBefore(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
-        if (GUITweenUtility.openScreenName == null)
-            return;
+    public void drawForegroundBefore(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
+        CompatUtility.JeiTween jeiTween = CompatUtility.getJeiRightTween();
+        if (jeiTween.inTween) {
+            gUITween$inTween = true;
 
-        if (!GUITweenConfig.isEnableJeiRight())
-            return;
-
-        float totalTick = Math.max(GUITweenConfig.window.jeiRightMoveDuration.get().floatValue(), 1);
-        float progress = GUITweenUtility.openScreenTick / totalTick;
-
-        if (progress > 1){
-            return;
+            Matrix3x2fStack poseStack = guiGraphics.pose();
+            poseStack.pushMatrix();
+            poseStack.translate(jeiTween.dx, jeiTween.dy);
         }
-
-        gUITween$inTween = true;
-
-        Matrix3x2fStack poseStack = guiGraphics.pose();
-        poseStack.pushMatrix();
-
-        float dx = TweenUtil.tween(GUITweenConfig.window.jeiRightMoveX.get().floatValue(), 0, progress, GUITweenConfig.window.jeiRightMoveEase.get());
-        float dy = TweenUtil.tween(GUITweenConfig.window.jeiRightMoveY.get().floatValue(), 0, progress, GUITweenConfig.window.jeiRightMoveEase.get());
-
-        poseStack.translate(dx, dy);
     }
 
     @Inject(
-            method = "drawScreen",
+            method = "drawForeground",
             at = @At(
                     value = "TAIL"
-            )
+            ),
+            require = 0
     )
-    public void drawScreenAfter(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
+    public void drawForegroundAfter(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
         if (!gUITween$inTween) {
             return;
         }
