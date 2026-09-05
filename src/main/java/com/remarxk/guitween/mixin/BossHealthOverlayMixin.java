@@ -45,7 +45,7 @@ public class BossHealthOverlayMixin {
 
     @Shadow
     @Final
-    private Map<UUID, LerpingBossEvent> events;
+    Map<UUID, LerpingBossEvent> events;
 
     @WrapOperation(
             method = "render",
@@ -132,22 +132,21 @@ public class BossHealthOverlayMixin {
             method = "render",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/client/gui/GuiGraphics;drawString(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;III)I"
+                    target = "Lnet/minecraft/client/gui/GuiGraphics;drawString(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;III)V"
             )
     )
-    private int wrapText(GuiGraphics instance, Font font, Component text, int x, int y, int color, Operation<Integer> original) {
+    private void wrapText(GuiGraphics instance, Font font, Component text, int x, int y, int color, Operation<Void> original) {
         if (gUITween$alpha != null) {
             GUITweenUtility.pushFontAlpha(gUITween$alpha);
         }
 
-        int value = original.call(instance, font, text, x, y, color);
+        original.call(instance, font, text, x, y, color);
 
         if (gUITween$alpha != null) {
             GUITweenUtility.popFontAlpha();
 
             gUITween$alpha = null;
         }
-        return value;
     }
 
     @Inject(
