@@ -430,12 +430,12 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
         ContainerItemTween tween = GUITweenUtility.getMoveItemTween();
 
         if (!GUITweenConfig.isEnableMoveItem()) {
-            tween.removeUnuseFakeItem(menu);
+            tween.clearAllFakeItem();
             return;
         }
 
         if (tween.getToMap().isEmpty()) {
-            tween.removeUnuseFakeItem(menu);
+            tween.clearAllFakeItem();
             return;
         }
 
@@ -468,6 +468,7 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
         poseStack.popMatrix();
 
         tween.removeUnuseFakeItem(menu);
+        tween.removeStaleEmptyFake(menu);
     }
 
     @Inject(
