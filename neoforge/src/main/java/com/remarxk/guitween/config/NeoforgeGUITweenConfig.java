@@ -103,7 +103,7 @@ public class NeoforgeGUITweenConfig {
     }
 
     public static float getJeiTotalDuration() {
-        return Math.max(window.jeiLeftMoveDuration.get().floatValue(), window.jeiRightMoveDuration.get().floatValue());
+        return window.jeiMoveDuration.get().floatValue();
     }
 
     public static void applyStylePreset(GUITweenStyle newStyle) {
@@ -128,8 +128,9 @@ public class NeoforgeGUITweenConfig {
 
     private static void applySimpleStyle() {
         window.moveEase.set(Ease.OUT_QUART);
-        window.jeiLeftMoveEase.set(Ease.OUT_QUART);
-        window.jeiRightMoveEase.set(Ease.OUT_QUART);
+        window.closeMoveEase.set(Ease.OUT_QUART);
+        window.jeiMoveEase.set(Ease.OUT_QUART);
+        window.closeJeiMoveEase.set(Ease.OUT_QUART);
 
         windowItem.enableSameItem.set(false);
         windowItem.enableClickItem.set(false);

@@ -53,43 +53,62 @@ public class NeoForgeConfigAdapter implements IGUITweenConfig {
         return NeoforgeGUITweenConfig.window.gradientEase.get();
     }
 
-    @Override
-    public float closeWindowSpeed() {
-        return NeoforgeGUITweenConfig.window.closeWindowSpeed.get().floatValue();
-    }
-
-    @Override public float jeiLeftMoveDuration() { return NeoforgeGUITweenConfig.window.jeiLeftMoveDuration.get().floatValue(); }
+    @Override public float closeMoveDuration() { return NeoforgeGUITweenConfig.window.closeMoveDuration.get().floatValue(); }
 
     @Override
-    public Ease jeiLeftMoveEase() {
-        return NeoforgeGUITweenConfig.window.jeiLeftMoveEase.get();
+    public Ease closeMoveEase() {
+        return NeoforgeGUITweenConfig.window.closeMoveEase.get();
     }
 
     @Override
-    public float jeiLeftMoveX() {
-        return NeoforgeGUITweenConfig.window.jeiLeftMoveX.get().floatValue();
+    public float closeMoveX() {
+        return NeoforgeGUITweenConfig.window.closeMoveX.get().floatValue();
     }
 
     @Override
-    public float jeiLeftMoveY() {
-        return NeoforgeGUITweenConfig.window.jeiRightMoveY.get().floatValue();
+    public float closeMoveY() {
+        return NeoforgeGUITweenConfig.window.closeMoveY.get().floatValue();
     }
 
-    @Override public float jeiRightMoveDuration() { return NeoforgeGUITweenConfig.window.jeiRightMoveDuration.get().floatValue(); }
+    @Override public float closeGradientDuration() { return NeoforgeGUITweenConfig.window.closeGradientDuration.get().floatValue(); }
 
     @Override
-    public Ease jeiRightMoveEase() {
-        return NeoforgeGUITweenConfig.window.jeiRightMoveEase.get();
+    public Ease closeGradientEase() {
+        return NeoforgeGUITweenConfig.window.closeGradientEase.get();
+    }
+
+    @Override public float jeiMoveDuration() { return NeoforgeGUITweenConfig.window.jeiMoveDuration.get().floatValue(); }
+
+    @Override
+    public Ease jeiMoveEase() {
+        return NeoforgeGUITweenConfig.window.jeiMoveEase.get();
     }
 
     @Override
-    public float jeiRightMoveX() {
-        return NeoforgeGUITweenConfig.window.jeiRightMoveX.get().floatValue();
+    public float jeiMoveX() {
+        return NeoforgeGUITweenConfig.window.jeiMoveX.get().floatValue();
     }
 
     @Override
-    public float jeiRightMoveY() {
-        return NeoforgeGUITweenConfig.window.jeiRightMoveY.get().floatValue();
+    public float jeiMoveY() {
+        return NeoforgeGUITweenConfig.window.jeiMoveY.get().floatValue();
+    }
+
+    @Override public float closeJeiMoveDuration() { return NeoforgeGUITweenConfig.window.closeJeiMoveDuration.get().floatValue(); }
+
+    @Override
+    public Ease closeJeiMoveEase() {
+        return NeoforgeGUITweenConfig.window.closeJeiMoveEase.get();
+    }
+
+    @Override
+    public float closeJeiMoveX() {
+        return NeoforgeGUITweenConfig.window.closeJeiMoveX.get().floatValue();
+    }
+
+    @Override
+    public float closeJeiMoveY() {
+        return NeoforgeGUITweenConfig.window.closeJeiMoveY.get().floatValue();
     }
 
     @Override public List<String> disableNames() { return castStringList(NeoforgeGUITweenConfig.window.disableNames.get()); }

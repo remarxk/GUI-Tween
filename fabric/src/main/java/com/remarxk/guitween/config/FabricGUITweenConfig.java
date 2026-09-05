@@ -49,26 +49,36 @@ public class FabricGUITweenConfig extends Config {
 
     public boolean enableCloseWindow = false;
 
-    public float closeWindowSpeed = 1.5f;
+    public float closeMoveDuration = 6;
+
+    public ValidatedChoice<Ease> closeMoveEase = new ValidatedChoice<>(Ease.IN_OUT_SINE, EASE_LIST, new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
+
+    public float closeMoveX = 0;
+
+    public float closeMoveY = 300;
+
+    public float closeGradientDuration = 8;
+
+    public ValidatedChoice<Ease> closeGradientEase = new ValidatedChoice<>(Ease.IN_OUT_SINE, EASE_LIST, new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
 
     public boolean enableJei = true;
 
-    public float jeiLeftMoveDuration = 6f;
+    public float jeiMoveDuration = 6f;
 
-    public ValidatedChoice<Ease> jeiLeftMoveEase = new ValidatedChoice<>(Ease.OUT_BACK, EASE_LIST, new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);;;
+    public ValidatedChoice<Ease> jeiMoveEase = new ValidatedChoice<>(Ease.OUT_BACK, EASE_LIST, new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
 
-    public float jeiLeftMoveX = -50f;
+    public float jeiMoveX = -50f;
 
-    public float jeiLeftMoveY = 0f;
+    public float jeiMoveY = 0f;
 
-    public float jeiRightMoveDuration = 6f;
+    public float closeJeiMoveDuration = 6f;
 
-    public ValidatedChoice<Ease> jeiRightMoveEase = new ValidatedChoice<>(Ease.OUT_BACK, EASE_LIST, new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);;
+    public ValidatedChoice<Ease> closeJeiMoveEase = new ValidatedChoice<>(Ease.IN_OUT_SINE, EASE_LIST, new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
 
-    public float jeiRightMoveX = 50f;
+    public float closeJeiMoveX = -300f;
 
     @ConfigGroup.Pop
-    public float jeiRightMoveY = 0;
+    public float closeJeiMoveY = 0;
 
     public ConfigGroup screenItemGroup = new ConfigGroup("Screen Item tween");
     public boolean enableHover = true;
@@ -266,7 +276,7 @@ public class FabricGUITweenConfig extends Config {
     }
 
     public float getJeiTotalDuration() {
-        return Math.max(jeiLeftMoveDuration, jeiRightMoveDuration);
+        return jeiMoveDuration;
     }
 
     public float getHoldItemTotalDuration() {
@@ -415,8 +425,9 @@ public class FabricGUITweenConfig extends Config {
 
     private void applySimpleStyle() {
         windowMoveEase.accept(Ease.OUT_QUART);
-        jeiLeftMoveEase.accept(Ease.OUT_QUART);
-        jeiRightMoveEase.accept(Ease.OUT_QUART);
+        closeMoveEase.accept(Ease.OUT_QUART);
+        jeiMoveEase.accept(Ease.OUT_QUART);
+        closeJeiMoveEase.accept(Ease.OUT_QUART);
 
         enableSameItem = false;
         enableClickItem = false;

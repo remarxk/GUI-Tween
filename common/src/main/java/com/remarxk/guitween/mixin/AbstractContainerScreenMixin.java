@@ -16,6 +16,7 @@ import com.remarxk.guitween.event.PlayGuiSoundEvent;
 import com.remarxk.guitween.mixinAccess.AbstractContainerScreenMixinAccess;
 import com.remarxk.guitween.util.Tuple;
 import com.remarxk.guitween.util.TweenUtil;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -262,9 +263,10 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
 
         gUITween$inClosingTween = !gUITween$inClosingTween;
 
-        if (gUITween$inClosingTween && !GUITweenConfig.isEnableWindow()) {
-            GUITweenUtility.openScreenTick = GUITweenConfig.getWindowTotalDuration();
-            GUITweenUtility.jeiOpenTick = GUITweenConfig.getJeiTotalDuration();
+        if (gUITween$inClosingTween) {
+            // 关闭动画从“居中/完全可见”状态开始，走完全独立的关闭计时与偏移参数
+            GUITweenUtility.startCloseWindowTween();
+            KeyMapping.setAll();
         }
 
         return gUITween$inClosingTween;
@@ -414,8 +416,6 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
         if (toMap.isEmpty()) {
             return;
         }
-
-        com.remarxk.guitween.Constants.LOGGER.info("GUITween: 渲染移动物品, toMap={}", toMap.size());
 
         toMap.forEach((to, fromList) -> {
             int targetX, targetY;

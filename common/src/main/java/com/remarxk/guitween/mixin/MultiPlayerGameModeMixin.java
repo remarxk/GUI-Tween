@@ -120,8 +120,6 @@ public class MultiPlayerGameModeMixin {
                     });
                 }
             }
-
-            com.remarxk.guitween.Constants.LOGGER.info("GUITween: 点击处理完成, input={}, slotId={}, toMap={}, fakeItems={}, pickup={}", input, slotId, tween.getToMap().size(), tween.getFakeItemCount(), tween.getPickupCount());
         } catch (Exception e) {
             com.remarxk.guitween.Constants.LOGGER.warn("GUITween: 容器点击动画处理异常", e);
         }

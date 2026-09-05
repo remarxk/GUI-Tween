@@ -44,7 +44,6 @@ public class GUITweenClient implements ClientModInitializer {
         });
 
         ScreenEvents.BEFORE_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
-//            ScreenEvents.afterBackground(screen).register(ScreenRenderListener::postRenderBackground);
             ScreenEvents.afterTick(screen).register(ScreenRenderListener::postScreenTick);
             ScreenEvents.afterExtract(screen).register(ScreenRenderListener::postRenderScreen);
         });

@@ -24,25 +24,35 @@ public class WindowTweenConfig {
 
     public final ModConfigSpec.BooleanValue enableCloseWindow;
 
-    public final ModConfigSpec.DoubleValue closeWindowSpeed;
+    public final ModConfigSpec.DoubleValue closeMoveDuration;
+
+    public final ModConfigSpec.EnumValue<Ease> closeMoveEase;
+
+    public final ModConfigSpec.DoubleValue closeMoveX;
+
+    public final ModConfigSpec.DoubleValue closeMoveY;
+
+    public final ModConfigSpec.DoubleValue closeGradientDuration;
+
+    public final ModConfigSpec.EnumValue<Ease> closeGradientEase;
 
     public final ModConfigSpec.BooleanValue enableJei;
 
-    public final ModConfigSpec.DoubleValue jeiLeftMoveDuration;
+    public final ModConfigSpec.DoubleValue jeiMoveDuration;
 
-    public final ModConfigSpec.EnumValue<Ease> jeiLeftMoveEase;
+    public final ModConfigSpec.EnumValue<Ease> jeiMoveEase;
 
-    public final ModConfigSpec.DoubleValue jeiLeftMoveX;
+    public final ModConfigSpec.DoubleValue jeiMoveX;
 
-    public final ModConfigSpec.DoubleValue jeiLeftMoveY;
+    public final ModConfigSpec.DoubleValue jeiMoveY;
 
-    public final ModConfigSpec.DoubleValue jeiRightMoveDuration;
+    public final ModConfigSpec.DoubleValue closeJeiMoveDuration;
 
-    public final ModConfigSpec.EnumValue<Ease> jeiRightMoveEase;
+    public final ModConfigSpec.EnumValue<Ease> closeJeiMoveEase;
 
-    public final ModConfigSpec.DoubleValue jeiRightMoveX;
+    public final ModConfigSpec.DoubleValue closeJeiMoveX;
 
-    public final ModConfigSpec.DoubleValue jeiRightMoveY;
+    public final ModConfigSpec.DoubleValue closeJeiMoveY;
 
     public WindowTweenConfig(ModConfigSpec.Builder BUILDER) {
         BUILDER.translation("guitween.config.windowGroup").push("windowGroup");
@@ -88,45 +98,67 @@ public class WindowTweenConfig {
                 .translation("guitween.config.enableJei")
                 .define("enableJei", true);
 
-        jeiLeftMoveDuration = BUILDER
-                .translation("guitween.config.jeiLeftMoveDuration")
-                .defineInRange("jeiLeftMoveDuration", 6d, 0, 1000d);
+        // 左右统一：按左侧方向填写，右侧会自动镜像 X
+        jeiMoveDuration = BUILDER
+                .translation("guitween.config.jeiMoveDuration")
+                .defineInRange("jeiMoveDuration", 6d, 0, 1000d);
 
-        jeiLeftMoveEase = BUILDER
-                .translation("guitween.config.jeiLeftMoveEase")
-                .defineEnum("jeiLeftMoveEase", Ease.OUT_BACK);
+        jeiMoveEase = BUILDER
+                .translation("guitween.config.jeiMoveEase")
+                .defineEnum("jeiMoveEase", Ease.OUT_BACK);
 
-        jeiLeftMoveX = BUILDER
-                .translation("guitween.config.jeiLeftMoveX")
-                .defineInRange("jeiLeftMoveX", -50d, -10000, 10000);
+        jeiMoveX = BUILDER
+                .translation("guitween.config.jeiMoveX")
+                .defineInRange("jeiMoveX", -50d, -10000, 10000);
 
-        jeiLeftMoveY = BUILDER
-                .translation("guitween.config.jeiLeftMoveY")
-                .defineInRange("jeiLeftMoveY", 0f, -10000, 10000);
-
-        jeiRightMoveDuration = BUILDER
-                .translation("guitween.config.jeiRightMoveDuration")
-                .defineInRange("jeiRightMoveDuration", 6d, 0, 1000d);
-
-        jeiRightMoveEase = BUILDER
-                .translation("guitween.config.jeiRightMoveEase")
-                .defineEnum("jeiRightMoveEase", Ease.OUT_BACK);
-
-        jeiRightMoveX = BUILDER
-                .translation("guitween.config.jeiRightMoveX")
-                .defineInRange("jeiRightMoveX", 50d, -10000, 10000);
-
-        jeiRightMoveY = BUILDER
-                .translation("guitween.config.jeiRightMoveY")
-                .defineInRange("jeiRightMoveY", 0f, -10000, 10000);
+        jeiMoveY = BUILDER
+                .translation("guitween.config.jeiMoveY")
+                .defineInRange("jeiMoveY", 0d, -10000, 10000);
 
         enableCloseWindow = BUILDER
                 .translation("guitween.config.enableCloseWindow")
                 .define("enableCloseWindow", false);
 
-        closeWindowSpeed = BUILDER
-                .translation("guitween.config.closeWindowSpeed")
-                .defineInRange("closeWindowSpeed", 1.5d, 0, 1000d);
+        closeMoveDuration = BUILDER
+                .translation("guitween.config.closeMoveDuration")
+                .defineInRange("closeMoveDuration", 6d, 0, 1000d);
+
+        closeMoveEase = BUILDER
+                .translation("guitween.config.closeMoveEase")
+                .defineEnum("closeMoveEase", Ease.IN_OUT_SINE);
+
+        closeMoveX = BUILDER
+                .translation("guitween.config.closeMoveX")
+                .defineInRange("closeMoveX", 0d, -10000, 10000);
+
+        closeMoveY = BUILDER
+                .translation("guitween.config.closeMoveY")
+                .defineInRange("closeMoveY", 300d, -10000, 10000);
+
+        closeGradientDuration = BUILDER
+                .translation("guitween.config.closeGradientDuration")
+                .defineInRange("closeGradientDuration", 8d, 0, 1000d);
+
+        closeGradientEase = BUILDER
+                .translation("guitween.config.closeGradientEase")
+                .defineEnum("closeGradientEase", Ease.IN_OUT_SINE);
+
+        // 关闭时同样左右统一，右侧自动镜像 X
+        closeJeiMoveDuration = BUILDER
+                .translation("guitween.config.closeJeiMoveDuration")
+                .defineInRange("closeJeiMoveDuration", 6d, 0, 1000d);
+
+        closeJeiMoveEase = BUILDER
+                .translation("guitween.config.closeJeiMoveEase")
+                .defineEnum("closeJeiMoveEase", Ease.IN_OUT_SINE);
+
+        closeJeiMoveX = BUILDER
+                .translation("guitween.config.closeJeiMoveX")
+                .defineInRange("closeJeiMoveX", -300d, -10000, 10000);
+
+        closeJeiMoveY = BUILDER
+                .translation("guitween.config.closeJeiMoveY")
+                .defineInRange("closeJeiMoveY", 0d, -10000, 10000);
 
         BUILDER.pop();
     }

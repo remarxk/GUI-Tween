@@ -4,6 +4,7 @@ import com.remarxk.guitween.anim.AttackTween;
 import com.remarxk.guitween.anim.ContainerItemTween;
 import com.remarxk.guitween.anim.DragTween;
 import com.remarxk.guitween.anim.UseTween;
+import com.remarxk.guitween.config.GUITweenConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.state.gui.pip.PictureInPictureRenderState;
 import org.joml.Matrix3x2f;
@@ -26,6 +27,11 @@ public class GUITweenUtility {
     public static String openScreenName;
     public static float openScreenTick;
     public static float jeiOpenTick;
+
+    /** 是否正处于窗口关闭动画阶段（与 openScreenTick/jeiOpenTick 完全独立的计时） */
+    public static boolean isWindowClosing;
+    public static float closeScreenTick;
+    public static float closeJeiTick;
 
     public static boolean inDragging;
 
@@ -67,6 +73,24 @@ public class GUITweenUtility {
         openScreenName = null;
         openScreenTick = 0;
         jeiOpenTick = 0;
+        endCloseWindowTween();
+    }
+
+    /**
+     * 开始独立的窗口关闭动画计时。
+     * 关闭动画从“居中、完全可见”的位置开始，向各自独立的偏移量运动，
+     * 因此这里不再复用 openScreenTick/jeiOpenTick，也不再有“关闭速度”概念。
+     */
+    public static void startCloseWindowTween() {
+        isWindowClosing = true;
+        closeScreenTick = GUITweenConfig.getCloseWindowTotalDuration();
+        closeJeiTick = GUITweenConfig.getCloseJeiTotalDuration();
+    }
+
+    public static void endCloseWindowTween() {
+        isWindowClosing = false;
+        closeScreenTick = 0;
+        closeJeiTick = 0;
     }
 
     public static void startTooltipTween(float tick) {

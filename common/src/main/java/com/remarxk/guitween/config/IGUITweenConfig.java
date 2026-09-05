@@ -29,18 +29,25 @@ public interface IGUITweenConfig {
     Ease windowGradientEase();
 
     boolean enableCloseWindow();
-    float closeWindowSpeed();
+
+    float closeMoveDuration();
+    Ease closeMoveEase();
+    float closeMoveX();
+    float closeMoveY();
+
+    float closeGradientDuration();
+    Ease closeGradientEase();
 
     boolean enableJei();
-    float jeiLeftMoveDuration();
-    Ease jeiLeftMoveEase();
-    float jeiLeftMoveX();
-    float jeiLeftMoveY();
+    float jeiMoveDuration();
+    Ease jeiMoveEase();
+    float jeiMoveX();
+    float jeiMoveY();
 
-    float jeiRightMoveDuration();
-    Ease jeiRightMoveEase();
-    float jeiRightMoveX();
-    float jeiRightMoveY();
+    float closeJeiMoveDuration();
+    Ease closeJeiMoveEase();
+    float closeJeiMoveX();
+    float closeJeiMoveY();
 
     // ===== screen item =====
     boolean enableHover();
@@ -167,7 +174,15 @@ public interface IGUITweenConfig {
     }
 
     default float getJeiTotalDuration() {
-        return Math.max(jeiLeftMoveDuration(), jeiRightMoveDuration());
+        return jeiMoveDuration();
+    }
+
+    default float getCloseWindowTotalDuration() {
+        return Math.max(closeMoveDuration(), closeGradientDuration());
+    }
+
+    default float getCloseJeiTotalDuration() {
+        return closeJeiMoveDuration();
     }
 
     default float getHoldItemTotalDuration() {

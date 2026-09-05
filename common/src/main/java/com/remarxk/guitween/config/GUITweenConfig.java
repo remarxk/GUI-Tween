@@ -67,19 +67,30 @@ public final class GUITweenConfig {
     public static float windowMoveY() { return cfg().windowMoveY(); }
     public static float windowGradientDuration() { return cfg().windowGradientDuration(); }
     public static Ease windowGradientEase() { return cfg().windowGradientEase(); }
-    public static float closeWindowSpeed() { return cfg().closeWindowSpeed(); }
-    public static float jeiLeftMoveDuration() { return cfg().jeiLeftMoveDuration(); }
-    public static Ease jeiLeftMoveEase() { return cfg().jeiLeftMoveEase(); }
-    public static float jeiLeftMoveX() { return cfg().jeiLeftMoveX(); }
-    public static float jeiLeftMoveY() { return cfg().jeiLeftMoveY(); }
-    public static float jeiRightMoveDuration() { return cfg().jeiRightMoveDuration(); }
-    public static Ease jeiRightMoveEase() { return cfg().jeiRightMoveEase(); }
-    public static float jeiRightMoveX() { return cfg().jeiRightMoveX(); }
-    public static float jeiRightMoveY() { return cfg().jeiRightMoveY(); }
+
+    public static float closeMoveDuration() { return cfg().closeMoveDuration(); }
+    public static Ease closeMoveEase() { return cfg().closeMoveEase(); }
+    public static float closeMoveX() { return cfg().closeMoveX(); }
+    public static float closeMoveY() { return cfg().closeMoveY(); }
+    public static float closeGradientDuration() { return cfg().closeGradientDuration(); }
+    public static Ease closeGradientEase() { return cfg().closeGradientEase(); }
+
+    public static float jeiMoveDuration() { return cfg().jeiMoveDuration(); }
+    public static Ease jeiMoveEase() { return cfg().jeiMoveEase(); }
+    public static float jeiMoveX() { return cfg().jeiMoveX(); }
+    public static float jeiMoveY() { return cfg().jeiMoveY(); }
+
+    public static float closeJeiMoveDuration() { return cfg().closeJeiMoveDuration(); }
+    public static Ease closeJeiMoveEase() { return cfg().closeJeiMoveEase(); }
+    public static float closeJeiMoveX() { return cfg().closeJeiMoveX(); }
+    public static float closeJeiMoveY() { return cfg().closeJeiMoveY(); }
+
     public static List<String> disableNames() { return cfg().disableNames(); }
     public static boolean isDisableTweenWindow(String name) { return cfg().isDisableTweenWindow(name); }
     public static float getWindowTotalDuration() { return cfg().getWindowTotalDuration(); }
     public static float getJeiTotalDuration() { return cfg().getJeiTotalDuration(); }
+    public static float getCloseWindowTotalDuration() { return cfg().getCloseWindowTotalDuration(); }
+    public static float getCloseJeiTotalDuration() { return cfg().getCloseJeiTotalDuration(); }
 
     // ===== screen item =====
     public static boolean enableHover() { return cfg().enableHover(); }

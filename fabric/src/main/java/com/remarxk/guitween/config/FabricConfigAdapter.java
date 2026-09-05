@@ -44,17 +44,22 @@ public class FabricConfigAdapter implements IGUITweenConfig {
     @Override public float windowGradientDuration() { return c.windowGradientDuration; }
     @Override public Ease windowGradientEase() { return c.windowGradientEase.get(); }
 
-    @Override public float closeWindowSpeed() { return c.closeWindowSpeed; }
+    @Override public float closeMoveDuration() { return c.closeMoveDuration; }
+    @Override public Ease closeMoveEase() { return c.closeMoveEase.get(); }
+    @Override public float closeMoveX() { return c.closeMoveX; }
+    @Override public float closeMoveY() { return c.closeMoveY; }
+    @Override public float closeGradientDuration() { return c.closeGradientDuration; }
+    @Override public Ease closeGradientEase() { return c.closeGradientEase.get(); }
 
-    @Override public float jeiLeftMoveDuration() { return c.jeiLeftMoveDuration; }
-    @Override public Ease jeiLeftMoveEase() { return c.jeiLeftMoveEase.get(); }
-    @Override public float jeiLeftMoveX() { return c.jeiLeftMoveX; }
-    @Override public float jeiLeftMoveY() { return c.jeiLeftMoveY; }
+    @Override public float jeiMoveDuration() { return c.jeiMoveDuration; }
+    @Override public Ease jeiMoveEase() { return c.jeiMoveEase.get(); }
+    @Override public float jeiMoveX() { return c.jeiMoveX; }
+    @Override public float jeiMoveY() { return c.jeiMoveY; }
 
-    @Override public float jeiRightMoveDuration() { return c.jeiRightMoveDuration; }
-    @Override public Ease jeiRightMoveEase() { return c.jeiRightMoveEase.get(); }
-    @Override public float jeiRightMoveX() { return c.jeiRightMoveX; }
-    @Override public float jeiRightMoveY() { return c.jeiRightMoveY; }
+    @Override public float closeJeiMoveDuration() { return c.closeJeiMoveDuration; }
+    @Override public Ease closeJeiMoveEase() { return c.closeJeiMoveEase.get(); }
+    @Override public float closeJeiMoveX() { return c.closeJeiMoveX; }
+    @Override public float closeJeiMoveY() { return c.closeJeiMoveY; }
 
     @Override public List<String> disableNames() { return c.disableNames; }
 
