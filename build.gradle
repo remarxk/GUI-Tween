@@ -117,10 +117,10 @@ dependencies {
 
 //    runtimeOnly "curse.maven:trade-refresh-821729:5533325"
 
-    compileOnly "curse.maven:sophisticated-core-618298:8304907"
-    runtimeOnly "curse.maven:sophisticated-core-618298:8304907"
-    runtimeOnly "curse.maven:sophisticated-backpacks-422301:8272377"
-    runtimeOnly "curse.maven:sophisticated-storage-619320:8304937"
+    compileOnly "curse.maven:sophisticated-core-618298:8833844"
+    runtimeOnly "curse.maven:sophisticated-core-618298:8833844"
+    runtimeOnly "curse.maven:sophisticated-backpacks-422301:8833888"
+    runtimeOnly "curse.maven:sophisticated-storage-619320:8687896"
 
 //    runtimeOnly "curse.maven:zeta-968868:7640154"
 //    runtimeOnly "curse.maven:quark-243121:7640331"

@@ -18,6 +18,41 @@ public class IngredientListOverlayMixin {
     private boolean gUITween$inTween;
 
     @Inject(
+            method = "drawBackground",
+            at = @At(
+                    value = "HEAD"
+            )
+    )
+    public void drawBackgroundBefore(GuiGraphics guiGraphics, CallbackInfo ci) {
+        CompatUtility.JeiTween jeiTween = CompatUtility.getJeiRightTween();
+        if (!jeiTween.inTween)
+            return;
+
+        gUITween$inTween = true;
+
+        PoseStack poseStack = guiGraphics.pose();
+        poseStack.pushPose();
+        poseStack.translate(jeiTween.dx, jeiTween.dy, 0);
+    }
+
+    @Inject(
+            method = "drawBackground",
+            at = @At(
+                    value = "TAIL"
+            )
+    )
+    public void drawBackgroundAfter(GuiGraphics guiGraphics, CallbackInfo ci) {
+        if (!gUITween$inTween) {
+            return;
+        }
+
+        gUITween$inTween = false;
+
+        PoseStack poseStack = guiGraphics.pose();
+        poseStack.popPose();
+    }
+
+    @Inject(
             method = "drawForeground",
             at = @At(
                     value = "HEAD"

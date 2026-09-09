@@ -38,6 +38,8 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import javax.annotation.Nullable;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 
@@ -61,12 +63,16 @@ public abstract class StorageScreenBaseMixin<S extends StorageContainerMenuBase<
         GUITweenUtility.setOpenScreen(access.getGUITween$screenName(), GUITweenUtility.openScreenTick);
         GUITweenUtility.jeiOpenTick = Math.max(GUITweenUtility.jeiOpenTick, GUITweenUtility.openScreenTick);
 
-        if (!GUITweenConfig.isEnableWindow())
+        boolean closing = access.gUITween$inCloseTween();
+        GUITweenUtility.isWindowClosing = closing;
+        if (!GUITweenConfig.isEnableWindow() && !closing)
             return;
 
         if (access.getGUITween$inTween()) { // 某些界面重写了render方法，导致没有取消渲染动画，需要强行终止
             access.setGUITween$inTween(false);
-            access.setGUITween$isDisableScreenTween(true);
+            if (!closing) {
+                access.setGUITween$isDisableScreenTween(true);
+            }
 
             GUITweenUtility.popAlpha();
 
@@ -76,17 +82,40 @@ public abstract class StorageScreenBaseMixin<S extends StorageContainerMenuBase<
         if (access.getGUITween$isDisableScreenTween())
             return;
 
-        float moveProgress = GUITweenUtility.openScreenTick / GUITweenConfig.window.moveDuration.get().floatValue();
-        float gradientProgress = GUITweenUtility.openScreenTick / GUITweenConfig.window.gradientDuration.get().floatValue();
+        float dx;
+        float dy;
+        float alpha;
+        float moveProgress;
+        float gradientProgress;
 
-        if (moveProgress >= 1 && gradientProgress >= 1)
-            return;
+        if (closing) {
+            // 独立的关闭动画：从居中位置向 closeMoveX/Y 移动，渐变 alpha 从 1 到 0
+            float total = GUITweenConfig.getCloseWindowTotalDuration();
+            float elapsed = Math.max(0, total - GUITweenUtility.closeScreenTick);
+            moveProgress = GUITweenConfig.window.closeMoveDuration.get().floatValue() <= 0
+                    ? 1
+                    : Math.min(1, elapsed / GUITweenConfig.window.closeMoveDuration.get().floatValue());
+            gradientProgress = GUITweenConfig.window.closeGradientDuration.get().floatValue() <= 0
+                    ? 1
+                    : Math.min(1, elapsed / GUITweenConfig.window.closeGradientDuration.get().floatValue());
+
+            dx = TweenUtil.tween(0, GUITweenConfig.window.closeMoveX.get().floatValue(), moveProgress, GUITweenConfig.window.closeMoveEase.get());
+            dy = TweenUtil.tween(0, GUITweenConfig.window.closeMoveY.get().floatValue(), moveProgress, GUITweenConfig.window.closeMoveEase.get());
+            alpha = TweenUtil.tween(1, 0, gradientProgress, GUITweenConfig.window.closeGradientEase.get());
+        }
+        else {
+            moveProgress = GUITweenUtility.openScreenTick / GUITweenConfig.window.moveDuration.get().floatValue();
+            gradientProgress = GUITweenUtility.openScreenTick / GUITweenConfig.window.gradientDuration.get().floatValue();
+
+            if (moveProgress >= 1 && gradientProgress >= 1)
+                return;
+
+            dx = TweenUtil.tween(GUITweenConfig.window.moveX.get().floatValue(), 0, moveProgress, GUITweenConfig.window.moveEase.get());
+            dy = TweenUtil.tween(GUITweenConfig.window.moveY.get().floatValue(), 0, moveProgress, GUITweenConfig.window.moveEase.get());
+            alpha = TweenUtil.tween(GUITweenUtility.fFontMinAlpha, 1, gradientProgress, GUITweenConfig.window.gradientEase.get());
+        }
 
         access.setGUITween$inTween(true);
-
-        float dx = TweenUtil.tween(GUITweenConfig.window.moveX.get().floatValue(), 0, moveProgress, GUITweenConfig.window.moveEase.get());
-        float dy = TweenUtil.tween(GUITweenConfig.window.moveY.get().floatValue(), 0, moveProgress, GUITweenConfig.window.moveEase.get());
-        float alpha = TweenUtil.tween(GUITweenUtility.fFontMinAlpha, 1, gradientProgress, GUITweenConfig.window.gradientEase.get());
 
         CompatUtility.startOpenTween(dx, dy, alpha);
 
@@ -446,6 +475,14 @@ public abstract class StorageScreenBaseMixin<S extends StorageContainerMenuBase<
                                                  @Local(index = 7) Int2ObjectMap<ItemStack> changedSlotIndexes) {
         if (!GUITweenConfig.isEnableMoveItem()) {
             return;
+        }
+
+        if (menu instanceof StorageContainerMenuBaseAccessor accessor) {
+            for (var entry : changedSlotIndexes.int2ObjectEntrySet()) {
+                if (accessor.gUITween$IsUpgradeSlot(entry.getIntKey())) {
+                    return;
+                }
+            }
         }
 
         ContainerItemTween tween = GUITweenUtility.getMoveItemTween();

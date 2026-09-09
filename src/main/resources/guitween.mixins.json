@@ -34,6 +34,7 @@
     "rei.ScreenOverlayImpMixin",
     "sodium.SodiumBakedModelEncoderMixin",
     "sophisticated.StorageScreenBaseMixin",
+    "sophisticated.StorageContainerMenuBaseAccessor",
     "touhoulittlemaid.AbstractMaidContainerGuiMixin",
     "watut.RenderHelperMixin"
   ],
