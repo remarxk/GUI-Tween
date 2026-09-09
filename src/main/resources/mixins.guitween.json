@@ -35,6 +35,7 @@
     "rei.DefaultScreenOverlayRendererMixin",
     "rei.ScreenOverlayImpMixin",
     "sophisticated.StorageScreenBaseMixin",
+    "sophisticated.StorageContainerMenuBaseAccessor",
     "touhoulittlemaid.AbstractMaidContainerGuiMixin"
   ],
   "injectors": {

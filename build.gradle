@@ -170,9 +170,9 @@ dependencies {
     compileOnly fg.deobf("curse.maven:oculus-581495:6020952")
     runtimeOnly fg.deobf("curse.maven:oculus-581495:6020952")
 
-    compileOnly fg.deobf("curse.maven:sophisticated-core-618298:7645911")
-    runtimeOnly fg.deobf("curse.maven:sophisticated-core-618298:7645911")
-    runtimeOnly fg.deobf("curse.maven:sophisticated-backpacks-422301:7645913")
+    compileOnly fg.deobf("curse.maven:sophisticated-core-618298:8833841")
+    runtimeOnly fg.deobf("curse.maven:sophisticated-core-618298:8833841")
+    runtimeOnly fg.deobf("curse.maven:sophisticated-backpacks-422301:8833879")
 
     compileOnly fg.deobf("curse.maven:emi-580555:6420945")
 //    runtimeOnly fg.deobf("curse.maven:emi-580555:6420945")

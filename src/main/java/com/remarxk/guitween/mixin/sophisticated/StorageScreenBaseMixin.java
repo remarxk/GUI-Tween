@@ -36,6 +36,8 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import javax.annotation.Nullable;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
 import java.util.List;
 
@@ -57,6 +59,45 @@ public abstract class StorageScreenBaseMixin<S extends StorageContainerMenuBase<
 
         GUITweenUtility.setOpenScreen(access.getGUITween$screenName(), GUITweenUtility.openScreenTick);
         GUITweenUtility.jeiOpenTick = Math.max(GUITweenUtility.jeiOpenTick, GUITweenUtility.openScreenTick);
+
+        // ===== 关闭动画（移植自 AbstractContainerScreenMixin 的关闭动画逻辑）=====
+        // 关闭由 keyPressed -> playCloseTween 触发（AbstractContainerScreenMixin / ScreenMixin 已处理），
+        // 这里负责在窗口渲染前应用关闭变换：从居中位置向 closeMoveX/Y 移动，alpha 从 1 渐隐到 0。
+        if (access.gUITween$inCloseTween()) {
+            // BackgroundRendered 事件已推入关闭变换（inTween==true）时直接复用，避免重复推入
+            if (access.getGUITween$inTween())
+                return;
+
+            // 与全局关闭分支保持一致：按配置禁用的界面不播放关闭动画
+            if (GUITween.CONFIG.isDisableTweenWindow(access.getGUITween$screenName()))
+                return;
+
+            float total = GUITween.CONFIG.getCloseWindowTotalDuration();
+            float elapsed = Math.max(0, total - GUITweenUtility.closeScreenTick);
+            float moveProgress = GUITween.CONFIG.closeMoveDuration <= 0
+                    ? 1
+                    : Math.min(1, elapsed / GUITween.CONFIG.closeMoveDuration);
+            float gradientProgress = GUITween.CONFIG.closeGradientDuration <= 0
+                    ? 1
+                    : Math.min(1, elapsed / GUITween.CONFIG.closeGradientDuration);
+
+            float dx = TweenUtil.tween(0, GUITween.CONFIG.closeMoveX, moveProgress, GUITween.CONFIG.closeMoveEase.get());
+            float dy = TweenUtil.tween(0, GUITween.CONFIG.closeMoveY, moveProgress, GUITween.CONFIG.closeMoveEase.get());
+            float alpha = TweenUtil.tween(1, 0, gradientProgress, GUITween.CONFIG.closeGradientEase.get());
+
+            access.setGUITween$inTween(true);
+
+            CompatUtility.startOpenTween(dx, dy, alpha);
+
+            PoseStack poseStack = guiGraphics.pose();
+
+            // 动画变换
+            poseStack.pushPose();
+            poseStack.translate(dx, dy, 0);
+
+            GUITweenUtility.pushAlpha(alpha);
+            return;
+        }
 
         if (!GUITween.CONFIG.isEnableWindow())
             return;
@@ -173,7 +214,8 @@ public abstract class StorageScreenBaseMixin<S extends StorageContainerMenuBase<
             method = "renderSuper",
             at = @At(
                     value = "INVOKE",
-                    target = "Lcom/mojang/blaze3d/vertex/PoseStack;popPose()V"
+                    target = "Lcom/mojang/blaze3d/vertex/PoseStack;popPose()V",
+                    ordinal = 1
             )
     )
     private void renderMoveItem(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
@@ -446,6 +488,14 @@ public abstract class StorageScreenBaseMixin<S extends StorageContainerMenuBase<
                                                  @Local(index = 7) Int2ObjectMap<ItemStack> changedSlotIndexes) {
         if (!GUITween.CONFIG.isEnableMoveItem()) {
             return;
+        }
+
+        if (menu instanceof StorageContainerMenuBaseAccessor accessor) {
+            for (var entry : changedSlotIndexes.int2ObjectEntrySet()) {
+                if (accessor.gUITween$IsUpgradeSlot(entry.getIntKey())) {
+                    return;
+                }
+            }
         }
 
         ContainerItemTween tween = GUITweenUtility.getMoveItemTween();
