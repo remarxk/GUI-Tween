@@ -18,7 +18,6 @@
     "GuiRenderStateMixin",
     "GuiScreenAccessor",
     "KeyboardHandlerMixin",
-    "LocalPlayerMixin",
     "MinecraftMixin",
     "MouseHandlerMixin",
     "MultiPlayerGameModeMixin",

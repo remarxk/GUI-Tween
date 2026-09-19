@@ -97,7 +97,7 @@ public class GuiGraphicsMixin {
     }
 
     @ModifyVariable(
-            method = "fill(Lcom/mojang/blaze3d/pipeline/RenderPipeline;IIIII)V",
+            method = "fill(Lcom/mojang/renderpearl/api/pipeline/RenderPipeline;IIIII)V",
             at = @At(
                     value = "HEAD"
             ),
@@ -114,14 +114,14 @@ public class GuiGraphicsMixin {
     }
 
     @Inject(
-            method = "setTooltipForNextFrameInternal",
+            method = "setTooltipForNextFrameInternal(Lnet/minecraft/client/gui/Font;Ljava/util/List;IILnet/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipPositioner;Lnet/minecraft/resources/Identifier;ZZ)V",
             at = @At(
                     value = "FIELD",
                     target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;deferredTooltip:Ljava/lang/Runnable;",
                     shift = At.Shift.AFTER
             )
     )
-    private void setTooltipForNextFrameInternalAfter(Font font, List<ClientTooltipComponent> components, int x, int y, ClientTooltipPositioner positioner, @Nullable Identifier background, boolean focused, CallbackInfo ci) {
+    private void setTooltipForNextFrameInternalAfter(Font font, List<ClientTooltipComponent> components, int x, int y, ClientTooltipPositioner positioner, @Nullable Identifier background, boolean replaceExisting, boolean extraSpaceAfterFirstLine, CallbackInfo ci) {
         if (!GUITweenUtility.inTooltipTween)
             return;
 

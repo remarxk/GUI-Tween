@@ -36,21 +36,21 @@ dependencies {
 
     implementation "me.fzzyhmstrs:fzzy_config:${fzzy_config_version}"
 
-    compileOnly "curse.maven:jei-238222:8767595"
-    runtimeOnly "curse.maven:jei-238222:8767595"
+    compileOnly "curse.maven:jei-238222:8911159"
+    runtimeOnly "curse.maven:jei-238222:8911159"
 
     compileOnly "curse.maven:roughly-enough-items-310111:8271755"
 //    runtimeOnly "curse.maven:roughly-enough-items-310111:8271755"
 
-    compileOnly "curse.maven:architectury-api-419699:8268577"
-//    runtimeOnly "curse.maven:architectury-api-419699:8268577"
+    compileOnly "curse.maven:architectury-api-419699:8915075"
+//    runtimeOnly "curse.maven:architectury-api-419699:8915075"
 
-    runtimeOnly "curse.maven:cloth-config-348521:8269699"
+    runtimeOnly "curse.maven:cloth-config-348521:8884063"
 
-    compileOnly "maven.modrinth:smooth-scroll:2.9.0"
-//    runtimeOnly "maven.modrinth:smooth-scroll:2.9.0"
+    compileOnly "maven.modrinth:smooth-scroll:3.0.0-beta.1"
+//    runtimeOnly "maven.modrinth:smooth-scroll:3.0.0-beta.1"
 
-    runtimeOnly "maven.modrinth:carpet:26.2"
+    runtimeOnly "maven.modrinth:carpet:26.3"
 }
 
 loom {

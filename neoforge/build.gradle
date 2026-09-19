@@ -52,14 +52,14 @@ repositories {
 }
 
 dependencies {
-    compileOnly "curse.maven:jei-238222:8767596"
-    runtimeOnly "curse.maven:jei-238222:8767596"
+    compileOnly "curse.maven:jei-238222:8911160"
+    runtimeOnly "curse.maven:jei-238222:8911160"
 
     compileOnly "curse.maven:roughly-enough-items-310111:8271756"
 //    runtimeOnly "curse.maven:roughly-enough-items-310111:8271756"
 
-    compileOnly "curse.maven:architectury-api-419699:8268578"
-//    runtimeOnly "curse.maven:architectury-api-419699:8268578"
+    compileOnly "curse.maven:architectury-api-419699:8915076"
+//    runtimeOnly "curse.maven:architectury-api-419699:8915076"
 
 //    runtimeOnly "curse.maven:cloth-config-348521:8269700"
 }

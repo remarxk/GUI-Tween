@@ -57,7 +57,7 @@ public class MouseHandlerMixin {
             mouseGrabbed = true;
             xpos = minecraft.getWindow().getScreenWidth() / 2.0;
             ypos = minecraft.getWindow().getScreenHeight() / 2.0;
-            InputConstants.grabOrReleaseMouse(minecraft.getWindow(), 212995, xpos, ypos);
+            InputConstants.grabMouse(minecraft.getWindow(), xpos, ypos);
             ignoreFirstMove = true;
         }
 

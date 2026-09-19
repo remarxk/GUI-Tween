@@ -4,8 +4,11 @@ import com.llamalad7.mixinextras.sugar.Local;
 import com.remarxk.guitween.GUITweenUtility;
 import com.remarxk.guitween.anim.ContainerItemTween;
 import com.remarxk.guitween.config.GUITweenConfig;
+import com.remarxk.guitween.event.PlayGuiSoundEvent;
+import com.remarxk.guitween.eventListener.HotbarChangeListener;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerInput;
@@ -21,6 +24,28 @@ import java.util.List;
 
 @Mixin(MultiPlayerGameMode.class)
 public class MultiPlayerGameModeMixin {
+    /**
+     * 26.3 起“丢出物品”由 LocalPlayer.drop(boolean) 移到了
+     * MultiPlayerGameMode.dropItem(LocalPlayer, boolean)：当选中槽为空时不会丢出任何物品，
+     * 等价于旧版 drop 返回 false，此时触发缺少物品的动画/音效。
+     */
+    @Inject(
+            method = "dropItem",
+            at = @At(
+                    value = "HEAD"
+            )
+    )
+    private void gUITween$onDropItemBefore(LocalPlayer player, boolean all, CallbackInfo ci) {
+        if (!player.getInventory().getSelectedItem().isEmpty()) {
+            return;
+        }
+
+        if (GUITweenConfig.isEnableExp()) {
+            HotbarChangeListener.lackTick = 0;
+            PlayGuiSoundEvent.post(new PlayGuiSoundEvent(PlayGuiSoundEvent.SoundType.LACK_ITEM));
+        }
+    }
+
     @Inject(
             method = "handleContainerInput",
             at = @At(
