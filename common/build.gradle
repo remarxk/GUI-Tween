@@ -36,7 +36,7 @@ dependencies {
 
     compileOnly "curse.maven:jei-238222:8911160"
 
-    compileOnly "curse.maven:roughly-enough-items-310111:8271755"
+    compileOnly "curse.maven:roughly-enough-items-310111:9090698"
     compileOnly "curse.maven:architectury-api-419699:8915075"
 }
 

@@ -39,8 +39,8 @@ dependencies {
     compileOnly "curse.maven:jei-238222:8911159"
     runtimeOnly "curse.maven:jei-238222:8911159"
 
-    compileOnly "curse.maven:roughly-enough-items-310111:8271755"
-//    runtimeOnly "curse.maven:roughly-enough-items-310111:8271755"
+    compileOnly "curse.maven:roughly-enough-items-310111:9090698"
+//    runtimeOnly "curse.maven:roughly-enough-items-310111:9090698"
 
     compileOnly "curse.maven:architectury-api-419699:8915075"
 //    runtimeOnly "curse.maven:architectury-api-419699:8915075"
