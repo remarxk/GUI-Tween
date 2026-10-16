@@ -12,6 +12,7 @@
     "ChatScreenMixin",
     "FontMixin",
     "ForgeGuiMixin",
+    "GameRendererMixin",
     "GuiMixin",
     "ItemRendererMixin",
     "KeyMappingMixin",
