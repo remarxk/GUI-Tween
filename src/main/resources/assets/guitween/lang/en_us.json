@@ -58,6 +58,8 @@
   "guitween.config.enableDrag": "Enable Drag Animation",
   "guitween.config.dragMaxAngle": "Max Drag Angle",
   "guitween.config.dragSensitivity": "Drag Sensitivity",
+  "guitween.config.dragStiffness": "Drag Stiffness",
+  "guitween.config.dragDamping": "Drag Damping",
 
   "guitween.config.enableSameItem": "Enable Same Item Animation",
   "guitween.config.sameItemDelay": "Animation Delay",

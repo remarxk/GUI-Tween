@@ -4,7 +4,6 @@ import com.corosus.watut.WatutMod;
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import dev.ftb.mods.ftblibrary.FTBLibrary;
 import fuzs.overflowingbars.OverflowingBars;
-import mezz.jei.api.constants.ModIds;
 import net.neoforged.fml.loading.LoadingModList;
 import net.p3pp3rf1y.sophisticatedcore.SophisticatedCore;
 import org.objectweb.asm.tree.ClassNode;
@@ -36,7 +35,7 @@ public class GUITweenMixinPlugin implements IMixinConfigPlugin {
         }
 
         if (mixinClassName.contains("com.remarxk.guitween.mixin.jei")) {
-            return modIsLoad(ModIds.JEI_ID);
+            return modIsLoad("jei");
         }
 
         if (mixinClassName.contains("com.remarxk.guitween.mixin.sodium")) {

@@ -38,6 +38,10 @@ public class WindowItemTweenConfig {
 
     public final ModConfigSpec.DoubleValue dragSensitivity;
 
+    public final ModConfigSpec.DoubleValue dragStiffness;
+
+    public final ModConfigSpec.DoubleValue dragDamping;
+
     public final ModConfigSpec.BooleanValue enableSameItem;
 
     public final ModConfigSpec.DoubleValue sameItemDelay;
@@ -142,6 +146,14 @@ public class WindowItemTweenConfig {
         dragSensitivity = builder
                 .translation("guitween.config.dragSensitivity")
                 .defineInRange("dragSensitivity", 8d, 0, 1000);
+
+        dragStiffness = builder
+                .translation("guitween.config.dragStiffness")
+                .defineInRange("dragStiffness", 26d, 1d, 100d);
+
+        dragDamping = builder
+                .translation("guitween.config.dragDamping")
+                .defineInRange("dragDamping", 0.25d, 0.05d, 1d);
 
         enableSameItem = builder
                 .translation("guitween.config.enableSameItem")
