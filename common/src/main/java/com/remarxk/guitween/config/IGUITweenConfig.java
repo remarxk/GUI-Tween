@@ -71,6 +71,8 @@ public interface IGUITweenConfig {
     boolean enableDrag();
     float dragMaxAngle();
     float dragSensitivity();
+    float dragStiffness();
+    float dragDamping();
 
     boolean enableSameItem();
     float sameItemDelay();

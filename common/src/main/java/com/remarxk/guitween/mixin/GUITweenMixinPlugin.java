@@ -30,9 +30,10 @@ public class GUITweenMixinPlugin implements IMixinConfigPlugin {
             return Services.PLATFORM.isModLoaded("emi");
         }
 
-//        if (mixinClassName.contains("com.remarxk.guitween.mixin.jei")) {
-//            return Services.PLATFORM.isModLoaded(ModIds.JEI_ID);
-//        }
+        // 用字符串 modId 而非 ModIds.JEI_ID，避免在未安装 JEI 时引入对 JEI API 的硬依赖
+        if (mixinClassName.contains("com.remarxk.guitween.mixin.jei")) {
+            return Services.PLATFORM.isModLoaded("jei");
+        }
 
         if (mixinClassName.contains("com.remarxk.guitween.mixin.sodium")) {
             return Services.PLATFORM.isModLoaded("sodium");

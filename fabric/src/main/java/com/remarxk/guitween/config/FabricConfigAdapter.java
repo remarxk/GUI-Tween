@@ -85,6 +85,8 @@ public class FabricConfigAdapter implements IGUITweenConfig {
     @Override public boolean enableDrag() { return c.enableDrag; }
     @Override public float dragMaxAngle() { return c.dragMaxAngle; }
     @Override public float dragSensitivity() { return c.dragSensitivity; }
+    @Override public float dragStiffness() { return c.dragStiffness; }
+    @Override public float dragDamping() { return c.dragDamping; }
 
     @Override public boolean enableSameItem() { return c.enableSameItem; }
     @Override public boolean enableQuick() { return c.enableQuick; }

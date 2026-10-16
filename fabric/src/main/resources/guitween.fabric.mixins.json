@@ -6,7 +6,8 @@
   "compatibilityLevel": "JAVA_25",
   "mixins": [],
   "client": [
-    "FabricHudMixin"
+    "FabricHudMixin",
+    "GuiMixin"
   ],
   "server": [],
   "injectors": {

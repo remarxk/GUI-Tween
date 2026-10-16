@@ -58,6 +58,8 @@
   "guitween.config.enableDrag": "启用拖拽动画",
   "guitween.config.dragMaxAngle": "拖拽最大角度",
   "guitween.config.dragSensitivity": "拖拽灵敏度",
+  "guitween.config.dragStiffness": "拖拽刚度",
+  "guitween.config.dragDamping": "拖拽阻尼",
 
   "guitween.config.enableSameItem": "启用相同物品动画",
   "guitween.config.sameItemDelay": "相同物品动画延迟",
