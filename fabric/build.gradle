@@ -34,6 +34,12 @@ dependencies {
 
     compileOnly "curse.maven:jei-238222:8767758"
     runtimeOnly "curse.maven:jei-238222:8767758"
+
+    compileOnly "curse.maven:roughly-enough-items-310111:8271476"
+//    runtimeOnly "curse.maven:roughly-enough-items-310111:8271476"
+
+    compileOnly "curse.maven:architectury-api-419699:8191992"
+//    runtimeOnly "curse.maven:architectury-api-419699:8191992"
 }
 
 loom {

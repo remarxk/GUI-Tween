@@ -183,6 +183,16 @@ public class NeoForgeConfigAdapter implements IGUITweenConfig {
         return NeoforgeGUITweenConfig.windowItem.dragSensitivity.get().floatValue();
     }
 
+    @Override
+    public float dragStiffness() {
+        return NeoforgeGUITweenConfig.windowItem.dragStiffness.get().floatValue();
+    }
+
+    @Override
+    public float dragDamping() {
+        return NeoforgeGUITweenConfig.windowItem.dragDamping.get().floatValue();
+    }
+
     @Override public boolean enableSameItem() { return NeoforgeGUITweenConfig.windowItem.enableSameItem.get(); }
     @Override public boolean enableQuick() { return NeoforgeGUITweenConfig.windowItem.enableQuick.get(); }
     @Override public boolean enableMove() { return NeoforgeGUITweenConfig.windowItem.enableMove.get(); }

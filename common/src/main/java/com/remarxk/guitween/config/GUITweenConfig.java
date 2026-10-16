@@ -131,6 +131,8 @@ public final class GUITweenConfig {
 
     public static float dragMaxAngle() { return cfg().dragMaxAngle(); }
     public static float dragSensitivity() { return cfg().dragSensitivity(); }
+    public static float dragStiffness() { return cfg().dragStiffness(); }
+    public static float dragDamping() { return cfg().dragDamping(); }
 
     public static float sameItemDelay() { return cfg().sameItemDelay(); }
     public static float sameItemShakeStrength() { return cfg().sameItemShakeStrength(); }

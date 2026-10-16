@@ -54,6 +54,12 @@ repositories {
 dependencies {
     compileOnly "curse.maven:jei-238222:8767759"
     runtimeOnly "curse.maven:jei-238222:8767759"
+
+    compileOnly "curse.maven:roughly-enough-items-310111:8271478"
+//    runtimeOnly "curse.maven:roughly-enough-items-310111:8271478"
+
+    compileOnly "curse.maven:architectury-api-419699:8191993"
+//    runtimeOnly "curse.maven:architectury-api-419699:8191993"
 }
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }

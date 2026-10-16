@@ -117,7 +117,7 @@ public class WindowTweenConfig {
 
         enableCloseWindow = BUILDER
                 .translation("guitween.config.enableCloseWindow")
-                .define("enableCloseWindow", false);
+                .define("enableCloseWindow", true);
 
         closeMoveDuration = BUILDER
                 .translation("guitween.config.closeMoveDuration")

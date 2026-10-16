@@ -47,7 +47,7 @@ public class FabricGUITweenConfig extends Config {
 
     public ValidatedChoice<Ease> windowGradientEase  = new ValidatedChoice<>(Ease.IN_OUT_SINE, EASE_LIST, new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
 
-    public boolean enableCloseWindow = false;
+    public boolean enableCloseWindow = true;
 
     public float closeMoveDuration = 6;
 
@@ -114,6 +114,10 @@ public class FabricGUITweenConfig extends Config {
     public float dragMaxAngle = 15f;
 
     public float dragSensitivity = 8f;
+
+    public float dragStiffness = 26f;
+
+    public float dragDamping = 0.25f;
 
     public boolean enableSameItem = true;
 

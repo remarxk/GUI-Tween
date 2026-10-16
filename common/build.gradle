@@ -35,6 +35,9 @@ dependencies {
     compileOnly "org.ow2.asm:asm-tree:9.5"
 
     compileOnly "curse.maven:jei-238222:8767759"
+
+    compileOnly "curse.maven:roughly-enough-items-310111:8271476"
+    compileOnly "curse.maven:architectury-api-419699:8191992"
 }
 
 configurations {
