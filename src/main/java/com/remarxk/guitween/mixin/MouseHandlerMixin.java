@@ -14,11 +14,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/**
- * 与 {@link KeyboardHandlerMixin} 配套：
- * 容器界面播放关闭动画时，屏幕尚未真正关闭，但应让鼠标像在游戏中一样工作，
- * 即抓取鼠标并转动视角，而不是把鼠标移动/点击交给仍处于关闭动画中的界面。
- */
 @Mixin(MouseHandler.class)
 public class MouseHandlerMixin {
     @Shadow
@@ -51,8 +46,6 @@ public class MouseHandlerMixin {
             return;
         }
 
-        // 只抓取鼠标、隐藏光标，但不走 grabMouse()，因为 grabMouse() 会调用 setScreen(null)
-        // 而关闭动画期间界面仍然需要被渲染。
         if (minecraft.isWindowActive() && !mouseGrabbed) {
             mouseGrabbed = true;
             xpos = minecraft.getWindow().getScreenWidth() / 2.0;
@@ -61,7 +54,6 @@ public class MouseHandlerMixin {
             ignoreFirstMove = true;
         }
 
-        // 处理期间临时当作“没有打开屏幕”，让 MouseHandler 走游戏输入逻辑（转动视角/攻击等）
         gUITween$screen = screen;
         minecraft.screen = null;
     }

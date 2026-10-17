@@ -31,7 +31,6 @@ public abstract class ScreenMixin extends AbstractContainerEventHandler implemen
             boolean closing = access.gUITween$inCloseTween();
 
             if (closing) {
-                // 关闭动画期间让屏幕背后的半透明黑色渐变遮罩按 closeGradient 渐隐到完全透明
                 float total = GUITweenConfig.getCloseWindowTotalDuration();
                 float elapsed = Math.max(0, total - GUITweenUtility.closeScreenTick);
                 float duration = GUITweenConfig.window.closeGradientDuration.get().floatValue();
@@ -43,8 +42,6 @@ public abstract class ScreenMixin extends AbstractContainerEventHandler implemen
                 colorBottom = gUITween$multiplyAlpha(colorBottom, fade);
             }
             else if (GUITweenConfig.isEnableWindow()) {
-                // 开启动画期间让遮罩从透明渐变到正常的黑色。
-                // 背景渐隐时长 = 窗口渐变时长 - 2（例如默认 8 → 背景 6）
                 float duration = Math.max(0, GUITweenConfig.window.gradientDuration.get().floatValue() - 2);
                 float progress = duration <= 0 ? 1 : Math.min(1, GUITweenUtility.openScreenTick / duration);
                 float fade = TweenUtil.tween(0, 1, progress, GUITweenConfig.window.gradientEase.get());

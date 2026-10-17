@@ -98,7 +98,6 @@ public class WindowTweenConfig {
                 .translation("guitween.config.enableJei")
                 .define("enableJei", true);
 
-        // 左右统一：按左侧方向填写，右侧会自动镜像 X
         jeiMoveDuration = BUILDER
                 .translation("guitween.config.jeiMoveDuration")
                 .defineInRange("jeiMoveDuration", 6d, 0, 1000d);
@@ -143,7 +142,6 @@ public class WindowTweenConfig {
                 .translation("guitween.config.closeGradientEase")
                 .defineEnum("closeGradientEase", Ease.IN_OUT_SINE);
 
-        // 关闭时同样左右统一，右侧自动镜像 X
         closeJeiMoveDuration = BUILDER
                 .translation("guitween.config.closeJeiMoveDuration")
                 .defineInRange("closeJeiMoveDuration", 6d, 0, 1000d);

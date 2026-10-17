@@ -183,7 +183,6 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
         gUITween$inClosingTween = !gUITween$inClosingTween;
 
         if (gUITween$inClosingTween) {
-            // 关闭动画从“居中/完全可见”状态开始，走完全独立的关闭计时与偏移参数
             GUITweenUtility.startCloseWindowTween();
             KeyMapping.setAll();
         }
@@ -513,7 +512,6 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
         float gradientProgress;
 
         if (closing) {
-            // 独立的关闭动画：从居中位置向 closeMoveX/Y 移动，渐变 alpha 从 1 到 0
             float total = GUITweenConfig.getCloseWindowTotalDuration();
             float elapsed = Math.max(0, total - GUITweenUtility.closeScreenTick);
             moveProgress = GUITweenConfig.window.closeMoveDuration.get().floatValue() <= 0
