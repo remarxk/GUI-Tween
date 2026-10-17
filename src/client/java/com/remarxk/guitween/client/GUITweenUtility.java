@@ -1,6 +1,7 @@
 package com.remarxk.guitween.client;
 
 import com.remarxk.guitween.client.anim.AttackTween;
+import com.remarxk.guitween.client.anim.ContainerItemTween;
 import com.remarxk.guitween.client.anim.DragTween;
 import com.remarxk.guitween.client.anim.UseTween;
 import net.minecraft.client.MinecraftClient;
@@ -22,6 +23,14 @@ public class GUITweenUtility {
 
     public static String openScreenName;
     public static float openScreenTick;
+    public static float jeiOpenTick;
+
+    /** 是否正处于窗口关闭动画阶段（与 openScreenTick/jeiOpenTick 完全独立的计时） */
+    public static boolean isWindowClosing;
+    public static float closeScreenTick;
+    public static float closeJeiTick;
+
+    public static boolean inDragging;
 
     private static final Stack<Float> itemAlphaStack = new Stack<>();
     private static final Stack<Float> fontAlphaStack = new Stack<>();
@@ -29,6 +38,7 @@ public class GUITweenUtility {
     private final static AttackTween attackTween = new AttackTween();
     private final static UseTween usingTween = new UseTween();
     private final static DragTween dragTween = new DragTween();
+    private final static ContainerItemTween CONTAINER_ITEM_TWEEN = new ContainerItemTween();
 
     public static float getDeltaTicks() {
         return MinecraftClient.getInstance().getRenderTickCounter().getLastDuration();
@@ -55,6 +65,25 @@ public class GUITweenUtility {
     public static void deleteOpenScreen() {
         openScreenName = null;
         openScreenTick = 0;
+        jeiOpenTick = 0;
+        endCloseWindowTween();
+    }
+
+    /**
+     * 开始独立的窗口关闭动画计时。
+     * 关闭动画从“居中、完全可见”的位置开始，向各自独立的偏移量运动，
+     * 因此这里不再复用 openScreenTick/jeiOpenTick。
+     */
+    public static void startCloseWindowTween() {
+        isWindowClosing = true;
+        closeScreenTick = GUITweenClient.CONFIG.getCloseWindowTotalDuration();
+        closeJeiTick = GUITweenClient.CONFIG.getCloseJeiTotalDuration();
+    }
+
+    public static void endCloseWindowTween() {
+        isWindowClosing = false;
+        closeScreenTick = 0;
+        closeJeiTick = 0;
     }
 
     public static void pushAlpha(float alpha) {
@@ -109,5 +138,9 @@ public class GUITweenUtility {
 
     public static DragTween getDragTween() {
         return dragTween;
+    }
+
+    public static ContainerItemTween getMoveItemTween() {
+        return CONTAINER_ITEM_TWEEN;
     }
 }

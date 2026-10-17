@@ -1,9 +1,7 @@
 package com.remarxk.guitween.client.mixin.rei;
 
-import com.remarxk.guitween.client.GUITweenClient;
-import com.remarxk.guitween.client.GUITweenUtility;
+import com.remarxk.guitween.client.compat.CompatUtility;
 import com.remarxk.guitween.client.compat.ReiCompat;
-import com.remarxk.guitween.client.util.TweenUtil;
 import me.shedaniel.rei.api.client.gui.widgets.Widget;
 import me.shedaniel.rei.impl.client.gui.ScreenOverlayImpl;
 import me.shedaniel.rei.impl.client.gui.widget.entrylist.EntryListWidget;
@@ -24,57 +22,54 @@ public class ScreenOverlayImpMixin {
             )
     )
     public void renderWidgets(Widget instance, DrawContext drawContext, int mouseX, int mouseY, float delta) {
-        if (GUITweenUtility.openScreenName != null) {
-            if (GUITweenClient.CONFIG.isEnableJeiLeft() && instance instanceof FavoritesListWidget favoritesListWidget) {
-                float totalTick = Math.max(GUITweenClient.CONFIG.jeiLeftMoveDuration, 1);
-                float progress = GUITweenUtility.openScreenTick / totalTick;
-
-                if (progress < 1){
+        if (com.remarxk.guitween.client.GUITweenUtility.openScreenName != null) {
+            if (instance instanceof FavoritesListWidget) {
+                CompatUtility.JeiTween jeiTween = CompatUtility.getJeiLeftTween();
+                if (jeiTween.inTween) {
                     MatrixStack poseStack = drawContext.getMatrices();
-
-                    float dx = TweenUtil.tween(GUITweenClient.CONFIG.jeiLeftMoveX, 0, progress, GUITweenClient.CONFIG.jeiLeftMoveEase.get());
-                    float dy = TweenUtil.tween(GUITweenClient.CONFIG.jeiLeftMoveY, 0, progress, GUITweenClient.CONFIG.jeiLeftMoveEase.get());
-
                     ReiCompat.inTween = true;
-                    ReiCompat.dx = dx;
-                    ReiCompat.dy = dy;
+                    ReiCompat.dx = jeiTween.dx;
+                    ReiCompat.dy = jeiTween.dy;
 
                     poseStack.push();
-                    poseStack.translate(dx, dy, 0);
-
+                    poseStack.translate(jeiTween.dx, jeiTween.dy, 0);
                     instance.render(drawContext, mouseX, mouseY, delta);
-
                     poseStack.pop();
 
                     ReiCompat.inTween = false;
-
                     return;
                 }
             }
-
-            if (GUITweenClient.CONFIG.isEnableJeiRight() && instance instanceof EntryListWidget entryListWidget) {
-                float totalTick = Math.max(GUITweenClient.CONFIG.jeiRightMoveDuration, 1);
-                float progress = GUITweenUtility.openScreenTick / totalTick;
-
-                if (progress < 1){
+            else if (instance instanceof EntryListWidget) {
+                CompatUtility.JeiTween jeiTween = CompatUtility.getJeiRightTween();
+                if (jeiTween.inTween) {
                     MatrixStack poseStack = drawContext.getMatrices();
-
-                    float dx = TweenUtil.tween(GUITweenClient.CONFIG.jeiRightMoveX, 0, progress, GUITweenClient.CONFIG.jeiRightMoveEase.get());
-                    float dy = TweenUtil.tween(GUITweenClient.CONFIG.jeiRightMoveY, 0, progress, GUITweenClient.CONFIG.jeiRightMoveEase.get());
-
                     ReiCompat.inTween = true;
-                    ReiCompat.dx = dx;
-                    ReiCompat.dy = dy;
+                    ReiCompat.dx = jeiTween.dx;
+                    ReiCompat.dy = jeiTween.dy;
 
                     poseStack.push();
-                    poseStack.translate(dx, dy, 0);
+                    poseStack.translate(jeiTween.dx, jeiTween.dy, 0);
+                    instance.render(drawContext, mouseX, mouseY, delta);
+                    poseStack.pop();
+
+                    ReiCompat.inTween = false;
+                    return;
+                }
+            }
+            else {
+                // 底部组件（搜索栏、配置按钮、可合成过滤按钮等）：
+                // REI 覆盖层在 renderContainerBg 中被整体抵消了窗口位移，
+                // 这里把窗口位移加回去，使其开/关位移参数与窗体动画完全一致。
+                CompatUtility.OpenTween openTween = CompatUtility.getOpenTween();
+                if (openTween.inTween) {
+                    MatrixStack poseStack = drawContext.getMatrices();
+                    poseStack.push();
+                    poseStack.translate(openTween.dx, openTween.dy, 0);
 
                     instance.render(drawContext, mouseX, mouseY, delta);
 
                     poseStack.pop();
-
-                    ReiCompat.inTween = false;
-
                     return;
                 }
             }

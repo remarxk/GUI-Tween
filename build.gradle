@@ -61,8 +61,8 @@ dependencies {
 
     modRuntimeOnly "curse.maven:modmenu-308702:7808443"
 
-    modCompileOnly "curse.maven:jei-238222:7420583"
-//    modRuntimeOnly "curse.maven:jei-238222:7420583"
+    modCompileOnly "curse.maven:jei-238222:8759214"
+    modRuntimeOnly "curse.maven:jei-238222:8759214"
 
     modCompileOnly "curse.maven:sodium-394468:6382649"
     modRuntimeOnly "curse.maven:sodium-394468:6382649"
@@ -78,8 +78,8 @@ dependencies {
 
     modCompileOnly "curse.maven:immersive-ui-1021685:6886573"
 
-    modCompileOnly "curse.maven:ftb-library-fabric-438495:7746958"
-//    modRuntimeOnly "curse.maven:ftb-library-fabric-438495:7746958"
+    modCompileOnly "curse.maven:ftb-library-fabric-438495:8438217"
+    modRuntimeOnly "curse.maven:ftb-library-fabric-438495:8438217"
 
     modCompileOnly "curse.maven:overflowing-bars-852662:5770622"
 }

@@ -1,8 +1,7 @@
 package com.remarxk.guitween.client.mixin.rei;
 
-import com.remarxk.guitween.client.GUITweenClient;
 import com.remarxk.guitween.client.GUITweenUtility;
-import com.remarxk.guitween.client.util.TweenUtil;
+import com.remarxk.guitween.client.compat.CompatUtility;
 import dev.architectury.event.events.client.ClientGuiEvent;
 import com.remarxk.guitween.client.mixinAccess.AbstractContainerScreenMixinAccess;
 import me.shedaniel.rei.api.client.registry.screen.OverlayRendererProvider;
@@ -43,19 +42,14 @@ public class DefaultScreenOverlayRendererMixin {
             }
 
             if (access.getGUITween$inTween()) {
-                float openTick = access.getGUITween$openTick();
-                float moveProgress = openTick / GUITweenClient.CONFIG.windowMoveDuration;
-                float gradientProgress = openTick / GUITweenClient.CONFIG.windowGradientDuration;
+                // 开启动画和关闭动画使用不同参数，这里必须重新压入“当前”窗口变换，
+                // 否则关闭动画时背景已经位移、后续绘制的格子却留在原位。
+                CompatUtility.WindowTween windowTween = CompatUtility.getWindowTween(access);
 
-                float dx = TweenUtil.tween(GUITweenClient.CONFIG.windowMoveX, 0, moveProgress, GUITweenClient.CONFIG.windowMoveEase.get());
-                float dy = TweenUtil.tween(GUITweenClient.CONFIG.windowMoveY, 0, moveProgress, GUITweenClient.CONFIG.windowMoveEase.get());
-
-                // 动画变换
                 poseStack.push();
-                poseStack.translate(dx, dy, 0);  // 上移
+                poseStack.translate(windowTween.dx, windowTween.dy, 0);
 
-                float alpha = TweenUtil.tween(0.05f, 1, gradientProgress, GUITweenClient.CONFIG.windowGradientEase.get());
-                GUITweenUtility.pushAlpha(alpha);
+                GUITweenUtility.pushAlpha(windowTween.alpha);
             }
         };
     }

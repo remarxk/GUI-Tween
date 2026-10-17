@@ -1,8 +1,5 @@
 package com.remarxk.guitween.client.mixin;
 
-import dev.ftb.mods.ftblibrary.FTBLibrary;
-import fuzs.overflowingbars.OverflowingBars;
-import mezz.jei.api.constants.ModIds;
 import net.fabricmc.loader.api.FabricLoader;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
@@ -24,28 +21,30 @@ public class GUITweenMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-        if (mixinClassName.contains("com.remarxk.guitween.mixin.rei")) {
+        // 注意：本工程的 mixin 包名是 com.remarxk.guitween.client.mixin
+        if (mixinClassName.contains(".client.mixin.rei.")) {
             return modIsLoad("roughlyenoughitems");
         }
 
-        if (mixinClassName.startsWith("com.remarxk.guitween.mixin.emi")) {
+        if (mixinClassName.contains(".client.mixin.emi.")) {
             return modIsLoad("emi");
         }
 
-        if (mixinClassName.contains("com.remarxk.guitween.mixin.jei")) {
-            return modIsLoad(ModIds.JEI_ID);
+        // 用字符串 modId 而非 ModIds.JEI_ID，避免在未安装 JEI 时引入对 JEI API 的硬依赖
+        if (mixinClassName.contains(".client.mixin.jei.")) {
+            return modIsLoad("jei");
         }
 
-        if (mixinClassName.contains("com.remarxk.guitween.mixin.sodium")) {
+        if (mixinClassName.contains(".client.mixin.sodium.")) {
             return modIsLoad("sodium");
         }
 
-        if (mixinClassName.contains("com.remarxk.guitween.mixin.overflowingbars")) {
-            return modIsLoad(OverflowingBars.MOD_ID);
+        if (mixinClassName.contains(".client.mixin.overflowingbars.")) {
+            return modIsLoad("overflowingbars");
         }
 
-        if (mixinClassName.contains("com.remarxk.guitween.mixin.ftblibrary")) {
-            return modIsLoad(FTBLibrary.MOD_ID);
+        if (mixinClassName.contains(".client.mixin.ftblibrary.")) {
+            return modIsLoad("ftblibrary");
         }
 
         return true;

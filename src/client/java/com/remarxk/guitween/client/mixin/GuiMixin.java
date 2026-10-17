@@ -6,6 +6,7 @@ import com.remarxk.guitween.client.anim.AttackTween;
 import com.remarxk.guitween.client.anim.Tween;
 import com.remarxk.guitween.client.anim.TweenPool;
 import com.remarxk.guitween.client.anim.UseTween;
+import com.remarxk.guitween.client.event.PlayGuiSoundEvent;
 import com.remarxk.guitween.client.eventListener.HotbarChangeListener;
 import com.remarxk.guitween.client.util.Axis;
 import com.remarxk.guitween.client.util.TweenUtil;
@@ -51,10 +52,14 @@ public class GuiMixin {
 
         if (GUITweenClient.CONFIG.isEnableHoldItem()) {
             Tween tween = HotbarChangeListener.hotbarAnimStateMap.getOrDefault(slot, null);
-            if (tween != null) {
+            if (tween != null && (!GUITweenClient.CONFIG.isEnableSelectMove() || HotbarChangeListener.scrollDir == 0)) {
                 hasTween = true;
 
                 scale = TweenUtil.tween(tween.startValue, tween.stopValue, tween.tick, tween.totalTick, tween.ease);
+
+                if (!tween.rewind && "zoomIn".equals(tween.name) && tween.tick == 0) {
+                    PlayGuiSoundEvent.post(new PlayGuiSoundEvent(PlayGuiSoundEvent.SoundType.SELECT_ITEM));
+                }
 
                 float deltaTicks = GUITweenUtility.getDeltaTicks();
                 if (!tween.rewind) {
@@ -159,7 +164,7 @@ public class GuiMixin {
         if (GUITweenClient.CONFIG.isEnableHoldItem()) {
             int slot = seed - 1;
             Tween tween = HotbarChangeListener.hotbarAnimStateMap.getOrDefault(slot, null);
-            if (tween != null) {
+            if (tween != null && (!GUITweenClient.CONFIG.isEnableSelectMove() || HotbarChangeListener.scrollDir == 0)) {
                 hasTween = true;
 
                 if (tween.rewind) {
@@ -180,6 +185,7 @@ public class GuiMixin {
                             HotbarChangeListener.hotbarAnimStateMap.remove(slot);
                         }
                         else {
+                            tween.name = "zoomOut";
                             tween.ease = GUITweenClient.CONFIG.holdZoomOutEase.get();
                             tween.tick = 0;
                             tween.totalTick = GUITweenClient.CONFIG.holdZoomOutDuration;

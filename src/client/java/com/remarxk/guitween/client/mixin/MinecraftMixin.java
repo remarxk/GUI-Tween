@@ -3,11 +3,13 @@ package com.remarxk.guitween.client.mixin;
 import com.remarxk.guitween.client.GUITweenUtility;
 import com.remarxk.guitween.client.anim.AttackTween;
 import com.remarxk.guitween.client.anim.UseTween;
+import com.remarxk.guitween.client.mixinAccess.AbstractContainerScreenMixinAccess;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.network.ClientPlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -15,6 +17,40 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(MinecraftClient.class)
 public class MinecraftMixin {
+    @Shadow
+    public Screen currentScreen;
+
+    @Unique
+    private Screen gUITween$screen;
+
+    @Inject(
+            method = "tick",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/gui/screen/Screen;wrapScreenError(Ljava/lang/Runnable;Ljava/lang/String;Ljava/lang/String;)V",
+                    shift = At.Shift.AFTER
+            )
+    )
+    private void clearClosingScreen(CallbackInfo ci) {
+        if (currentScreen instanceof AbstractContainerScreenMixinAccess access && access.gUITween$inCloseTween()) {
+            gUITween$screen = currentScreen;
+            currentScreen = null;
+        }
+    }
+
+    @Inject(
+            method = "tick",
+            at = @At(
+                    value = "RETURN"
+            )
+    )
+    private void restoreClosingScreen(CallbackInfo ci) {
+        if (gUITween$screen != null) {
+            currentScreen = gUITween$screen;
+            gUITween$screen = null;
+        }
+    }
+
     @Inject(
             method = "doItemUse",
             at = @At(

@@ -1,9 +1,6 @@
 package com.remarxk.guitween.client.mixin.jei;
 
-import com.remarxk.guitween.client.GUITweenClient;
-import com.remarxk.guitween.client.GUITweenUtility;
-import com.remarxk.guitween.client.config.GUITweenConfig;
-import com.remarxk.guitween.client.util.TweenUtil;
+import com.remarxk.guitween.client.compat.CompatUtility;
 import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -14,49 +11,106 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(value = BookmarkOverlay.class)
+@Mixin(BookmarkOverlay.class)
 public class BookmarkOverlayMixin {
     @Unique
     private boolean gUITween$inTween;
 
     @Inject(
-            method = "drawScreen",
+            method = "drawBackground",
             at = @At(
                     value = "HEAD"
             )
     )
-    public void drawScreenBefore(MinecraftClient minecraft, DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
-        if (GUITweenUtility.openScreenName == null)
+    public void drawBackgroundBefore(DrawContext guiGraphics, CallbackInfo ci) {
+        CompatUtility.JeiTween jeiTween = CompatUtility.getJeiLeftTween();
+        if (!jeiTween.inTween)
             return;
-
-        if (!GUITweenClient.CONFIG.isEnableJeiLeft())
-            return;
-
-        float totalTick = Math.max(GUITweenClient.CONFIG.jeiLeftMoveDuration, 1);
-        float progress = GUITweenUtility.openScreenTick / totalTick;
-
-        if (progress > 1){
-            return;
-        }
 
         gUITween$inTween = true;
 
         MatrixStack poseStack = guiGraphics.getMatrices();
         poseStack.push();
-
-        float dx = TweenUtil.tween(GUITweenClient.CONFIG.jeiLeftMoveX, 0, progress, GUITweenClient.CONFIG.jeiLeftMoveEase.get());
-        float dY = TweenUtil.tween(GUITweenClient.CONFIG.jeiLeftMoveY, 0, progress, GUITweenClient.CONFIG.jeiLeftMoveEase.get());
-
-        poseStack.translate(dx, dY , 0);
+        poseStack.translate(jeiTween.dx, jeiTween.dy, 0);
     }
 
     @Inject(
-            method = "drawScreen",
+            method = "drawBackground",
             at = @At(
                     value = "TAIL"
             )
     )
-    public void drawScreenAfter(MinecraftClient minecraft, DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
+    public void drawBackgroundAfter(DrawContext guiGraphics, CallbackInfo ci) {
+        if (!gUITween$inTween) {
+            return;
+        }
+
+        gUITween$inTween = false;
+
+        MatrixStack poseStack = guiGraphics.getMatrices();
+        poseStack.pop();
+    }
+
+    @Inject(
+            method = "drawForeground",
+            at = @At(
+                    value = "HEAD"
+            )
+    )
+    public void drawForegroundBefore(MinecraftClient minecraft, DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
+        CompatUtility.JeiTween jeiTween = CompatUtility.getJeiLeftTween();
+        if (!jeiTween.inTween)
+            return;
+
+        gUITween$inTween = true;
+
+        MatrixStack poseStack = guiGraphics.getMatrices();
+        poseStack.push();
+        poseStack.translate(jeiTween.dx, jeiTween.dy, 0);
+    }
+
+    @Inject(
+            method = "drawForeground",
+            at = @At(
+                    value = "TAIL"
+            )
+    )
+    public void drawForegroundAfter(MinecraftClient minecraft, DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
+        if (!gUITween$inTween) {
+            return;
+        }
+
+        gUITween$inTween = false;
+
+        MatrixStack poseStack = guiGraphics.getMatrices();
+        poseStack.pop();
+    }
+
+    @Inject(
+            method = "drawOnForeground",
+            at = @At(
+                    value = "HEAD"
+            )
+    )
+    public void drawOnForegroundBefore(DrawContext guiGraphics, int mouseX, int mouseY, CallbackInfo ci) {
+        CompatUtility.JeiTween jeiTween = CompatUtility.getJeiLeftTween();
+        if (!jeiTween.inTween)
+            return;
+
+        gUITween$inTween = true;
+
+        MatrixStack poseStack = guiGraphics.getMatrices();
+        poseStack.push();
+        poseStack.translate(jeiTween.dx, jeiTween.dy, 0);
+    }
+
+    @Inject(
+            method = "drawOnForeground",
+            at = @At(
+                    value = "TAIL"
+            )
+    )
+    public void drawOnForegroundAfter(DrawContext guiGraphics, int mouseX, int mouseY, CallbackInfo ci) {
         if (!gUITween$inTween) {
             return;
         }

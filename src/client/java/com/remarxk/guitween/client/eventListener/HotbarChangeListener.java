@@ -6,6 +6,7 @@ import com.remarxk.guitween.client.anim.Tween;
 import com.remarxk.guitween.client.anim.TweenPool;
 import com.remarxk.guitween.client.anim.UseTween;
 import com.remarxk.guitween.client.config.GUITweenConfig;
+import com.remarxk.guitween.client.event.PlayGuiSoundEvent;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.world.ClientWorld;
@@ -75,9 +76,7 @@ public class HotbarChangeListener {
                     }
                 }
 
-                if (GUITweenClient.CONFIG.isEnableHoldItem()) {
-                    animTick = lastSelected >= 0 ? 0 : GUITweenClient.CONFIG.getHoldItemTotalDuration();
-                }
+                animTick = lastSelected >= 0 ? 0 : Math.max(GUITweenClient.CONFIG.getSelectedItemNameDuration(), GUITweenClient.CONFIG.getHoldItemTotalDuration());
                 lastSelected = index;
 
                 lackTick = GUITweenClient.CONFIG.lackDuration;
@@ -87,6 +86,7 @@ public class HotbarChangeListener {
                     Tween tween = hotbarAnimStateMap.getOrDefault(index, null);
                     if (tween == null) {
                         tween = TweenPool.getTween();
+                        tween.name = "zoomIn";
                         tween.tick = 0;
                         tween.totalTick = GUITweenClient.CONFIG.holdZoomInDuration;
                         tween.ease = GUITweenClient.CONFIG.holdZoomInEase.get();
@@ -113,8 +113,10 @@ public class HotbarChangeListener {
                 boolean curHasItem = selectedItem.getCount() > 0;
                 if (curHasItem != hasItem) {
                     hasItem = curHasItem;
-                    if (!hasItem)
+                    if (!hasItem) {
                         lackTick = 0;
+                        PlayGuiSoundEvent.post(new PlayGuiSoundEvent(PlayGuiSoundEvent.SoundType.LACK_ITEM));
+                    }
                 }
             }
         }

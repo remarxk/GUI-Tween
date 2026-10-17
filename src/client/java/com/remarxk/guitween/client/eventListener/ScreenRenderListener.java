@@ -10,7 +10,6 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.MathHelper;
 
 public class ScreenRenderListener {
     public static void postRenderScreen(Screen screen, DrawContext drawContext, int mouseX, int mouseY, float tickDelta) {
@@ -53,12 +52,25 @@ public class ScreenRenderListener {
 
         access.setGUITween$inTween(false);
 
-        float sign = access.gUITween$inCloseTween() ? -GUITweenClient.CONFIG.closeWindowSpeed : 1;
-        float openTick = MathHelper.clamp(access.getGUITween$openTick() + sign * GUITweenUtility.getDeltaTicks(),0, GUITweenClient.CONFIG.getWindowTotalDuration());
-        access.setGUITween$openTick(openTick);
+        boolean closing = access.gUITween$inCloseTween();
+        GUITweenUtility.isWindowClosing = closing;
+        float deltaTicks = GUITweenUtility.getDeltaTicks();
 
-        if (sign < 0 && openTick <= 0) {
-            access.gUITween$setNeedClose(true);
+        if (closing) {
+            // 关闭动画使用独立计时：按真实帧数推进，速度恒为 1（不再有“关闭速度”）
+            GUITweenUtility.closeScreenTick = Math.max(0, GUITweenUtility.closeScreenTick - deltaTicks);
+            GUITweenUtility.closeJeiTick = Math.max(0, GUITweenUtility.closeJeiTick - deltaTicks);
+
+            if (GUITweenUtility.closeScreenTick <= 0 && GUITweenUtility.closeJeiTick <= 0) {
+                access.gUITween$setNeedClose(true);
+            }
+        }
+        else {
+            GUITweenUtility.closeScreenTick = 0;
+            GUITweenUtility.closeJeiTick = 0;
+
+            GUITweenUtility.openScreenTick = Math.min(GUITweenClient.CONFIG.getWindowTotalDuration(), GUITweenUtility.openScreenTick + deltaTicks);
+            GUITweenUtility.jeiOpenTick = Math.min(GUITweenClient.CONFIG.getJeiTotalDuration(), GUITweenUtility.jeiOpenTick + deltaTicks);
         }
     }
 

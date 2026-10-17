@@ -1,6 +1,7 @@
 package com.remarxk.guitween.client.config;
 
 import com.remarxk.guitween.GUITween;
+import com.remarxk.guitween.client.anim.GUITweenStyle;
 import com.remarxk.guitween.client.util.Ease;
 import me.fzzyhmstrs.fzzy_config.annotations.Translation;
 import me.fzzyhmstrs.fzzy_config.config.Config;
@@ -16,8 +17,11 @@ import java.util.List;
 @Translation(prefix = "guitween.config")
 public class GUITweenConfig extends Config {
     public final static List<Ease> EASE_LIST = Arrays.stream(Ease.values()).toList();
+    public final static List<GUITweenStyle> STYLE_LIST = Arrays.stream(GUITweenStyle.values()).toList();
 
     public boolean enable = true;
+
+    public ValidatedChoice<GUITweenStyle> style = new ValidatedChoice<>(GUITweenStyle.DEFAULT, STYLE_LIST, new ValidatedEnum(GUITweenStyle.class), WidgetType.SCROLLABLE);
 
     public boolean enableDebugWindow = false;
 
@@ -38,30 +42,39 @@ public class GUITweenConfig extends Config {
 
     public ValidatedChoice<Ease> windowGradientEase  = new ValidatedChoice<>(Ease.IN_OUT_SINE, EASE_LIST, new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
 
-    public boolean enableCloseWindow = false;
+    public boolean enableCloseWindow = true;
 
-    public float closeWindowSpeed = 1.5f;
+    public float closeMoveDuration = 6f;
 
-    public boolean enableJeiLeft = true;
+    public ValidatedChoice<Ease> closeMoveEase = new ValidatedChoice<>(Ease.IN_OUT_SINE, EASE_LIST, new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
 
-    public float jeiLeftMoveDuration = 6f;
+    public float closeMoveX = 0f;
 
-    public ValidatedChoice<Ease> jeiLeftMoveEase = new ValidatedChoice<>(Ease.OUT_BACK, EASE_LIST, new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);;;
+    public float closeMoveY = 300f;
 
-    public float jeiLeftMoveX = -50f;
+    public float closeGradientDuration = 8f;
 
-    public float jeiLeftMoveY = 0f;
+    public ValidatedChoice<Ease> closeGradientEase = new ValidatedChoice<>(Ease.IN_OUT_SINE, EASE_LIST, new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
 
-    public boolean enableJeiRight = true;
+    public boolean enableJei = true;
 
-    public float jeiRightMoveDuration = 6f;
+    // 宸﹀彸缁熶竴锛氭寜宸︿晶鏂瑰悜濉啓锛屽彸渚т細鑷姩闀滃儚 X
+    public float jeiMoveDuration = 6f;
 
-    public ValidatedChoice<Ease> jeiRightMoveEase = new ValidatedChoice<>(Ease.OUT_BACK, EASE_LIST, new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);;
+    public ValidatedChoice<Ease> jeiMoveEase = new ValidatedChoice<>(Ease.OUT_BACK, EASE_LIST, new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
 
-    public float jeiRightMoveX = 50f;
+    public float jeiMoveX = -50f;
+
+    public float jeiMoveY = 0f;
+
+    public float closeJeiMoveDuration = 6f;
+
+    public ValidatedChoice<Ease> closeJeiMoveEase = new ValidatedChoice<>(Ease.IN_OUT_SINE, EASE_LIST, new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
+
+    public float closeJeiMoveX = -300f;
 
     @ConfigGroup.Pop
-    public float jeiRightMoveY = 0;
+    public float closeJeiMoveY = 0f;
 
     public ConfigGroup screenItemGroup = new ConfigGroup("Screen Item tween");
     public boolean enableHover = true;
@@ -98,6 +111,10 @@ public class GUITweenConfig extends Config {
 
     public float dragSensitivity = 8f;
 
+    public float dragStiffness = 26f;
+
+    public float dragDamping = 0.25f;
+
     public boolean enableSameItem = true;
 
     public float sameItemDelay = 8f;
@@ -110,8 +127,28 @@ public class GUITweenConfig extends Config {
 
     public float sameItemShakeWaitDuration = 20f;
 
-    @ConfigGroup.Pop
     public boolean enableQuick = true;
+
+    public boolean enableMove = true;
+
+    public float moveDuration = 6f;
+
+    public ValidatedChoice<Ease> moveEase = new ValidatedChoice<>(Ease.IN_OUT_SINE, EASE_LIST, new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
+
+    public boolean enableFinish = true;
+
+    public float finishPunchStrength = 0.2f;
+
+    public float finishDuration = 6f;
+
+    public boolean enablePickup = true;
+
+    public float pickupDuration = 4f;
+
+    public ValidatedChoice<Ease> pickupEase = new ValidatedChoice<>(Ease.IN_OUT_SINE, EASE_LIST, new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
+
+    @ConfigGroup.Pop
+    public float quickCraftDuration = 4f;
 
     public ConfigGroup hotbarGroup = new ConfigGroup("hotbar tween");
     public boolean enableHoldItem = true;
@@ -235,9 +272,19 @@ public class GUITweenConfig extends Config {
     }
 
     public float getWindowTotalDuration() {
-        float windowMaxDuration = Math.max(windowMoveDuration, windowGradientDuration);
-        float jeiMaxDuration = Math.max(jeiLeftMoveDuration, jeiRightMoveDuration);
-        return Math.max(windowMaxDuration, jeiMaxDuration);
+        return Math.max(windowMoveDuration, windowGradientDuration);
+    }
+
+    public float getJeiTotalDuration() {
+        return jeiMoveDuration;
+    }
+
+    public float getCloseWindowTotalDuration() {
+        return Math.max(closeMoveDuration, closeGradientDuration);
+    }
+
+    public float getCloseJeiTotalDuration() {
+        return closeJeiMoveDuration;
     }
 
     public float getHoldItemTotalDuration() {
@@ -284,12 +331,8 @@ public class GUITweenConfig extends Config {
         return isEnable() && enableCloseWindow;
     }
 
-    public boolean isEnableJeiLeft() {
-        return isEnable() && enableJeiLeft;
-    }
-
-    public boolean isEnableJeiRight() {
-        return isEnable() && enableJeiRight;
+    public boolean isEnableJei() {
+        return isEnable() && enableJei;
     }
 
     public boolean isEnableDebugWindow() {
@@ -322,6 +365,18 @@ public class GUITweenConfig extends Config {
 
     public boolean isEnableQuickCraft() {
         return isEnable() && enableQuick;
+    }
+
+    public boolean isEnableMoveItem() {
+        return isEnable() && enableMove && !com.remarxk.guitween.client.compat.SmoothSwappingCompat.isLoaded;
+    }
+
+    public boolean isEnableFinishItem() {
+        return isEnable() && enableFinish;
+    }
+
+    public boolean isEnablePickupItem() {
+        return isEnable() && enablePickup;
     }
 
     public boolean isEnableHoldItem() {
@@ -378,5 +433,44 @@ public class GUITweenConfig extends Config {
 
     public boolean isEnableBossHurt() {
         return isEnable() && enableBossHurt;
+    }
+
+    private transient GUITweenStyle gUITween$lastAppliedStyle = GUITweenStyle.DEFAULT;
+
+    @Override
+    public void onUpdateClient() {
+        GUITweenStyle currentStyle = style.get();
+        if (currentStyle == gUITween$lastAppliedStyle)
+            return;
+
+        gUITween$lastAppliedStyle = currentStyle;
+        applyStylePreset(currentStyle);
+        save();
+    }
+
+    public void applyStylePreset(GUITweenStyle newStyle) {
+        switch (newStyle) {
+            case SIMPLE -> {
+                windowMoveEase.setAndUpdate(Ease.OUT_QUART);
+                closeMoveEase.setAndUpdate(Ease.OUT_QUART);
+                jeiMoveEase.setAndUpdate(Ease.OUT_QUART);
+                closeJeiMoveEase.setAndUpdate(Ease.OUT_QUART);
+
+                enableSameItem = false;
+                enableClickItem = false;
+                enableFinish = false;
+                enableDrag = false;
+            }
+            case COMPLETE -> {
+                enableCloseWindow = true;
+            }
+            case DEFAULT -> {
+                enableCloseWindow = true;
+                enableSameItem = true;
+                enableClickItem = true;
+                enableFinish = true;
+                enableDrag = true;
+            }
+        }
     }
 }
