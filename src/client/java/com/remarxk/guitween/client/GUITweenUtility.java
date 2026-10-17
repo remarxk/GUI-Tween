@@ -29,7 +29,6 @@ public class GUITweenUtility {
     public static float openScreenTick;
     public static float jeiOpenTick;
 
-    /** 是否正处于窗口关闭动画阶段（与 openScreenTick/jeiOpenTick 完全独立的计时） */
     public static boolean isWindowClosing;
     public static float closeScreenTick;
     public static float closeJeiTick;
@@ -77,11 +76,6 @@ public class GUITweenUtility {
         endCloseWindowTween();
     }
 
-    /**
-     * 开始独立的窗口关闭动画计时。
-     * 关闭动画从“居中、完全可见”的位置开始，向各自独立的偏移量运动，
-     * 因此这里不再复用 openScreenTick/jeiOpenTick，也不再有“关闭速度”概念。
-     */
     public static void startCloseWindowTween() {
         isWindowClosing = true;
         closeScreenTick = GUITweenClient.CONFIG.getCloseWindowTotalDuration();

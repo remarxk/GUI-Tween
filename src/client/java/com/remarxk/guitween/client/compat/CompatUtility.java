@@ -78,7 +78,6 @@ public class CompatUtility {
             float progress = duration <= 0 ? 1 : Math.min(1, elapsed / duration);
 
             jeiTween.inTween = true;
-            // X 自动镜像：配置按左侧方向填写，右侧自动取反
             jeiTween.dx = TweenUtil.tween(0, -GUITweenClient.CONFIG.closeJeiMoveX, progress, GUITweenClient.CONFIG.closeJeiMoveEase.get());
             jeiTween.dy = TweenUtil.tween(0, GUITweenClient.CONFIG.closeJeiMoveY, progress, GUITweenClient.CONFIG.closeJeiMoveEase.get());
             return jeiTween;
@@ -93,7 +92,6 @@ public class CompatUtility {
 
         jeiTween.inTween = true;
 
-        // X 自动镜像：配置按左侧方向填写，右侧自动取反
         jeiTween.dx = TweenUtil.tween(-GUITweenClient.CONFIG.jeiMoveX, 0, progress, GUITweenClient.CONFIG.jeiMoveEase.get());
         jeiTween.dy = TweenUtil.tween(GUITweenClient.CONFIG.jeiMoveY, 0, progress, GUITweenClient.CONFIG.jeiMoveEase.get());
 

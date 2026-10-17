@@ -23,13 +23,6 @@ public class MinecraftMixin {
     @Unique
     private Screen gUITween$closingScreen;
 
-    /**
-     * 关闭动画期间需要让鼠标走「游戏内」逻辑（抓取光标 + 转视角）。
-     * 关键时序：{@code MinecraftClient.render()} 里是 先 tick() → 再 mouse.tick() → 再渲染，
-     * 而 {@code Mouse.tick()} 一开始就会把 {@code client.currentScreen} 抓进局部变量，
-     * 并且只有 {@code cursorLocked} 为 true 时才会调用 {@code updateMouse()}。
-     * 因此屏幕必须在调用 {@code mouse.tick()} 之前就置空；只在按键回调用完就还原是不够的。
-     */
     @Inject(
             method = "render",
             at = @At(
@@ -42,7 +35,6 @@ public class MinecraftMixin {
         Screen screen = this.currentScreen;
         boolean closing = screen instanceof AbstractContainerScreenMixinAccess access && access.gUITween$inCloseTween();
 
-        // 供 MouseMixin 判断是否要抓取光标（此时 currentScreen 即将被置空，不能再靠它判断）
         GUITweenUtility.isWindowClosing = closing;
 
         if (closing) {

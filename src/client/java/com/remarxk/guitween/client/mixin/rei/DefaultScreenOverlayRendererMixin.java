@@ -35,7 +35,6 @@ public class DefaultScreenOverlayRendererMixin {
             if (openTween.inTween) {
                 GUITweenUtility.popAlpha();
 
-                // 取消动画
                 Matrix3x2fStack matrix3x2fStack = graphics.getMatrices();
                 matrix3x2fStack.translate(-openTween.dx, -openTween.dy);
             }
@@ -45,7 +44,6 @@ public class DefaultScreenOverlayRendererMixin {
             }
 
             if (openTween.inTween) {
-                // 取消动画
                 Matrix3x2fStack matrix3x2fStack = graphics.getMatrices();
                 matrix3x2fStack.translate(openTween.dx, openTween.dy);
 

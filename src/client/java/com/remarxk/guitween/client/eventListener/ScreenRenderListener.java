@@ -59,7 +59,6 @@ public class ScreenRenderListener {
         float deltaTicks = GUITweenUtility.getDeltaTicks();
 
         if (closing) {
-            // 关闭动画使用独立计时：按真实帧数推进，速度恒为 1（不再有“关闭速度”）
             GUITweenUtility.closeScreenTick = Math.max(0, GUITweenUtility.closeScreenTick - deltaTicks);
             GUITweenUtility.closeJeiTick = Math.max(0, GUITweenUtility.closeJeiTick - deltaTicks);
 

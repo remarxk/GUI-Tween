@@ -181,11 +181,7 @@ public abstract class AbstractContainerScreenMixin <T extends ScreenHandler> ext
         gUITween$inClosingTween = !gUITween$inClosingTween;
 
         if (gUITween$inClosingTween) {
-            // 关闭动画从“居中/完全可见”状态开始，走完全独立的关闭计时与偏移参数
             GUITweenUtility.startCloseWindowTween();
-            // 界面打开期间 Keyboard.onKey 不会更新 KeyBinding，
-            // 所以这里按一次物理键盘，把“已经按住”的键（例如 W）同步进来，
-            // 否则关闭动画期间必须松手重按才会生效。
             KeyBinding.updatePressedStates();
         }
 
@@ -461,7 +457,6 @@ public abstract class AbstractContainerScreenMixin <T extends ScreenHandler> ext
         float gradientProgress;
 
         if (closing) {
-            // 独立的关闭动画：从居中位置向 closeMoveX/Y 移动，渐变 alpha 从 1 到 0
             float total = GUITweenClient.CONFIG.getCloseWindowTotalDuration();
             float elapsed = Math.max(0, total - GUITweenUtility.closeScreenTick);
             moveProgress = GUITweenClient.CONFIG.closeMoveDuration <= 0
@@ -901,7 +896,6 @@ public abstract class AbstractContainerScreenMixin <T extends ScreenHandler> ext
 
     @Inject(method = "drawMouseoverTooltip", at = @At(value = "HEAD"), cancellable = true)
     public void renderTooltipBefore(DrawContext context, int x, int y, CallbackInfo ci) {
-        // 关闭动画播放期间不弹出物品提示框（tooltip）
         if (gUITween$inClosingTween) {
             gUITween$inTooltip = false;
             GUITweenUtility.endTooltipTween();

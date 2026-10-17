@@ -15,20 +15,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/**
- * 关闭动画期间让鼠标像在游戏中一样工作。
- *
- * <p>原版 {@code Mouse.tick()} 的顺序：
- * <pre>
- *   30:  Screen screen = client.currentScreen;   // 一开始就抓取
- *  296:  if (isCursorLocked()) ...
- *  314:      updateMouse(delta)                   // 转视角只在这条分支里
- * </pre>
- * 所以必须在 {@code tick()} 开始前就把 {@code cursorLocked} 置为 true，
- * 否则 {@code updateMouse()} 根本不会被调用。屏幕本身由
- * {@link MinecraftMixin} 在 {@code MinecraftClient.render()} 调用 {@code mouse.tick()}
- * 之前置空，因此这里用 {@link GUITweenUtility#isWindowClosing} 判断。
- */
 @Mixin(Mouse.class)
 public class MouseMixin {
     @Shadow
@@ -75,7 +61,6 @@ public class MouseMixin {
             return;
         }
 
-        // 处理期间临时当作“没有打开屏幕”，让点击/滚轮走游戏输入逻辑
         gUITween$screen = screen;
         client.currentScreen = null;
     }
