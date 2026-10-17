@@ -1,11 +1,8 @@
 package com.remarxk.guitween.mixin.rei;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.remarxk.guitween.GUITween;
 import com.remarxk.guitween.GUITweenUtility;
-import com.remarxk.guitween.config.GUITweenConfig;
+import com.remarxk.guitween.compat.CompatUtility;
 import com.remarxk.guitween.mixinAccess.AbstractContainerScreenMixinAccess;
-import com.remarxk.guitween.util.TweenUtil;
 import dev.architectury.event.events.client.ClientGuiEvent;
 import me.shedaniel.rei.api.client.registry.screen.OverlayRendererProvider;
 import me.shedaniel.rei.impl.client.registry.screen.DefaultScreenOverlayRenderer;
@@ -33,31 +30,26 @@ public class DefaultScreenOverlayRendererMixin {
                 return;
             }
 
-            Matrix3x2fStack poseStack = graphics.pose();
+            CompatUtility.OpenTween openTween = CompatUtility.getOpenTween();
 
-            if (access.getGUITween$inTween()) {
-                poseStack.popMatrix();
+            if (openTween.inTween) {
                 GUITweenUtility.popAlpha();
+
+                // 取消动画
+                Matrix3x2fStack matrix3x2fStack = graphics.pose();
+                matrix3x2fStack.translate(-openTween.dx, -openTween.dy);
             }
 
             if (oldRenderContainerBg != null) {
                 oldRenderContainerBg.render(screen, graphics, mouseX, mouseY, delta);
             }
 
-            if (access.getGUITween$inTween()) {
-                float openTick = access.getGUITween$openTick();
-                float moveProgress = openTick / GUITweenConfig.window.moveDuration.get().floatValue();
-                float gradientProgress = openTick / GUITweenConfig.window.gradientDuration.get().floatValue();
+            if (openTween.inTween) {
+                // 取消动画
+                Matrix3x2fStack matrix3x2fStack = graphics.pose();
+                matrix3x2fStack.translate(openTween.dx, openTween.dy);
 
-                float dx = TweenUtil.tween(GUITweenConfig.window.moveX.get().floatValue(), 0, moveProgress, GUITweenConfig.window.moveEase.get());
-                float dy = TweenUtil.tween(GUITweenConfig.window.moveY.get().floatValue(), 0, moveProgress, GUITweenConfig.window.moveEase.get());
-
-                // 动画变换
-                poseStack.pushMatrix();
-                poseStack.translate(dx, dy);  // 上移
-
-                float alpha = TweenUtil.tween(0.05f, 1, gradientProgress, GUITweenConfig.window.gradientEase.get());
-                GUITweenUtility.pushAlpha(alpha);
+                GUITweenUtility.pushAlpha(openTween.alpha);
             }
         };
     }

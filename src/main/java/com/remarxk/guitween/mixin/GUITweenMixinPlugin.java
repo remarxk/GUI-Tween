@@ -2,7 +2,6 @@ package com.remarxk.guitween.mixin;
 
 //import com.corosus.watut.WatutMod;
 import fuzs.overflowingbars.OverflowingBars;
-import mezz.jei.api.constants.ModIds;
 import net.neoforged.fml.loading.FMLLoader;
 import net.p3pp3rf1y.sophisticatedcore.SophisticatedCore;
 import org.objectweb.asm.tree.ClassNode;
@@ -33,8 +32,9 @@ public class GUITweenMixinPlugin implements IMixinConfigPlugin {
             return modIsLoad("emi");
         }
 
+        // 用字符串 modId 而非 ModIds.JEI_ID，避免在未安装 JEI 时引入对 JEI API 的硬依赖
         if (mixinClassName.contains("com.remarxk.guitween.mixin.jei")) {
-            return modIsLoad(ModIds.JEI_ID);
+            return modIsLoad("jei");
         }
 
         if (mixinClassName.contains("com.remarxk.guitween.mixin.sodium")) {

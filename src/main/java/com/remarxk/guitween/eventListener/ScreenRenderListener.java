@@ -3,6 +3,7 @@ package com.remarxk.guitween.eventListener;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.remarxk.guitween.GUITween;
 import com.remarxk.guitween.GUITweenUtility;
+import com.remarxk.guitween.compat.CompatUtility;
 import com.remarxk.guitween.config.GUITweenConfig;
 import com.remarxk.guitween.event.PostScreenTickEvent;
 import com.remarxk.guitween.mixinAccess.AbstractContainerScreenMixinAccess;
@@ -103,19 +104,34 @@ public class ScreenRenderListener {
             GUITweenUtility.enablePictureMatrix = false;
 
             poseStack.popMatrix();
+
+            CompatUtility.endOpenTween();
         }
 
         access.setGUITween$inTween(false);
 
-        float sign = access.gUITween$inCloseTween() ? -GUITweenConfig.window.closeWindowSpeed.get().floatValue() : 1;
-        float openTick = Mth.clamp(access.getGUITween$openTick() + sign * GUITweenUtility.getDeltaTicks(), 0, GUITweenConfig.getWindowTotalDuration());
-        access.setGUITween$openTick(openTick);
-        GUITweenUtility.openScreenTick = openTick;
+        boolean closing = access.gUITween$inCloseTween();
+        GUITweenUtility.isWindowClosing = closing;
+        float deltaTicks = GUITweenUtility.getDeltaTicks();
 
-        GUITweenUtility.jeiOpenTick = Mth.clamp(GUITweenUtility.jeiOpenTick + sign * GUITweenUtility.getDeltaTicks(), 0, GUITweenConfig.getJeiTotalDuration());
+        if (closing) {
+            // 关闭动画使用独立计时：按真实帧数推进，速度恒为 1（不再有“关闭速度”）
+            GUITweenUtility.closeScreenTick = Math.max(0, GUITweenUtility.closeScreenTick - deltaTicks);
+            GUITweenUtility.closeJeiTick = Math.max(0, GUITweenUtility.closeJeiTick - deltaTicks);
 
-        if (sign < 0 && openTick <= 0 && GUITweenUtility.jeiOpenTick <= 0) {
-            access.gUITween$setNeedClose(true);
+            if (GUITweenUtility.closeScreenTick <= 0 && GUITweenUtility.closeJeiTick <= 0) {
+                access.gUITween$setNeedClose(true);
+            }
+        }
+        else {
+            GUITweenUtility.closeScreenTick = 0;
+            GUITweenUtility.closeJeiTick = 0;
+
+            float openTick = Mth.clamp(access.getGUITween$openTick() + deltaTicks, 0, GUITweenConfig.getWindowTotalDuration());
+            access.setGUITween$openTick(openTick);
+            GUITweenUtility.openScreenTick = openTick;
+
+            GUITweenUtility.jeiOpenTick = Mth.clamp(GUITweenUtility.jeiOpenTick + deltaTicks, 0, GUITweenConfig.getJeiTotalDuration());
         }
     }
 

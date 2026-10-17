@@ -91,7 +91,15 @@ public class GUITweenConfig {
     }
 
     public static float getJeiTotalDuration() {
-        return Math.max(window.jeiLeftMoveDuration.get().floatValue(), window.jeiRightMoveDuration.get().floatValue());
+        return window.jeiMoveDuration.get().floatValue();
+    }
+
+    public static float getCloseWindowTotalDuration() {
+        return Math.max(window.closeMoveDuration.get().floatValue(), window.closeGradientDuration.get().floatValue());
+    }
+
+    public static float getCloseJeiTotalDuration() {
+        return window.closeJeiMoveDuration.get().floatValue();
     }
 
     public static float getHoldItemTotalDuration() {
@@ -152,8 +160,9 @@ public class GUITweenConfig {
 
     private static void applySimpleStyle() {
         window.moveEase.set(Ease.OUT_QUART);
-        window.jeiLeftMoveEase.set(Ease.OUT_QUART);
-        window.jeiRightMoveEase.set(Ease.OUT_QUART);
+        window.closeMoveEase.set(Ease.OUT_QUART);
+        window.jeiMoveEase.set(Ease.OUT_QUART);
+        window.closeJeiMoveEase.set(Ease.OUT_QUART);
 
         windowItem.enableSameItem.set(false);
         windowItem.enableClickItem.set(false);
@@ -194,23 +203,6 @@ public class GUITweenConfig {
 
     public static boolean isEnableJei() {
         return isEnable() && window.enableJei.get();
-    }
-
-    /**
-     * 兼容转发：1.21.11 旧的 REI/JEI mixin 仍调用左/右两个开关，
-     * 3.4.0 起统一为单一 JEI 面板开关。
-     */
-    @Deprecated
-    public static boolean isEnableJeiLeft() {
-        return isEnableJei();
-    }
-
-    /**
-     * 兼容转发：见 {@link #isEnableJeiLeft()}。
-     */
-    @Deprecated
-    public static boolean isEnableJeiRight() {
-        return isEnableJei();
     }
 
     public static boolean isEnableDebugWindow() {

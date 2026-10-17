@@ -8,6 +8,7 @@ import com.remarxk.guitween.anim.ContainerItemTween;
 import com.remarxk.guitween.anim.DragTween;
 import com.remarxk.guitween.anim.Tween;
 import com.remarxk.guitween.anim.TweenPool;
+import com.remarxk.guitween.compat.CompatUtility;
 import com.remarxk.guitween.config.GUITweenConfig;
 import com.remarxk.guitween.dataPack.WindowSlotsConfig;
 import com.remarxk.guitween.dataPack.WindowSlotsLoader;
@@ -15,6 +16,7 @@ import com.remarxk.guitween.event.PlayGuiSoundEvent;
 import com.remarxk.guitween.mixinAccess.AbstractContainerScreenMixinAccess;
 import com.remarxk.guitween.util.Ease;
 import com.remarxk.guitween.util.TweenUtil;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -180,10 +182,10 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
 
         gUITween$inClosingTween = !gUITween$inClosingTween;
 
-        if (gUITween$inClosingTween && !GUITweenConfig.isEnableWindow()) {
-            gUITween$openTick = GUITweenConfig.getWindowTotalDuration();
-            GUITweenUtility.openScreenTick = GUITweenConfig.getWindowTotalDuration();
-            GUITweenUtility.jeiOpenTick = GUITweenConfig.getJeiTotalDuration();
+        if (gUITween$inClosingTween) {
+            // 关闭动画从“居中/完全可见”状态开始，走完全独立的关闭计时与偏移参数
+            GUITweenUtility.startCloseWindowTween();
+            KeyMapping.setAll();
         }
 
         return gUITween$inClosingTween;
@@ -489,27 +491,57 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
             GUITweenUtility.popAlpha();
             GUITweenUtility.enablePictureMatrix = false;
             guiGraphics.pose().popMatrix();
+
+            CompatUtility.endOpenTween();
         }
 
         GUITweenUtility.setOpenScreen(gUITween$screenName, gUITween$openTick);
         GUITweenUtility.jeiOpenTick = Math.max(GUITweenUtility.jeiOpenTick, GUITweenUtility.openScreenTick);
 
-        if (!GUITweenConfig.isEnableWindow() && !gUITween$inClosingTween)
+        boolean closing = gUITween$inClosingTween;
+        GUITweenUtility.isWindowClosing = closing;
+        if (!GUITweenConfig.isEnableWindow() && !closing)
             return;
 
         if (gUITween$isDisableScreenTween)
             return;
 
-        float moveProgress = gUITween$openTick / GUITweenConfig.window.moveDuration.get().floatValue();
-        float gradientProgress = gUITween$openTick / GUITweenConfig.window.gradientDuration.get().floatValue();
+        float dx;
+        float dy;
+        float alpha;
+        float moveProgress;
+        float gradientProgress;
 
-        if (moveProgress >= 1 && gradientProgress >= 1)
-            return;
+        if (closing) {
+            // 独立的关闭动画：从居中位置向 closeMoveX/Y 移动，渐变 alpha 从 1 到 0
+            float total = GUITweenConfig.getCloseWindowTotalDuration();
+            float elapsed = Math.max(0, total - GUITweenUtility.closeScreenTick);
+            moveProgress = GUITweenConfig.window.closeMoveDuration.get().floatValue() <= 0
+                    ? 1
+                    : Math.min(1, elapsed / GUITweenConfig.window.closeMoveDuration.get().floatValue());
+            gradientProgress = GUITweenConfig.window.closeGradientDuration.get().floatValue() <= 0
+                    ? 1
+                    : Math.min(1, elapsed / GUITweenConfig.window.closeGradientDuration.get().floatValue());
+
+            dx = TweenUtil.tween(0, GUITweenConfig.window.closeMoveX.get().floatValue(), moveProgress, GUITweenConfig.window.closeMoveEase.get());
+            dy = TweenUtil.tween(0, GUITweenConfig.window.closeMoveY.get().floatValue(), moveProgress, GUITweenConfig.window.closeMoveEase.get());
+            alpha = TweenUtil.tween(1, 0, gradientProgress, GUITweenConfig.window.closeGradientEase.get());
+        }
+        else {
+            moveProgress = gUITween$openTick / GUITweenConfig.window.moveDuration.get().floatValue();
+            gradientProgress = gUITween$openTick / GUITweenConfig.window.gradientDuration.get().floatValue();
+
+            if (moveProgress >= 1 && gradientProgress >= 1)
+                return;
+
+            dx = TweenUtil.tween(GUITweenConfig.window.moveX.get().floatValue(), 0, moveProgress, GUITweenConfig.window.moveEase.get());
+            dy = TweenUtil.tween(GUITweenConfig.window.moveY.get().floatValue(), 0, moveProgress, GUITweenConfig.window.moveEase.get());
+            alpha = TweenUtil.tween(GUITweenUtility.fFontMinAlpha, 1, gradientProgress, GUITweenConfig.window.gradientEase.get());
+        }
 
         gUiTween$inTween = true;
 
-        float dx = TweenUtil.tween(GUITweenConfig.window.moveX.get().floatValue(), 0, moveProgress, GUITweenConfig.window.moveEase.get());
-        float dy = TweenUtil.tween(GUITweenConfig.window.moveY.get().floatValue(), 0, moveProgress, GUITweenConfig.window.moveEase.get());
+        CompatUtility.startOpenTween(dx, dy, alpha);
 
         Matrix3x2fStack poseStack = guiGraphics.pose();
 
@@ -517,7 +549,6 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
         poseStack.pushMatrix();
         poseStack.translate(dx, dy);  // 上移
 
-        float alpha = TweenUtil.tween(GUITweenUtility.fFontMinAlpha, 1, gradientProgress, GUITweenConfig.window.gradientEase.get());
         GUITweenUtility.pushAlpha(alpha);
         GUITweenUtility.enablePictureMatrix = true;
     }
@@ -958,6 +989,19 @@ public abstract class AbstractContainerScreenMixin <T extends AbstractContainerM
         gUITween$tooltipShowTick += GUITweenUtility.getDeltaTicks();
 
         GUITweenUtility.endTooltipTween();
+    }
+
+    @WrapOperation(
+            method = "keyPressed",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/gui/screens/inventory/AbstractContainerScreen;onClose()V"
+            )
+    )
+    private void onCloseBefore(AbstractContainerScreen screen, Operation<Void> original) {
+        if (!gUITween$playCloseTween()) {
+            original.call(screen);
+        }
     }
 
     @Inject(method = "onClose", at = @At("TAIL"))
