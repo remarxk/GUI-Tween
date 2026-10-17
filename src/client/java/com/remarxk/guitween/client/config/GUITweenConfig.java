@@ -45,28 +45,38 @@ public class GUITweenConfig extends Config {
 
     public ValidatedChoice<Ease> windowGradientEase  = new ValidatedChoice<>(Ease.IN_OUT_SINE, Arrays.stream(Ease.values()).toList(), new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
 
-    public boolean enableCloseWindow = false;
+    public boolean enableCloseWindow = true;
 
-    public float closeWindowSpeed = 1.5f;
+    public float closeMoveDuration = 6;
+
+    public ValidatedChoice<Ease> closeMoveEase = new ValidatedChoice<>(Ease.IN_OUT_SINE, Arrays.stream(Ease.values()).toList(), new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
+
+    public float closeMoveX = 0;
+
+    public float closeMoveY = 300;
+
+    public float closeGradientDuration = 8;
+
+    public ValidatedChoice<Ease> closeGradientEase = new ValidatedChoice<>(Ease.IN_OUT_SINE, Arrays.stream(Ease.values()).toList(), new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
 
     public boolean enableJei = true;
 
-    public float jeiLeftMoveDuration = 6f;
+    public float jeiMoveDuration = 6f;
 
-    public ValidatedChoice<Ease> jeiLeftMoveEase = new ValidatedChoice<>(Ease.OUT_BACK, Arrays.stream(Ease.values()).toList(), new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
+    public ValidatedChoice<Ease> jeiMoveEase = new ValidatedChoice<>(Ease.OUT_BACK, Arrays.stream(Ease.values()).toList(), new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
 
-    public float jeiLeftMoveX = -50f;
+    public float jeiMoveX = -50f;
 
-    public float jeiLeftMoveY = 0f;
+    public float jeiMoveY = 0f;
 
-    public float jeiRightMoveDuration = 6f;
+    public float closeJeiMoveDuration = 6f;
 
-    public ValidatedChoice<Ease> jeiRightMoveEase = new ValidatedChoice<>(Ease.OUT_BACK, Arrays.stream(Ease.values()).toList(), new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
+    public ValidatedChoice<Ease> closeJeiMoveEase = new ValidatedChoice<>(Ease.IN_OUT_SINE, Arrays.stream(Ease.values()).toList(), new ValidatedEnum(Ease.class), WidgetType.SCROLLABLE);
 
-    public float jeiRightMoveX = 50f;
+    public float closeJeiMoveX = -300f;
 
     @ConfigGroup.Pop
-    public float jeiRightMoveY = 0;
+    public float closeJeiMoveY = 0;
 
     public ConfigGroup screenItemGroup = new ConfigGroup("Screen Item tween");
     public boolean enableHover = true;
@@ -102,6 +112,10 @@ public class GUITweenConfig extends Config {
     public float dragMaxAngle = 15f;
 
     public float dragSensitivity = 8f;
+
+    public float dragStiffness = 26f;
+
+    public float dragDamping = 0.25f;
 
     public boolean enableSameItem = true;
 
@@ -265,7 +279,15 @@ public class GUITweenConfig extends Config {
     }
 
     public float getJeiTotalDuration() {
-        return Math.max(jeiLeftMoveDuration, jeiRightMoveDuration);
+        return jeiMoveDuration;
+    }
+
+    public float getCloseWindowTotalDuration() {
+        return Math.max(closeMoveDuration, closeGradientDuration);
+    }
+
+    public float getCloseJeiTotalDuration() {
+        return closeJeiMoveDuration;
     }
 
     public float getHoldItemTotalDuration() {
@@ -314,22 +336,6 @@ public class GUITweenConfig extends Config {
 
     public boolean isEnableJei() {
         return isEnable() && enableJei;
-    }
-
-    /**
-     * 兼容转发：旧 mixin 仍调用左/右两个开关，3.4.0 起统一为单一 JEI 面板开关。
-     */
-    @Deprecated
-    public boolean isEnableJeiLeft() {
-        return isEnableJei();
-    }
-
-    /**
-     * 兼容转发：见 {@link #isEnableJeiLeft()}。
-     */
-    @Deprecated
-    public boolean isEnableJeiRight() {
-        return isEnableJei();
     }
 
     public boolean isEnableDebugWindow() {
@@ -450,8 +456,9 @@ public class GUITweenConfig extends Config {
 
     private void applySimpleStyle() {
         windowMoveEase.accept(Ease.OUT_QUART);
-        jeiLeftMoveEase.accept(Ease.OUT_QUART);
-        jeiRightMoveEase.accept(Ease.OUT_QUART);
+        closeMoveEase.accept(Ease.OUT_QUART);
+        jeiMoveEase.accept(Ease.OUT_QUART);
+        closeJeiMoveEase.accept(Ease.OUT_QUART);
 
         enableSameItem = false;
         enableClickItem = false;

@@ -1,6 +1,7 @@
 package com.remarxk.guitween.client.mixin;
 
 import com.remarxk.guitween.client.mixinAccess.AbstractContainerScreenMixinAccess;
+import com.remarxk.guitween.client.util.DebugUtil;
 import net.minecraft.client.Keyboard;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;

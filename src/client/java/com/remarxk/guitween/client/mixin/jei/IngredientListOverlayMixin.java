@@ -17,6 +17,28 @@ public class IngredientListOverlayMixin {
     private boolean gUITween$inTween;
 
     @Inject(
+            method = "drawBackground",
+            at = @At(
+                    value = "HEAD"
+            ),
+            require = 0
+    )
+    public void drawBackgroundBefore(DrawContext guiGraphics, CallbackInfo ci) {
+        gUITween$startTween(guiGraphics);
+    }
+
+    @Inject(
+            method = "drawBackground",
+            at = @At(
+                    value = "TAIL"
+            ),
+            require = 0
+    )
+    public void drawBackgroundAfter(DrawContext guiGraphics, CallbackInfo ci) {
+        gUITween$endTween(guiGraphics);
+    }
+
+    @Inject(
             method = "drawForeground",
             at = @At(
                     value = "HEAD"
@@ -24,15 +46,7 @@ public class IngredientListOverlayMixin {
             require = 0
     )
     public void drawForegroundBefore(MinecraftClient minecraft, DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
-        CompatUtility.JeiTween jeiTween = CompatUtility.getJeiRightTween();
-        if (!jeiTween.inTween)
-            return;
-
-        gUITween$inTween = true;
-
-        Matrix3x2fStack poseStack = guiGraphics.getMatrices();
-        poseStack.pushMatrix();
-        poseStack.translate(jeiTween.dx, jeiTween.dy);
+        gUITween$startTween(guiGraphics);
     }
 
     @Inject(
@@ -43,6 +57,23 @@ public class IngredientListOverlayMixin {
             require = 0
     )
     public void drawForegroundAfter(MinecraftClient minecraft, DrawContext guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
+        gUITween$endTween(guiGraphics);
+    }
+
+    @Unique
+    private void gUITween$startTween(DrawContext guiGraphics) {
+        CompatUtility.JeiTween jeiTween = CompatUtility.getJeiRightTween();
+        if (jeiTween.inTween) {
+            gUITween$inTween = true;
+
+            Matrix3x2fStack poseStack = guiGraphics.getMatrices();
+            poseStack.pushMatrix();
+            poseStack.translate(jeiTween.dx, jeiTween.dy);
+        }
+    }
+
+    @Unique
+    private void gUITween$endTween(DrawContext guiGraphics) {
         if (!gUITween$inTween) {
             return;
         }

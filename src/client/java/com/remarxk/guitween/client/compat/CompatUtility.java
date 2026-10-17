@@ -32,7 +32,19 @@ public class CompatUtility {
         if (!GUITweenClient.CONFIG.isEnableJei())
             return jeiTween;
 
-        float totalTick = Math.max(GUITweenClient.CONFIG.jeiLeftMoveDuration, 1);
+        if (GUITweenUtility.isWindowClosing) {
+            float duration = GUITweenClient.CONFIG.closeJeiMoveDuration;
+            float total = GUITweenClient.CONFIG.getCloseJeiTotalDuration();
+            float elapsed = Math.max(0, total - GUITweenUtility.closeJeiTick);
+            float progress = duration <= 0 ? 1 : Math.min(1, elapsed / duration);
+
+            jeiTween.inTween = true;
+            jeiTween.dx = TweenUtil.tween(0, GUITweenClient.CONFIG.closeJeiMoveX, progress, GUITweenClient.CONFIG.closeJeiMoveEase.get());
+            jeiTween.dy = TweenUtil.tween(0, GUITweenClient.CONFIG.closeJeiMoveY, progress, GUITweenClient.CONFIG.closeJeiMoveEase.get());
+            return jeiTween;
+        }
+
+        float totalTick = Math.max(GUITweenClient.CONFIG.jeiMoveDuration, 1);
         float progress = GUITweenUtility.jeiOpenTick / totalTick;
 
         if (progress > 1) {
@@ -41,8 +53,8 @@ public class CompatUtility {
 
         jeiTween.inTween = true;
 
-        float dx = TweenUtil.tween(GUITweenClient.CONFIG.jeiLeftMoveX, 0, progress, GUITweenClient.CONFIG.jeiLeftMoveEase.get());
-        float dY = TweenUtil.tween(GUITweenClient.CONFIG.jeiLeftMoveY, 0, progress, GUITweenClient.CONFIG.jeiLeftMoveEase.get());
+        float dx = TweenUtil.tween(GUITweenClient.CONFIG.jeiMoveX, 0, progress, GUITweenClient.CONFIG.jeiMoveEase.get());
+        float dY = TweenUtil.tween(GUITweenClient.CONFIG.jeiMoveY, 0, progress, GUITweenClient.CONFIG.jeiMoveEase.get());
 
         jeiTween.dx = dx;
         jeiTween.dy = dY;
@@ -59,7 +71,20 @@ public class CompatUtility {
         if (!GUITweenClient.CONFIG.isEnableJei())
             return jeiTween;
 
-        float totalTick = Math.max(GUITweenClient.CONFIG.jeiRightMoveDuration, 1);
+        if (GUITweenUtility.isWindowClosing) {
+            float duration = GUITweenClient.CONFIG.closeJeiMoveDuration;
+            float total = GUITweenClient.CONFIG.getCloseJeiTotalDuration();
+            float elapsed = Math.max(0, total - GUITweenUtility.closeJeiTick);
+            float progress = duration <= 0 ? 1 : Math.min(1, elapsed / duration);
+
+            jeiTween.inTween = true;
+            // X 自动镜像：配置按左侧方向填写，右侧自动取反
+            jeiTween.dx = TweenUtil.tween(0, -GUITweenClient.CONFIG.closeJeiMoveX, progress, GUITweenClient.CONFIG.closeJeiMoveEase.get());
+            jeiTween.dy = TweenUtil.tween(0, GUITweenClient.CONFIG.closeJeiMoveY, progress, GUITweenClient.CONFIG.closeJeiMoveEase.get());
+            return jeiTween;
+        }
+
+        float totalTick = Math.max(GUITweenClient.CONFIG.jeiMoveDuration, 1);
         float progress = GUITweenUtility.jeiOpenTick / totalTick;
 
         if (progress > 1) {
@@ -68,8 +93,9 @@ public class CompatUtility {
 
         jeiTween.inTween = true;
 
-        jeiTween.dx = TweenUtil.tween(GUITweenClient.CONFIG.jeiRightMoveX, 0, progress, GUITweenClient.CONFIG.jeiRightMoveEase.get());
-        jeiTween.dy = TweenUtil.tween(GUITweenClient.CONFIG.jeiRightMoveY, 0, progress, GUITweenClient.CONFIG.jeiRightMoveEase.get());
+        // X 自动镜像：配置按左侧方向填写，右侧自动取反
+        jeiTween.dx = TweenUtil.tween(-GUITweenClient.CONFIG.jeiMoveX, 0, progress, GUITweenClient.CONFIG.jeiMoveEase.get());
+        jeiTween.dy = TweenUtil.tween(GUITweenClient.CONFIG.jeiMoveY, 0, progress, GUITweenClient.CONFIG.jeiMoveEase.get());
 
         return jeiTween;
     }

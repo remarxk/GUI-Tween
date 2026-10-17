@@ -30,6 +30,7 @@ import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
+import net.minecraft.client.option.KeyBinding;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
@@ -177,16 +178,15 @@ public abstract class AbstractContainerScreenMixin <T extends ScreenHandler> ext
             return false;
         }
 
-        if (!GUITweenClient.CONFIG.isEnableWindow()) {
-            GUITweenUtility.openScreenTick = GUITweenClient.CONFIG.getWindowTotalDuration();
-            GUITweenUtility.jeiOpenTick = GUITweenClient.CONFIG.getJeiTotalDuration();
-        }
-
         gUITween$inClosingTween = !gUITween$inClosingTween;
 
         if (gUITween$inClosingTween) {
-            GUITweenUtility.openScreenTick = Math.min(GUITweenUtility.openScreenTick, GUITweenClient.CONFIG.getWindowTotalDuration());
-            GUITweenUtility.jeiOpenTick = Math.min(GUITweenUtility.jeiOpenTick, GUITweenClient.CONFIG.getJeiTotalDuration());
+            // 关闭动画从“居中/完全可见”状态开始，走完全独立的关闭计时与偏移参数
+            GUITweenUtility.startCloseWindowTween();
+            // 界面打开期间 Keyboard.onKey 不会更新 KeyBinding，
+            // 所以这里按一次物理键盘，把“已经按住”的键（例如 W）同步进来，
+            // 否则关闭动画期间必须松手重按才会生效。
+            KeyBinding.updatePressedStates();
         }
 
         return gUITween$inClosingTween;
@@ -446,22 +446,48 @@ public abstract class AbstractContainerScreenMixin <T extends ScreenHandler> ext
         GUITweenUtility.setOpenScreen(gUITween$screenName, GUITweenUtility.openScreenTick);
         GUITweenUtility.jeiOpenTick = Math.max(GUITweenUtility.jeiOpenTick, GUITweenUtility.openScreenTick);
 
-        if (!GUITweenClient.CONFIG.isEnableWindow() && !gUITween$inClosingTween)
+        boolean closing = gUITween$inClosingTween;
+        GUITweenUtility.isWindowClosing = closing;
+        if (!GUITweenClient.CONFIG.isEnableWindow() && !closing)
             return;
 
         if (gUITween$isDisableScreenTween)
             return;
 
-        float moveProgress = GUITweenUtility.openScreenTick / GUITweenClient.CONFIG.windowMoveDuration;
-        float gradientProgress = GUITweenUtility.openScreenTick / GUITweenClient.CONFIG.windowGradientDuration;
+        float dx;
+        float dy;
+        float alpha;
+        float moveProgress;
+        float gradientProgress;
 
-        if (moveProgress >= 1 && gradientProgress >= 1)
-            return;
+        if (closing) {
+            // 独立的关闭动画：从居中位置向 closeMoveX/Y 移动，渐变 alpha 从 1 到 0
+            float total = GUITweenClient.CONFIG.getCloseWindowTotalDuration();
+            float elapsed = Math.max(0, total - GUITweenUtility.closeScreenTick);
+            moveProgress = GUITweenClient.CONFIG.closeMoveDuration <= 0
+                    ? 1
+                    : Math.min(1, elapsed / GUITweenClient.CONFIG.closeMoveDuration);
+            gradientProgress = GUITweenClient.CONFIG.closeGradientDuration <= 0
+                    ? 1
+                    : Math.min(1, elapsed / GUITweenClient.CONFIG.closeGradientDuration);
+
+            dx = TweenUtil.tween(0, GUITweenClient.CONFIG.closeMoveX, moveProgress, GUITweenClient.CONFIG.closeMoveEase.get());
+            dy = TweenUtil.tween(0, GUITweenClient.CONFIG.closeMoveY, moveProgress, GUITweenClient.CONFIG.closeMoveEase.get());
+            alpha = TweenUtil.tween(1, 0, gradientProgress, GUITweenClient.CONFIG.closeGradientEase.get());
+        }
+        else {
+            moveProgress = GUITweenUtility.openScreenTick / GUITweenClient.CONFIG.windowMoveDuration;
+            gradientProgress = GUITweenUtility.openScreenTick / GUITweenClient.CONFIG.windowGradientDuration;
+
+            if (moveProgress >= 1 && gradientProgress >= 1)
+                return;
+
+            dx = TweenUtil.tween(GUITweenClient.CONFIG.windowMoveX, 0, moveProgress, GUITweenClient.CONFIG.windowMoveEase.get());
+            dy = TweenUtil.tween(GUITweenClient.CONFIG.windowMoveY, 0, moveProgress, GUITweenClient.CONFIG.windowMoveEase.get());
+            alpha = TweenUtil.tween(GUITweenUtility.fFontMinAlpha, 1, gradientProgress, GUITweenClient.CONFIG.windowGradientEase.get());
+        }
 
         gUiTween$inTween = true;
-
-        float dx = TweenUtil.tween(GUITweenClient.CONFIG.windowMoveX, 0, moveProgress, GUITweenClient.CONFIG.windowMoveEase.get());
-        float dy = TweenUtil.tween(GUITweenClient.CONFIG.windowMoveY, 0, moveProgress, GUITweenClient.CONFIG.windowMoveEase.get());
 
         Matrix3x2fStack poseStack = guiGraphics.getMatrices();
 
@@ -469,7 +495,6 @@ public abstract class AbstractContainerScreenMixin <T extends ScreenHandler> ext
         poseStack.pushMatrix();
         poseStack.translate(dx, dy);  // 上移
 
-        float alpha = TweenUtil.tween(GUITweenUtility.fFontMinAlpha, 1, gradientProgress, GUITweenClient.CONFIG.windowGradientEase.get());
         GUITweenUtility.pushAlpha(alpha);
         GUITweenUtility.enablePictureMatrix = true;
 
@@ -874,8 +899,16 @@ public abstract class AbstractContainerScreenMixin <T extends ScreenHandler> ext
         poseStack.popMatrix();
     }
 
-    @Inject(method = "drawMouseoverTooltip", at = @At(value = "HEAD"))
+    @Inject(method = "drawMouseoverTooltip", at = @At(value = "HEAD"), cancellable = true)
     public void renderTooltipBefore(DrawContext context, int x, int y, CallbackInfo ci) {
+        // 关闭动画播放期间不弹出物品提示框（tooltip）
+        if (gUITween$inClosingTween) {
+            gUITween$inTooltip = false;
+            GUITweenUtility.endTooltipTween();
+            ci.cancel();
+            return;
+        }
+
         if (!GUITweenClient.CONFIG.isEnableTooltip())
             return;
 

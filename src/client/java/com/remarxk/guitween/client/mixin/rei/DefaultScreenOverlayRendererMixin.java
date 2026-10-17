@@ -1,9 +1,8 @@
 package com.remarxk.guitween.client.mixin.rei;
 
-import com.remarxk.guitween.client.GUITweenClient;
 import com.remarxk.guitween.client.GUITweenUtility;
+import com.remarxk.guitween.client.compat.CompatUtility;
 import com.remarxk.guitween.client.mixinAccess.AbstractContainerScreenMixinAccess;
-import com.remarxk.guitween.client.util.TweenUtil;
 import dev.architectury.event.events.client.ClientGuiEvent;
 import me.shedaniel.rei.api.client.registry.screen.OverlayRendererProvider;
 import me.shedaniel.rei.impl.client.registry.screen.DefaultScreenOverlayRenderer;
@@ -27,35 +26,30 @@ public class DefaultScreenOverlayRendererMixin {
         var oldRenderContainerBg = renderContainerBg;
 
         renderContainerBg = (screen, graphics, mouseX, mouseY, delta) -> {
-            if (!(screen instanceof AbstractContainerScreenMixinAccess access)) {
+            if (!(screen instanceof AbstractContainerScreenMixinAccess)) {
                 return;
             }
 
-            Matrix3x2fStack poseStack = graphics.getMatrices();
+            CompatUtility.OpenTween openTween = CompatUtility.getOpenTween();
 
-            if (access.getGUITween$inTween()) {
-                poseStack.popMatrix();
+            if (openTween.inTween) {
                 GUITweenUtility.popAlpha();
+
+                // 取消动画
+                Matrix3x2fStack matrix3x2fStack = graphics.getMatrices();
+                matrix3x2fStack.translate(-openTween.dx, -openTween.dy);
             }
 
             if (oldRenderContainerBg != null) {
                 oldRenderContainerBg.render(screen, graphics, mouseX, mouseY, delta);
             }
 
-            if (access.getGUITween$inTween()) {
-                float openTick = access.getGUITween$openTick();
-                float moveProgress = openTick / GUITweenClient.CONFIG.windowMoveDuration;
-                float gradientProgress = openTick / GUITweenClient.CONFIG.windowGradientDuration;
+            if (openTween.inTween) {
+                // 取消动画
+                Matrix3x2fStack matrix3x2fStack = graphics.getMatrices();
+                matrix3x2fStack.translate(openTween.dx, openTween.dy);
 
-                float dx = TweenUtil.tween(GUITweenClient.CONFIG.windowMoveX, 0, moveProgress, GUITweenClient.CONFIG.windowMoveEase.get());
-                float dy = TweenUtil.tween(GUITweenClient.CONFIG.windowMoveY, 0, moveProgress, GUITweenClient.CONFIG.windowMoveEase.get());
-
-                // 动画变换
-                poseStack.pushMatrix();
-                poseStack.translate(dx, dy);  // 上移
-
-                float alpha = TweenUtil.tween(0.05f, 1, gradientProgress, GUITweenClient.CONFIG.windowGradientEase.get());
-                GUITweenUtility.pushAlpha(alpha);
+                GUITweenUtility.pushAlpha(openTween.alpha);
             }
         };
     }

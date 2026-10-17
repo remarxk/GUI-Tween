@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '1.15-SNAPSHOT'
+    id 'fabric-loom' version "1.17-SNAPSHOT"
     id 'maven-publish'
 }
 
@@ -51,27 +51,29 @@ dependencies {
 
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-    modImplementation "curse.maven:fzzy-config-1005914:7568981"
+    modImplementation "curse.maven:fzzy-config-1005914:8883795"
     modImplementation "net.fabricmc:fabric-language-kotlin:1.12.1+kotlin.2.0.20"
     modImplementation "blue.endless:jankson:1.2.3"
     modImplementation "net.peanuuutz.tomlkt:tomlkt:0.3.7"
 
-    modRuntimeOnly "curse.maven:modmenu-308702:7441070"
+    modRuntimeOnly "curse.maven:modmenu-308702:8966499"
 
-    modCompileOnly "curse.maven:jei-238222:7783150"
-//    modRuntimeOnly "curse.maven:jei-238222:7783150"
+    modCompileOnly "curse.maven:jei-238222:9205143"
+    modRuntimeOnly "curse.maven:jei-238222:9205143"
+    // 新版 JEI(27.48+) 依赖 mezz_config，且在 Fabric 下不随 JEI 打包，需单独提供
+    modRuntimeOnly "curse.maven:mezzconfig-1689768:9048668"
 
-    modCompileOnly "curse.maven:roughly-enough-items-310111:7486489"
+    modCompileOnly "curse.maven:roughly-enough-items-310111:8249100"
     modCompileOnly "curse.maven:architectury-api-419699:7339256"
-//    modRuntimeOnly "curse.maven:roughly-enough-items-310111:7486489"
+//    modRuntimeOnly "curse.maven:roughly-enough-items-310111:8249100"
 //    modRuntimeOnly "curse.maven:architectury-api-419699:7339256"
 //    modRuntimeOnly "curse.maven:cloth-config-348521:7361438"
 
     modCompileOnly "curse.maven:overflowing-bars-852662:7347868"
-//    modCompileOnly "curse.maven:puzzles-lib-495476:7613334"
+//    modCompileOnly "curse.maven:puzzles-lib-495476:8168204"
 //    modCompileOnly "curse.maven:forge-config-api-port-547434:7337130"
 //    modRuntimeOnly "curse.maven:overflowing-bars-852662:7347868"
-//    modRuntimeOnly "curse.maven:puzzles-lib-495476:7613334"
+//    modRuntimeOnly "curse.maven:puzzles-lib-495476:8168204"
 //    modRuntimeOnly "curse.maven:forge-config-api-port-547434:7337130"
 }
 

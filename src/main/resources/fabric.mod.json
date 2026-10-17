@@ -32,6 +32,6 @@
     "fabricloader": ">=${loader_version}",
     "fabric-api": "*",
     "minecraft": "${minecraft_version}",
-    "fzzy_config": "0.7.6+1.21.11"
+    "fzzy_config": ">=0.7.6"
   }
 }

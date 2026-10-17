@@ -54,14 +54,25 @@ public class ScreenRenderListener {
 
         access.setGUITween$inTween(false);
 
-        float sign = access.gUITween$inCloseTween() ? -GUITweenClient.CONFIG.closeWindowSpeed : 1;
-        float openTick = MathHelper.clamp(GUITweenUtility.openScreenTick + sign * GUITweenUtility.getDeltaTicks(), 0, GUITweenClient.CONFIG.getWindowTotalDuration());
-        GUITweenUtility.openScreenTick = openTick;
+        boolean closing = access.gUITween$inCloseTween();
+        GUITweenUtility.isWindowClosing = closing;
+        float deltaTicks = GUITweenUtility.getDeltaTicks();
 
-        GUITweenUtility.jeiOpenTick = MathHelper.clamp(GUITweenUtility.jeiOpenTick + sign * GUITweenUtility.getDeltaTicks(), 0, GUITweenClient.CONFIG.getJeiTotalDuration());
+        if (closing) {
+            // 关闭动画使用独立计时：按真实帧数推进，速度恒为 1（不再有“关闭速度”）
+            GUITweenUtility.closeScreenTick = Math.max(0, GUITweenUtility.closeScreenTick - deltaTicks);
+            GUITweenUtility.closeJeiTick = Math.max(0, GUITweenUtility.closeJeiTick - deltaTicks);
 
-        if (sign < 0 && openTick <= 0) {
-            access.gUITween$setNeedClose(true);
+            if (GUITweenUtility.closeScreenTick <= 0 && GUITweenUtility.closeJeiTick <= 0) {
+                access.gUITween$setNeedClose(true);
+            }
+        }
+        else {
+            GUITweenUtility.closeScreenTick = 0;
+            GUITweenUtility.closeJeiTick = 0;
+
+            GUITweenUtility.openScreenTick = MathHelper.clamp(GUITweenUtility.openScreenTick + deltaTicks, 0, GUITweenClient.CONFIG.getWindowTotalDuration());
+            GUITweenUtility.jeiOpenTick = MathHelper.clamp(GUITweenUtility.jeiOpenTick + deltaTicks, 0, GUITweenClient.CONFIG.getJeiTotalDuration());
         }
     }
 
